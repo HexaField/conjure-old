@@ -1,13 +1,11 @@
 const IPFS = require('ipfs')
 const os = require('os')
 
-
-
-async function loadIPFS(isDevelopment, isBrowser) {
+async function loadIPFS() {
     console.log('Connecting to IPFS...')
     console.log(os.homedir())
     const ipfs = await IPFS.create({
-        repo: os.homedir() + (isDevelopment ? '/.ipfs-dev-' : '/.ipfs-') + (isBrowser ? Date.now() : '') + '/',
+        repo: os.homedir() + (global.isDevelopment ? '/.ipfs-dev-' : '/.ipfs-') + (global.isBrowser ? Date.now() : '') + '/',
         config:{
             Addresses:{
                 Swarm:[
@@ -17,7 +15,7 @@ async function loadIPFS(isDevelopment, isBrowser) {
                 ]
             }
         },
-        libp2p: isBrowser ? {} : { ...getLibp2pConfig()},
+        libp2p: global.isBrowser ? {} : { ...getLibp2pConfig()},
     });
     
     const version = await ipfs.version()

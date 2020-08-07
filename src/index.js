@@ -1,16 +1,19 @@
-const isBrowser = typeof window !== 'undefined' && typeof window.document !== 'undefined'
-const isDevelopment = process.env.NODE_ENV === 'development'
+import DataHandler from './Data/DataHandler'
+
+global.isBrowser = typeof window !== 'undefined' && typeof window.document !== 'undefined'
+global.isDevelopment = process.env.NODE_ENV === 'development'
 console.log('Launched ' + (isBrowser ? 'browser' : 'node') + ' on ' + process.env.NODE_ENV + ' network')
 
 async function start()
 {
     // initiate data layer
-    const { loadDataHandler } = require('./Data')
-    await loadDataHandler(isDevelopment, isBrowser)
+    const dataHandler = new DataHandler()
+    await dataHandler.initialise()
 
-    if(isBrowser)
+    if(global.isBrowser)
     {
         // initiate conjure
+        console.log('Launching Conjure...')
     }
 }
 
