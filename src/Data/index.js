@@ -1,13 +1,13 @@
-export async function loadDataHandler(isProduction) {
+async function loadDataHandler(isDevelopment, isBrowser) {
     // === load IPFS === //
 
     const IPFS = require('./IPFS')
-    const ipfs = await IPFS.loadIPFS(isProduction)
+    const ipfs = await IPFS.loadIPFS(isDevelopment, isBrowser)
 
     // === connect to conjure network === //
 
     // const network = require('./network')
-    // network.connect(isProduction)
+    // network.connect(isDevelopment, isBrowser)
 
     // === load local database === //
 
@@ -18,3 +18,5 @@ export async function loadDataHandler(isProduction) {
 
 
 }
+
+module.exports = { loadDataHandler }
