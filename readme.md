@@ -24,11 +24,11 @@ yarn install
 
 Run browser and node on development network
 
-`yarn dev`
+```yarn dev```
 
 Run browser and node on production network
 
-`yarn start`
+```yarn start```
 
 To run production network seperately 
 
