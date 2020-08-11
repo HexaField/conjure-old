@@ -39,13 +39,13 @@ export default class DataHandler
                 this.loadDataHandler()
             }
         })
-        this.webSocketClient = new WebSocketClient(callback)
+        this.webSocket = new WebSocketClient(callback)
     }
 
     // Creates a web socket for the browser to communicate with
     createWebSocket()
     {
-        this.webSocketServer = new WebSocketServer()
+        this.webSocket = new WebSocketServer(this)
     }
 
     // Load all the data things
@@ -79,5 +79,20 @@ export default class DataHandler
 
             default:break;
         }
+    }
+
+    addDataListener(callback)
+    {
+        this.webSocket.addDataListener(callback)
+    }
+
+    parseWebsocketData(data)
+    {
+        // convert back to function calls
+    }
+
+    sendWebsocketData(data)
+    {
+        this.webSocket.sendData(data)
     }
 }

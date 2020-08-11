@@ -1,9 +1,15 @@
 import WebSocket from 'ws'
 
+export const WEB_SOCKET_PROTOCOL = {
+    SERVER_CONNECT: 'server_connect',
+    CLIENT_CONNECT: 'client_connect',
+}
+
 export default class WebSocketServer
 {
-    constructor()
+    constructor(dataHandler)
     {
+        this.dataHandler = dataHandler
         this.onConnect = this.onConnect.bind(this)
         this.onDisconnect = this.onDisconnect.bind(this)
         this.onData = this.onData.bind(this)
@@ -18,7 +24,8 @@ export default class WebSocketServer
     onConnect(ws)
     {
         ws.on('message', this.onData)
-        this.sendData('Hello, browser!')
+        this.connection = ws
+        this.sendData(WEB_SOCKET_PROTOCOL.SERVER_CONNECT)
     }
 
     onDisconnect()
@@ -28,7 +35,7 @@ export default class WebSocketServer
 
     onData(data)
     {
-        console.log('got data from browser:', data)
+        this.dataHandler.parseWebsocketData(data)
     }
 
     sendData(data)
