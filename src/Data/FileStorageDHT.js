@@ -1,13 +1,14 @@
 // https://www.newline.co/@Mydrax/a-journey-to-asynchronous-programming-nodejs-fspromises-api--95ae553b
 // https://nodejs.org/dist/latest-v14.x/docs/api/fs.html#fs_fs_promises_api
 import FileSystem from '@forlagshuset/simple-fs'
+import DHTFS from './simple-fs-dht'
 
 export default class FileStorageBrowser
 {  
-    constructor()
+    constructor(dht)
     {
         this.rootDirectory = global.isDevelopment ? '/conjure-dev/' : '/conjure/'
-        this.files = new FileSystem()
+        this.files = new FileSystem({ storage: new DHTFS('DHT Storage', dht) })
     }
 
     async initialise()

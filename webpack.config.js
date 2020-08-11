@@ -22,5 +22,8 @@ module.exports = {
       new HtmlWebpackPlugin({
         template: "src/index.html" //source html
       })
-    ]
+    ],
+    node: {
+      fs: 'empty'
+    }
 };

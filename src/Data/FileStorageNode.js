@@ -1,29 +1,44 @@
-import fs from 'fs'
+import { promises as fs } from 'fs'
+import os from 'os'
 
 export default class FileStorageNode
 {  
-    constructor(isProduction)
+    constructor()
     {
-        this.rootDirectory = '~' + (isProduction ? '/conjure-dev/' : '/conjure/')
-        this.files = fs.promises
-    }
+        this.rootDirectory = os.homedir() + (global.isDevelopment ? '/.conjure-dev/' : '/.conjure/')
+        this.files = fs
+    }   
 
     // Internal
 
     async initialise()
     {
-        await this.makeDirectory(this.rootDirectory)
+        if(await this.makeDirectory(this.rootDirectory))
+            console.log('Created    Root Directory: ' + this.rootDirectory)
     }
 
     async makeDirectory(directory)
     {
-        await this.files.mkdir(this.rootDirectory + directory, { recursive: true })
+        try {
+            // console.log('makeDirectory', directory)
+            if(!await this.exists(directory))
+                return Boolean(await this.files.mkdir(directory, { recursive: true }))
+        } catch (err) {
+            console.log('Error making directory at location', directory, err)
+        }
+        return false
     }
 
     async exists(directory)
     {
-        let stat = await this.files.stat(directory)
-        return stat.isFile() || stat.isDirectory()
+        try {
+            // console.log('exists', directory)
+            let stat = await this.files.stat(directory)
+            return Boolean(stat)
+        } catch (err) {
+            console.log('Error finding status of file at location', directory, err)
+        }
+        return false
     }
 
     // API
@@ -31,8 +46,9 @@ export default class FileStorageNode
     async readFile(filename)
     {
         try {
+            // console.log('readFile', this.rootDirectory + filename)
             if(await this.exists(this.rootDirectory + filename))
-                return await (await this.files.readFile(this.rootDirectory + filename)).text()
+                return await this.files.readFile(this.rootDirectory + filename)
             return false
         } catch (err) {
             console.log('Error reading file at location', filename, err)
@@ -43,7 +59,8 @@ export default class FileStorageNode
     async writeFile(filename, data)
     {
        try {
-            return await this.files.writeFile(this.rootDirectory + filename, new Blob([data]))
+            // console.log('writeFile', this.rootDirectory + filename)
+            return await this.files.writeFile(this.rootDirectory + filename, data)
         } catch (err) {
             console.log('Error writing file at location', filename, err)
         }
