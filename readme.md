@@ -32,15 +32,17 @@ Run browser and node on production network
 
 To run production network seperately 
 
-`yarn start-browser`
-
-`yarn start-node`
+```
+yarn start-browser
+yarn start-node
+```
 
 To run development network seperately
 
-`yarn dev-browser`
-
-`yarn dev-node`
+```
+yarn dev-browser
+yarn dev-node
+```
 
 **Updating Conjure**	
 
