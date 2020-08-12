@@ -8,8 +8,8 @@
     "dev": "concurrently \"yarn dev-node\" \"yarn dev-browser\"",
     "start-browser": "webpack-dev-server --define process.env.NODE_ENV='\"production\"' --mode development",
     "dev-browser": "webpack-dev-server --mode development",
-    "start-node": "NODE_ENV=production nodemon --exec babel-node -- src/index.js",
-    "dev-node": "NODE_ENV=development nodemon --exec babel-node -- src/index.js",
+    "start-node": "NODE_ENV=production nodemon --exec babel-node -- src/node.js",
+    "dev-node": "NODE_ENV=development nodemon --exec babel-node -- src/node.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack --mode production"
   },
@@ -23,6 +23,7 @@
     "@babel/preset-env": "^7.11.0",
     "babel-loader": "^8.1.0",
     "concurrently": "^5.2.0",
+    "copy-webpack-plugin": "^6.0.3",
     "html-webpack-plugin": "^4.3.0",
     "nodemon": "^2.0.4",
     "webpack": "^4.44.1",
@@ -31,10 +32,12 @@
   },
   "dependencies": {
     "@forlagshuset/simple-fs": "^0.4.0",
+    "enable3d": "^0.19.1",
     "fs": "^0.0.1-security",
     "ipfs": "^0.48.1",
     "ipfs-pubsub-room": "^2.0.1",
     "lodash": "^4.17.19",
+    "three": "^0.119.1",
     "wrtc": "^0.4.6",
     "ws": "^7.3.1"
   }

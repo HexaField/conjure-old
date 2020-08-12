@@ -1,20 +1,16 @@
 import DataHandler from './data/DataHandler'
-import Conjure from './conjure/Conjure'
+import App from './conjure/App'
 
-global.isBrowser = typeof window !== 'undefined' && typeof window.document !== 'undefined'
+global.isBrowser = true
 global.isDevelopment = process.env.NODE_ENV === 'development'
-console.log('Launched ' + (isBrowser ? 'browser' : 'node') + ' on ' + process.env.NODE_ENV + ' network')
 
 async function start()
 {
+    console.log('Launched browser on ' + process.env.NODE_ENV + ' network')
+
     const dataHandler = new DataHandler()
     await dataHandler.initialise()
-
-    if(global.isBrowser)
-    {
-        const conjure = new Conjure(dataHandler)
-    }
-    
+    const conjure = new App(dataHandler)
 }
 
 start()
