@@ -1,4 +1,4 @@
-import { enable3d, Project, Scene3D, PhysicsLoader, THREE } from 'enable3d'
+import { Project, Scene3D, PhysicsLoader, THREE } from 'enable3d'
 import { CSS3DRenderer } from 'three/examples/jsm/renderers/CSS3DRenderer.js'
 import Input from './Input';
 
@@ -18,7 +18,7 @@ export default class Conjure extends Scene3D
     {
         this.initRenderer()
         this.initCamera()
-        this.initializeScene()
+        this.initScene()
 
         this.resizeCanvas = this.resizeCanvas.bind(this);
         window.onresize = this.resizeCanvas;
@@ -107,24 +107,24 @@ export default class Conjure extends Scene3D
 
     }
     
-    _update()
-    {
-        const delta = this.clock.getDelta() * 1000
-        const time = this.clock.getElapsedTime()
+    // _update()
+    // {
+    //     const delta = this.clock.getDelta() * 1000
+    //     const time = this.clock.getElapsedTime()
     
-        this.update(parseFloat(time.toFixed(3)), parseInt(delta.toString()))
+    //     this.update(parseFloat(time.toFixed(3)), parseInt(delta.toString()))
         
-        if(this.world.realm && this.world.realm.online)
-        {
-            this.physics.update(delta)
-            this.physics.updateDebugger()
-        }
+    //     if(this.world.realm && this.world.realm.online)
+    //     {
+    //         this.physics.update(delta)
+    //         this.physics.updateDebugger()
+    //     }
         
-        this.animationMixers.update(delta)
-        this.renderer.render(this.scene, this.camera)
-        // this.postProcessing.render();
-        this.rendererCSS.render( this.sceneCSS, this.camera )
-    }
+    //     this.animationMixers.update(delta)
+    //     this.renderer.render(this.scene, this.camera)
+    //     // this.postProcessing.render();
+    //     this.rendererCSS.render( this.sceneCSS, this.camera )
+    // }
 
     update(time, delta)
     {
