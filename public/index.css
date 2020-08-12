@@ -1,0 +1,7 @@
+body {
+	font-family: Monospace;
+	overscroll-behavior: none;
+    width:100%;
+    display: flex;
+    margin: 0;
+}

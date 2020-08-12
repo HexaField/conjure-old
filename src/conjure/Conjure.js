@@ -1,6 +1,6 @@
 import { Project, Scene3D, PhysicsLoader, THREE } from 'enable3d'
 import { CSS3DRenderer } from 'three/examples/jsm/renderers/CSS3DRenderer.js'
-import Input from './Input';
+import Input from './Input'; 
 
 export default class Conjure extends Scene3D
 {
@@ -171,7 +171,7 @@ export default class Conjure extends Scene3D
         
         this.renderer.setSize(width, height);
         // this.loadingScreen.renderer.setSize(width, height);
-        // this.rendererCSS.setSize(width, height);
+        this.rendererCSS.setSize(width, height);
         // this.postProcessing.composer.setSize(width, height);
         // if(this.screenManager)
         //     this.screenManager.resizeScreens(ratio);
