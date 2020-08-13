@@ -17,9 +17,12 @@ module.exports = {
       }]
     },
     devServer: {
-      contentBase:  path.resolve(__dirname, 'dist'),  
+      publicPath: '',
+      contentBase: path.resolve(__dirname),
+      // contentBase:  path.resolve(__dirname, 'src'),  
       port: 3000,
       watchContentBase: true,
+      hot: true,
     },
     plugins: [
       new HtmlWebpackPlugin({
