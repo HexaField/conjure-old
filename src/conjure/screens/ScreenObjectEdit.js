@@ -45,9 +45,9 @@ export default class ScreenObjectEdit extends ScreenBase
         this.screenManager.screenObjectsHierarchy.updateObjects();
     }
 
-    update(delta, input, raycaster)
+    update(updateArgs)
     {
-        super.update(delta, input, raycaster);
+        super.update(updateArgs);
     }
 
     getSchema(object)

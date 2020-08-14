@@ -35,17 +35,17 @@ export default class ScreenTextEntry extends ScreenBase
         super.showScreen(active);
     }
 
-    update(delta, input, raycaster)
+    update(updateArgs)
     {
-        super.update(delta, input, raycaster);
+        super.update(updateArgs);
 
-        if(input.isPressed('ENTER', true))
+        if(updateArgs.input.isPressed('ENTER', true))
         {
             if(this.callback)
                 this.callback(this.textElement.getValue())
             this.screenManager.hideLastOpenScreen()
         }
-        if(input.isPressed('HOME'))
+        if(updateArgs.input.isPressed('HOME'))
         {
             this.screenManager.hideLastOpenScreen()
         }

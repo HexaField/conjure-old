@@ -14,8 +14,8 @@ export default class ScreenSettings extends ScreenBase
         super.showScreen(active);
     }
 
-    update(delta, input, raycaster)
+    update(updateArgs)
     {
-        super.update(delta, input, raycaster);
+        super.update(updateArgs);
     }
 }

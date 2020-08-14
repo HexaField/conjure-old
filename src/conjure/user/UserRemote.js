@@ -39,7 +39,7 @@ export default class UserRemote extends User
         }
     }
 
-    update(delta, input, raycaster)
+    update(updateArgs)
     {
         if(this.timedOut) return
         this.timeoutCount++;
@@ -50,7 +50,7 @@ export default class UserRemote extends User
             return
         }
         if(!this.group || !this.group.body) return;
-        this.group.position.set(this.group.position.x + (this.velocity.x * delta), this.group.position.y + (this.velocity.y * delta), this.group.position.z + (this.velocity.z * delta))
+        this.group.position.set(this.group.position.x + (this.velocity.x * updateArgs.delta), this.group.position.y + (this.velocity.y * updateArgs.delta), this.group.position.z + (this.velocity.z * updateArgs.delta))
         this.group.body.needUpdate = true;
     }
 

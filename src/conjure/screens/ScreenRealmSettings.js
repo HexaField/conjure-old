@@ -76,8 +76,8 @@ export default class ScreenRealmSettings extends ScreenBase
         this.screenManager.conjure.getWorld().realm.settings.updateSettings();
     }
 
-    update(delta, input, raycaster)
+    update(updateArgs)
     {
-        super.update(delta, input, raycaster);
+        super.update(updateArgs);
     }
 }

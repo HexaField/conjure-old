@@ -217,15 +217,21 @@ export class Conjure extends Scene3D
         const delta = this.clock.getDelta() * 1000
         const time = this.clock.getElapsedTime()
     
-        this.update(parseFloat(time.toFixed(3)), parseInt(delta.toString()))
-        
-        this.physics.update(delta)
-        this.physics.updateDebugger()
-        
-        this.animationMixers.update(delta)
-        this.renderer.render(this.scene, this.camera)
-        this.postProcessing.render()
-        this.rendererCSS.render(this.sceneCSS, this.camera)
+        if(this.conjureMode === CONJURE_MODE.LOADING)
+        {
+            this.loadingScreen.update(parseFloat(time.toFixed(3)), parseInt(delta.toString()))
+        } 
+        else
+        {
+            this.update(parseFloat(time.toFixed(3)), parseInt(delta.toString()))
+            this.physics.update(delta)
+            this.physics.updateDebugger()
+            
+            this.animationMixers.update(delta)
+            // this.renderer.render(this.scene, this.camera)
+            this.postProcessing.render()
+            this.rendererCSS.render(this.sceneCSS, this.camera)
+        }
     }
 
     update(time, delta)
@@ -247,7 +253,9 @@ export class Conjure extends Scene3D
     
         // update controls
 
-        this.world.update({ delta: deltaSeconds, input: this.input, mouseRaycaster: this.mouseRaycaster, worldRaycaster: this.worldRaycaster })
+        this.getScreens().update({ delta: deltaSeconds, input: this.input, mouseRaycaster: this.mouseRaycaster, worldRaycaster: this.worldRaycaster })
+        this.getWorld().update({ delta: deltaSeconds, input: this.input, mouseRaycaster: this.mouseRaycaster, worldRaycaster: this.worldRaycaster })
+        this.getControls().update({ delta: deltaSeconds, input: this.input, mouseRaycaster: this.mouseRaycaster, worldRaycaster: this.worldRaycaster })
 
         this.cameraScreenAttach.position.copy(this.cameraFollow.getWorldPosition(this.vec3))
         this.cameraScreenAttach.quaternion.copy(this.cameraFollow.getWorldQuaternion(this.quat))

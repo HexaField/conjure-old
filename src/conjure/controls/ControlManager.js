@@ -158,10 +158,10 @@ export default class ControlManager
 
                 if(this.currentControlScheme === CONTROL_SCHEME.FLY)
                 {
-                    this.orbit.target.copy(this.flyControls.raycaster.ray.at(10, this.vec3));
+                    this.orbit.target.copy(this.flyControls.updateArgs.mouseRaycaster.ray.at(10, this.vec3));
                 }
                 if(this.currentControlScheme === CONTROL_SCHEME.AVATAR)
-                    this.orbit.target.copy(this.avatarControls.raycaster.ray.at(10, this.vec3));
+                    this.orbit.target.copy(this.avatarControls.updateArgs.mouseRaycaster.ray.at(10, this.vec3));
                 
                 this.currentControlScheme = scheme
                 this.enableCurrentControls(true)
@@ -202,7 +202,7 @@ export default class ControlManager
             this.objectControls.attach(obj, { detachOthers:true });
     }
 
-    update(delta, input, raycaster)
+    update(updateArgs)
     {
         if(!this.controlsEnabled) 
         {
@@ -216,9 +216,9 @@ export default class ControlManager
             this.enableControls(false)
             return
         }
-        if(input.isPressed('MOUSELEFT', true))
+        if(updateArgs.input.isPressed('MOUSELEFT', true))
             this.getPointerLock()
-        // if(input.isPressed('HOME'))
+        // if(updateArgs.input.isPressed('HOME'))
         // {
         //     if(this.currentControlScheme === CONTROL_SCHEME.ORBIT && this.transformControls.hasAnyAttached())
         //     {
@@ -233,24 +233,24 @@ export default class ControlManager
         //     }
         // }
 
-        // if(input.isPressed('DELETE', true) || input.isPressed('BACKSPACE', true))
+        // if(updateArgs.input.isPressed('DELETE', true) || updateArgs.input.isPressed('BACKSPACE', true))
         // {
         //     this.objectControls.detachAll({ isDeleting:true });
         // }
 
         // if(this.transformControls.enabled)
         // {
-        //     let intersections = raycaster.intersectObjects(this.transformObjects, true);
+        //     let intersections = updateArgs.mouseRaycaster.intersectObjects(this.transformObjects, true);
         //     if(intersections.length > 0)
         //     {
-        //         if(input.isPressed('MOUSELEFT', true))
+        //         if(updateArgs.input.isPressed('MOUSELEFT', true))
         //         {
         //             // if(!this.transformControls.axis)
         //             // {
         //                 let object = this.conjure.getWorld().objectManager.getTopGroupObject(intersections[0].object);
         //                 if(object)
         //                 {
-        //                     if(input.isDown('SHIFT', true))
+        //                     if(updateArgs.input.isDown('SHIFT', true))
         //                     {
         //                         this.objectControls.attach(object);
         //                     }
@@ -274,7 +274,7 @@ export default class ControlManager
         //     }
         // }
         // need to fix this to work with multiple objects
-        // if(input.isPressed('FOCUS')) // focus on object
+        // if(updateArgs.input.isPressed('FOCUS')) // focus on object
         // {
         //     // need to add things necessary to change from other control schemes to orbit/transform
         //     this.transformControls.enabled = true;
@@ -285,7 +285,7 @@ export default class ControlManager
         //             let obj = this.lastTransformObject;
         //             this.lastTransformObject = this.transformControls.object;
         //             this.objectControls.attach(obj);
-        //             if(input.isDown('SHIFT', true))
+        //             if(updateArgs.input.isDown('SHIFT', true))
         //                 this.lookAt(this.lastTransformObject);
         //         }
         //     }
@@ -294,7 +294,7 @@ export default class ControlManager
         //         if(this.lastTransformObject)
         //         {
         //             this.objectControls.attach(this.lastTransformObject);
-        //             if(input.isDown('SHIFT', true))
+        //             if(updateArgs.input.isDown('SHIFT', true))
         //                 this.lookAt(this.lastTransformObject);
         //         }
         //     }
@@ -313,19 +313,19 @@ export default class ControlManager
                 this.transformControls.enabled = true;
                 this.orbit.enabled = true;
             }
-            this.objectControls.input(input);
+            this.objectControls.input(updateArgs);
         }
         if(this.currentControlScheme === CONTROL_SCHEME.FLY) 
-            this.flyControls.input(input);
+            this.flyControls.input(updateArgs);
         if(this.currentControlScheme === CONTROL_SCHEME.AVATAR) 
-            this.avatarControls.input(input);
+            this.avatarControls.input(updateArgs);
         
         // CONTROL UPDATE
         if(this.currentControlScheme === CONTROL_SCHEME.ORBIT)
-            this.objectControls.update();
+            this.objectControls.update(updateArgs);
         if(this.currentControlScheme === CONTROL_SCHEME.FLY)
-            this.flyControls.update(delta);
+            this.flyControls.update(updateArgs);
         
-        this.avatarControls.update(delta); 
+        this.avatarControls.update(updateArgs); 
     }
 }

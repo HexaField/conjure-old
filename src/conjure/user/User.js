@@ -167,7 +167,7 @@ export default class User
         })
     }
 
-    update(delta, input, raycaster)
+    update(updateArgs)
     {
         if(!this.playerModel) return;
         if(this.isRemote) return;

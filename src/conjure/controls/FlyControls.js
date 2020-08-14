@@ -48,37 +48,37 @@ export default class FlyControls
         this.onPointerlockError = this.onPointerlockError.bind(this);
     }
 
-    input( input )
+    input(updateArgs)
     {
         if ( this.enabled === false || this.isLocked === false ) return;
-        if(input.isDown('FORWARD'))
+        if(updateArgs.input.isDown('FORWARD'))
             this.forward = true;
         else
             this.forward = false;
         
-        if(input.isDown('LEFT'))
+        if(updateArgs.input.isDown('LEFT'))
             this.left = true;
         else
             this.left = false;
 
-        if(input.isDown('BACKWARD'))
+        if(updateArgs.input.isDown('BACKWARD'))
             this.backward = true;
         else
             this.backward = false;
         
-        if(input.isDown('RIGHT'))
+        if(updateArgs.input.isDown('RIGHT'))
             this.right = true;
         else
             this.right = false;
 
-        if(input.isPressed('v', true))
+        if(updateArgs.input.isPressed('v', true))
             this.lockXZ = !this.lockXZ;
 
-        if(input.isDown('JUMP'))
+        if(updateArgs.input.isDown('JUMP'))
             this.up = true;
         else
             this.up = false;
-        if(input.isDown('SHIFT', true))
+        if(updateArgs.input.isDown('SHIFT', true))
             this.down = true;
         else
             this.down = false;        
@@ -102,26 +102,26 @@ export default class FlyControls
     }
     
 
-    update(delta)
+    update(updateArgs)
     {
         this.raycaster.ray.origin.copy( this.getObject().position );
         
-        this.velocity.x -= this.velocity.x * this.moveDamp * delta;
-        this.velocity.y -= this.velocity.y * this.moveDamp * delta;
-        this.velocity.z -= this.velocity.z * this.moveDamp * delta;
+        this.velocity.x -= this.velocity.x * this.moveDamp * updateArgs.delta;
+        this.velocity.y -= this.velocity.y * this.moveDamp * updateArgs.delta;
+        this.velocity.z -= this.velocity.z * this.moveDamp * updateArgs.delta;
 
         this.direction.x = Number( this.right ) - Number( this.left );
         this.direction.y = Number( this.up ) - Number( this.down );
         this.direction.z = Number( this.forward ) - Number( this.backward );
         this.direction.normalize(); // this ensures consistent movements in all directions
 
-        if ( this.forward || this.backward ) this.velocity.z -= this.direction.z * this.moveSensitivity * delta;
-        if ( this.up || this.down ) this.velocity.y -= this.direction.y * this.moveSensitivity * delta;
-        if ( this.left || this.right ) this.velocity.x -= this.direction.x * this.moveSensitivity * delta;
+        if ( this.forward || this.backward ) this.velocity.z -= this.direction.z * this.moveSensitivity * updateArgs.delta;
+        if ( this.up || this.down ) this.velocity.y -= this.direction.y * this.moveSensitivity * updateArgs.delta;
+        if ( this.left || this.right ) this.velocity.x -= this.direction.x * this.moveSensitivity * updateArgs.delta;
         
-        this.moveRight( - this.velocity.x * delta );
-        this.moveUp( - this.velocity.y * delta );
-        this.moveForward( - this.velocity.z * delta );
+        this.moveRight( - this.velocity.x * updateArgs.delta );
+        this.moveUp( - this.velocity.y * updateArgs.delta );
+        this.moveForward( - this.velocity.z * updateArgs.delta );
 
         this.raycaster.ray.direction.copy(this.getDirection(this.vector).normalize()); // this is for control switching
     }

@@ -186,34 +186,34 @@ export default class ScreenElementBase
                 this.elements.splice(i, 1);
     }
 
-    update(delta, input, raycaster)
+    update(updateArgs)
     {
         for(let i = 0; i < this.elements.length; i++)
         {
             // if(this.elements[i].active)
-            this.elements[i].update(delta, input, raycaster);
+            this.elements[i].update(updateArgs);
         }
 
         for(let i = 0; i < this.htmlObjects.length; i++)
-            this.htmlObjects[i].update(delta, input, raycaster);
+            this.htmlObjects[i].update(updateArgs);
         
         if(this.disabled) return;
         if(!this.active) return;
         if(this.hidden) return;
-        let intersections = raycaster.intersectObject(this.targetBounds, false);
+        let intersections = updateArgs.mouseRaycaster.intersectObject(this.targetBounds, false);
         if(intersections.length > 0)
         {
             this.hover(this, true);
-            if(input.isPressed('MOUSELEFT', true))
+            if(updateArgs.input.isPressed('MOUSELEFT', true))
                 this.click(this, true);
         }
         else
         {
-            if(input.isPressed('MOUSELEFT', true))
+            if(updateArgs.input.isPressed('MOUSELEFT', true))
                 this.click(this, false);
             this.hover(this, false);
         }
-        if(input.isReleased('MOUSELEFT', true))
+        if(updateArgs.input.isReleased('MOUSELEFT', true))
             this.click(this, false);
     }
 

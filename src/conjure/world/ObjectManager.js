@@ -225,7 +225,7 @@ export default class ObjectManager
         return hex;
     }
 
-    update(delta, input, raycaster)
+    update(updateArgs)
     {
         for(let o of this.objects)
         {
@@ -237,7 +237,7 @@ export default class ObjectManager
         }
         if(this.conjure.getControls().activeControl === 0 && !this.conjure.getScreens().mouseOver)
         {
-            let intersects = raycaster.intersectObjects(this.objects, true);
+            let intersects = updateArgs.mouseRaycaster.intersectObjects(this.objects, true);
             if(intersects.length > 0)
                 this.conjure.postProcessing.setHoverObject(intersects[0].object);
             else

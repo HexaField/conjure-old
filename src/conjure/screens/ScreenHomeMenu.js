@@ -63,13 +63,13 @@ export default class ScreenHomeMenu extends ScreenBase
         super.showScreen(active)
     }
 
-    update(delta, input, raycaster)
+    update(updateArgs)
     {
-        super.update(delta, input, raycaster)
+        super.update(updateArgs)
                 
         if(this.segments.length > 0 && this.segments[this.hoverNumber])
             this.segments[this.hoverNumber].scale.set(1,1,1)
-        let intersections = raycaster.intersectObjects(this.segmentTargets, false);
+        let intersections = updateArgs.mouseRaycaster.intersectObjects(this.segmentTargets, false);
         if(intersections.length)
         {
             let hoverTarget = intersections[0].object
@@ -78,7 +78,7 @@ export default class ScreenHomeMenu extends ScreenBase
                     this.hoverNumber = Number(i)
 
             this.segments[this.hoverNumber].scale.set(this.expandScale, this.expandScale, this.expandScale)
-            if(input.isPressed('MOUSELEFT', true))
+            if(updateArgs.input.isPressed('MOUSELEFT', true))
                 this.clickItem()
         }
         else

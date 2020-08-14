@@ -74,21 +74,21 @@ export default class ScreenTextureEditor extends ScreenBase
         this.getAssetsByType(this.currentAssetType);
     }
 
-    update(delta, input, raycaster)
+    update(updateArgs)
     {
-        super.update(delta, input, raycaster);
-        let intersections = raycaster.intersectObject(this.background, false);
+        super.update(updateArgs);
+        let intersections = updateArgs.mouseRaycaster.intersectObject(this.background, false);
         if(intersections.length > 0)
         {
-            if(input.isPressed('MOUSELEFT', true))
+            if(updateArgs.input.isPressed('MOUSELEFT', true))
             {
                 
             }
-            if(input.isDown('MOUSELEFT', true))
+            if(updateArgs.input.isDown('MOUSELEFT', true))
             {
                 this.draw();
             }
-            if(input.isReleased('MOUSELEFT', true))
+            if(updateArgs.input.isReleased('MOUSELEFT', true))
             {
 
             }

@@ -107,8 +107,8 @@ export default class ScreenObjectsHierarchy extends ScreenBase
             this.updateObjects();
     }
 
-    update(delta, input, raycaster)
+    update(updateArgs)
     {
-        super.update(delta, input, raycaster);
+        super.update(updateArgs);
     }
 }

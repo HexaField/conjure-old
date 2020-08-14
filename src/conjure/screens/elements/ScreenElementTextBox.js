@@ -127,9 +127,9 @@ export default class ScreenElementTextBox extends ScreenElementBase
         // easyPlane(this.group, icon, 0xffffff, 0.4, 0.2);
     }
 
-    update(delta, input, raycaster)
+    update(updateArgs)
     {
-        super.update(delta, input, raycaster);
+        super.update(updateArgs);
         if(this.disabled) return;
 
         if(this.focused)
@@ -138,30 +138,30 @@ export default class ScreenElementTextBox extends ScreenElementBase
         this.cssObj.update();
         if(!this.active) return;
         
-        if(input.isPressed('ESCAPE', true, true) || input.isPressed('ENTER', true, true))
+        if(updateArgs.input.isPressed('ESCAPE', true, true) || updateArgs.input.isPressed('ENTER', true, true))
         {
             if(this.focused && this.onClickCallback)
                 this.onClickCallback(this.onClickCallbackArgs, this.getValue());
             this.edit(false);
         }
-        let intersections = raycaster.intersectObject(this.background, false);
+        let intersections = updateArgs.mouseRaycaster.intersectObject(this.background, false);
         if(intersections.length > 0)
         {
             this.hover(this, true);
-            if(input.isPressed('MOUSELEFT', true, true))
+            if(updateArgs.input.isPressed('MOUSELEFT', true, true))
                 this.click(this, true);
         }
         else
         {
-            if(input.isPressed('MOUSELEFT', true, true))
+            if(updateArgs.input.isPressed('MOUSELEFT', true, true))
                 this.click(this, false);
             this.hover(this, false);
         }
-        if(input.isReleased('MOUSELEFT', true))
+        if(updateArgs.input.isReleased('MOUSELEFT', true))
             this.click(this, false);
-        if(input.isDown('CONTROL', true))
+        if(updateArgs.input.isDown('CONTROL', true))
         {
-            if(input.isPressed('V', true))
+            if(updateArgs.input.isPressed('V', true))
             {
                 navigator.clipboard.readText().then(clipText => this.setValue(clipText))
             }

@@ -108,8 +108,8 @@ export default class ScreenRealms extends ScreenBase
         this.screenManager.conjure.getWorld().joinRealm(realmInfo) // for joining a public realm
     }
 
-    update(delta, input, raycaster)
+    update(updateArgs)
     {
-        super.update(delta, input, raycaster)
+        super.update(updateArgs)
     }
 }

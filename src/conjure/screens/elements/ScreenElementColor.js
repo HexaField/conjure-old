@@ -75,9 +75,9 @@ export default class ScreenElementColor extends ScreenElementBase
         this.setHTMLActive(active);
     }
 
-    update(delta, input, raycaster)
+    update(updateArgs)
     {
-        super.update(delta, input, raycaster)
+        super.update(updateArgs)
         if(!this.xElement.isEditing && !this.yElement.isEditing && !this.zElement.isEditing)
             this.setValue(this.subject);
     }

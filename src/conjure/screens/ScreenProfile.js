@@ -63,9 +63,9 @@ export default class ScreenProfile extends ScreenBase
         super.showScreen(active);
     }
 
-    update(delta, input, raycaster)
+    update(updateArgs)
     {
-        super.update(delta, input, raycaster);
+        super.update(updateArgs);
         // this.avatarPreview.mesh.rotation.y += 0.01;
     }
     

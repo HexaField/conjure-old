@@ -339,9 +339,9 @@ export default class ScreenPayID extends ScreenBase
         this.refreshDomains()
     }
 
-    update(delta, input, raycaster)
+    update(updateArgs)
     {
-        super.update(delta, input, raycaster)
+        super.update(updateArgs)
     }
 
     getSchema()

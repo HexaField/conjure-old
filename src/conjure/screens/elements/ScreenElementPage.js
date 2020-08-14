@@ -114,12 +114,12 @@ export default class ScreenElementPage extends ScreenElementBase
         
     }
 
-    update(delta, input, raycaster)
+    update(updateArgs)
     {
-        super.update(delta, input, raycaster);
+        super.update(updateArgs);
         for(let i = 0; i < this.pageElements.length; i++)
         {
-            this.pageElements[i].update(delta, input, raycaster);
+            this.pageElements[i].update(updateArgs);
         }
     }
 }

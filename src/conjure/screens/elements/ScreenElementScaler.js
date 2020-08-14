@@ -86,27 +86,27 @@ export default class ScreenElementScaler extends ScreenElementBase
             this.updateCallback()
     }
 
-    update(delta, input, raycaster)
+    update(updateArgs)
     {
-        super.update(delta, input, raycaster);
+        super.update(updateArgs);
         if(this.disabled) return;
         if(!this.active) return;
 
         //
 
-        if(input.isPressed('MOUSELEFT', true) && this.mouseOver)
+        if(updateArgs.input.isPressed('MOUSELEFT', true) && this.mouseOver)
         {
-            if(input.isDown('SHIFT', true))
+            if(updateArgs.input.isDown('SHIFT', true))
             {
                 this.defaultValue();
             }
             else
             {
-                this.clickY = input.mouse.y;
+                this.clickY = updateArgs.input.mouse.y;
                 this.isEditing = true;
             }
         }
-        if(input.isReleased('MOUSELEFT', true) && this.isEditing)
+        if(updateArgs.input.isReleased('MOUSELEFT', true) && this.isEditing)
         {
             this.isEditing = false;
             this.setValue(this.getNewValue(this.scalerValue));
@@ -116,7 +116,7 @@ export default class ScreenElementScaler extends ScreenElementBase
         
         if(this.isEditing)
         {
-            this.updateSlider(-(this.clickY - input.mouse.y) * 10);
+            this.updateSlider(-(this.clickY - updateArgs.input.mouse.y) * 10);
             if(this.updateCallback)
                 this.updateCallback()
         }

@@ -99,23 +99,23 @@ export default class ScreenElementSlider extends ScreenElementBase
     //     super.setActive(active);
     // }
 
-    update(delta, input, raycaster)
+    update(updateArgs)
     {
-        super.update(delta, input, raycaster);
+        super.update(updateArgs);
         if(this.disabled) return;
         if(!this.active) return;
 
-        if(input.isPressed('MOUSELEFT', true))
-            if(input.isDown('SHIFT', true))
+        if(updateArgs.input.isPressed('MOUSELEFT', true))
+            if(updateArgs.input.isDown('SHIFT', true))
                 this.defaultValue();
             else
                 this.isEditing = true;
-        if(input.isReleased('MOUSELEFT', true))
+        if(updateArgs.input.isReleased('MOUSELEFT', true))
             this.isEditing = false;
         
         if(this.isEditing)
         {
-            let intersections = raycaster.intersectObject(this.sliderTarget, false);
+            let intersections = updateArgs.mouseRaycaster.intersectObject(this.sliderTarget, false);
             if(intersections.length > 0)
             {
                 var vector = this.vec3.copy(intersections[0].point);

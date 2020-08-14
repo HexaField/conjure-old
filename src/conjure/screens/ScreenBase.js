@@ -157,21 +157,21 @@ export default class ScreenBase
         return elements;
     }
 
-    update(delta, input, raycaster)
+    update(updateArgs)
     {
-        let intersections = raycaster.intersectObject(this.background, false);
+        let intersections = updateArgs.mouseRaycaster.intersectObject(this.background, false);
         if(this.draggingElementOriginator)
         {
             if(intersections.length > 0)
             {
-                if(input.isReleased('MOUSELEFT', true))
+                if(updateArgs.input.isReleased('MOUSELEFT', true))
                 {
                     if(this.draggingElementOriginator.endDrag)
                         this.draggingElementOriginator.endDrag(this.getAllElements())
                     // this.draggingElement = undefined;
                     this.draggingElementOriginator = undefined;
                 }
-                // if(input.isDown('MOUSELEFT', true))
+                // if(updateArgs.input.isDown('MOUSELEFT', true))
                 // {
                 //     // console.log(intersections[0])
                 //     this.draggingElement.group.position.setX(intersections[0].point.x)
@@ -185,18 +185,18 @@ export default class ScreenBase
             this.mouseOver = false;
         if(this.activeTextBox)
         {
-            this.activeTextBox.update(delta, input, raycaster);
+            this.activeTextBox.update(updateArgs);
         }
         else
         {
 
-            if(input.isPressed('k', true))
+            if(updateArgs.input.isPressed('k', true))
             {
                 this.debugLines.visible = !this.debugLines.visible;
             }
             
             for(let i = 0; i < this.elements.length; i++)
-                this.elements[i].update(delta, input, raycaster);
+                this.elements[i].update(updateArgs);
 
             for(let i = 0; i < this.htmlObjects.length; i++)
                 this.htmlObjects[i].update();

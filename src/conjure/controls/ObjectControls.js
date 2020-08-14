@@ -13,52 +13,52 @@ export default class ObjectControls
         this.translationSnap = 0.5;
     }
 
-    input(input)
+    input(updateArgs)
     {
-        if(input.isPressed('q', true))
+        if(updateArgs.input.isPressed('q', true))
             this.controls.setSpace( this.controls.space === "local" ? "world" : "local" );
             
-        if(input.isPressed('SHIFT', true))
+        if(updateArgs.input.isPressed('SHIFT', true))
         {
             // add settings for this
             this.controls.setTranslationSnap( this.translationSnap );
             this.controls.setRotationSnap( THREE.MathUtils.degToRad( 15 ) );
             this.controls.setScaleSnap( 0.25 );
         }
-        if(input.isReleased('SHIFT', true))
+        if(updateArgs.input.isReleased('SHIFT', true))
         {
             this.controls.setTranslationSnap( null );
             this.controls.setRotationSnap( null );
             this.controls.setScaleSnap( null );
         }
-        if(input.isPressed('w', true))
+        if(updateArgs.input.isPressed('w', true))
             this.controls.setMode( "translate" );
 
-        if(input.isPressed('e', true))
+        if(updateArgs.input.isPressed('e', true))
             this.controls.setMode( "rotate" );
 
-        if(input.isPressed('r', true))
+        if(updateArgs.input.isPressed('r', true))
             this.controls.setMode( "scale" );
 
-        if(input.isPressed('g', true))
+        if(updateArgs.input.isPressed('g', true))
             this.createGroup();
 
-        if(input.isPressed('+', true) || input.isPressed('=', true))
+        if(updateArgs.input.isPressed('+', true) || updateArgs.input.isPressed('=', true))
             this.controls.setSize( this.controls.size + 0.1 );
 
-        if(input.isPressed('-', true) || input.isPressed('_', true))
+        if(updateArgs.input.isPressed('-', true) || updateArgs.input.isPressed('_', true))
             this.controls.setSize( Math.max( this.controls.size - 0.1, 0.1 ) );
 
-        if(input.isPressed('x', true))
+        if(updateArgs.input.isPressed('x', true))
             this.controls.showX = ! this.controls.showX;
 
-        if(input.isPressed('y', true))
+        if(updateArgs.input.isPressed('y', true))
             this.controls.showY = ! this.controls.showY;
 
-        if(input.isPressed('z', true))
+        if(updateArgs.input.isPressed('z', true))
             this.controls.showZ = ! this.controls.showZ;
 
-        if(input.isPressed('SPACEBAR', true))
+        if(updateArgs.input.isPressed('SPACEBAR', true))
         {
             this.controls.enabled = ! this.controls.enabled;
             this.controlInfo.hidden = !this.controls.enabled;
@@ -136,7 +136,7 @@ export default class ObjectControls
         this.conjure.getScreens().hideScreen(this.conjure.getScreens().screenObjectEdit);
     }
 
-    update()
+    update(updateArgs)
     {
         
     }

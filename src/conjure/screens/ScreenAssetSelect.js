@@ -77,8 +77,8 @@ export default class ScreenAssets extends ScreenBase
         this.getAssetsByType(this.currentAssetType);
     }
 
-    update(delta, input, raycaster)
+    update(updateArgs)
     {
-        super.update(delta, input, raycaster);
+        super.update(updateArgs);
     }
 }

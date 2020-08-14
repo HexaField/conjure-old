@@ -31,9 +31,9 @@ export default class ScreenElementMesh extends ScreenElementBase
         this.mesh.geometry = geometry;
     }
 
-    update(delta, input, raycaster)
+    update(updateArgs)
     {
-        super.update(delta, input, raycaster);
+        super.update(updateArgs);
         if(this.rotate)
         {
             this.mesh.rotation.x += 0.005;

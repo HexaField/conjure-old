@@ -75,11 +75,11 @@ export default class ScreenElementTexture extends ScreenElementBase
         // easyPlane(this.group, icon, 0xffffff, 0.4, 0.2);
     }
     
-    update(delta, input, raycaster)
+    update(updateArgs)
     {
-        super.update(delta, input, raycaster);
-        this.editButton.update(delta, input, raycaster);
-        this.textBox.update(delta, input, raycaster);
+        super.update(updateArgs);
+        this.editButton.update(updateArgs);
+        this.textBox.update(updateArgs);
     }
 
     setDisabled(disable)

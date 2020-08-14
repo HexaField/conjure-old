@@ -76,8 +76,8 @@ export default class ScreenElementAssetSelector extends ScreenElementBase
         this.registerElement(this.preview);
     }
     
-    update(delta, input, raycaster)
+    update(updateArgs)
     {
-        super.update(delta, input, raycaster);
+        super.update(updateArgs);
     }
 }

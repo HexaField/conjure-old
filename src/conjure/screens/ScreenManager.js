@@ -205,10 +205,10 @@ export default class ScreenManager
             this.hideAllScreens();
     }
 
-    update(delta, input, raycaster)
+    update(updateArgs)
     {
         // add custom key listeners to allow this to scale
-        if(input.isPressed('HOME'))
+        if(updateArgs.input.isPressed('HOME'))
         {
             if(this.openScreens.length === 0)
                 this.showScreen(this.screenHomeMenu);
@@ -219,18 +219,18 @@ export default class ScreenManager
         for(let s of this.openScreens)
         {
             if(!s.pauses || s === this.openScreens[this.openScreens.length - 1])
-                s.update(delta, input, raycaster);
+                s.update(updateArgs);
             if(s.mouseOver)
                 this.mouseOver = true;
         }
         if(this.openScreens.length === 0)
         {
             if(this.conjure.conjureMode === CONJURE_MODE.EXPLORE)
-                this.hudExplore.update(delta, input, raycaster);
+                this.hudExplore.update(updateArgs);
             if(this.conjure.conjureMode === CONJURE_MODE.CONJURE)
-                this.hudConjure.update(delta, input, raycaster);
+                this.hudConjure.update(updateArgs);
         }
-        this.hudGlobal.update(delta, input, raycaster);
+        this.hudGlobal.update(updateArgs);
     }
 
     resizeScreens(ratio)

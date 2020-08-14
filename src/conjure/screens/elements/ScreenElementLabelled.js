@@ -91,8 +91,8 @@ export default class ScreenElementLabelled extends ScreenElementBase
         this.setHTMLActive(active);
     }
 
-    update(delta, input, raycaster)
+    update(updateArgs)
     {
-        super.update(delta, input, raycaster)
+        super.update(updateArgs)
     }
 }

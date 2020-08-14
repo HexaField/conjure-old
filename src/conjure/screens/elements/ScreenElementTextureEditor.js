@@ -57,8 +57,8 @@ export default class ScreenElementTextureEditor extends ScreenElementBase
         this.preview.setIconTexture(asset.data)
     }
     
-    update(delta, input, raycaster)
+    update(updateArgs)
     {
-        super.update(delta, input, raycaster)
+        super.update(updateArgs)
     }
 }

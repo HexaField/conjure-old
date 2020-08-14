@@ -39,15 +39,15 @@ export default class ScreenElementPreviewPanel extends ScreenElementBase
         // this.isTouchingPreview = false;
     }
 
-    update(delta, input, raycaster)
+    update(updateArgs)
     {
-        super.update(delta, input, raycaster);
-        // if(input.isPressed('MOUSELEFT'))
+        super.update(updateArgs);
+        // if(updateArgs.input.isPressed('MOUSELEFT'))
         //     this.isTouchingPreview = true;
-        // if(input.isReleased('MOUSELEFT'))
+        // if(updateArgs.input.isReleased('MOUSELEFT'))
         //     this.isTouchingPreview = false;
         
-        // let intersections = raycaster.intersectObject(this.background, false);
+        // let intersections = updateArgs.mouseRaycaster.intersectObject(this.background, false);
         // if(intersections.length > 0 && this.isTouchingPreview)
         // {
         //     console.log(intersections[0].point);

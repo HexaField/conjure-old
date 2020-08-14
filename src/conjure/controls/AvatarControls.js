@@ -64,39 +64,39 @@ export default class AvatarControls
 		document.addEventListener('wheel', this.onMouseWheel, false);
     }
 
-    input( input )
+    input(updateArgs)
     {
-        if(input.isDown('FORWARD'))
+        if(updateArgs.input.isDown('FORWARD'))
             this.forward = true;
         else
             this.forward = false;
         
-        if(input.isDown('LEFT'))
+        if(updateArgs.input.isDown('LEFT'))
             this.left = true;
         else
             this.left = false;
 
-        if(input.isDown('BACKWARD'))
+        if(updateArgs.input.isDown('BACKWARD'))
             this.backward = true;
         else
             this.backward = false;
         
-        if(input.isDown('RIGHT'))
+        if(updateArgs.input.isDown('RIGHT'))
             this.right = true;
         else
             this.right = false;
 
-        if(input.isDown('SHIFT', true))
+        if(updateArgs.input.isDown('SHIFT', true))
             this.sprint = true;
         else
             this.sprint = false;
 
-        if(input.isDown('CONTROL', true))
+        if(updateArgs.input.isDown('CONTROL', true))
             this.crouch = true;
         else
             this.crouch = false;
 
-		if(input.isPressed('JUMP'))
+		if(updateArgs.input.isPressed('JUMP'))
             this.user.jump();
     }
 
@@ -128,7 +128,7 @@ export default class AvatarControls
         this.camera.lookAt(center)
     }
 
-    update( delta, input)
+    update(updateArgs)
     {
         // if ( !this.enabled || !this.isLocked ) return
         
@@ -175,9 +175,9 @@ export default class AvatarControls
 
 
         // Third Person Movement
-        this.velocity.x -= this.velocity.x * this.moveDamp * delta;
-        this.velocity.y -= this.velocity.y * this.moveDamp * delta;
-        this.velocity.z -= this.velocity.z * this.moveDamp * delta;
+        this.velocity.x -= this.velocity.x * this.moveDamp * updateArgs.delta;
+        this.velocity.y -= this.velocity.y * this.moveDamp * updateArgs.delta;
+        this.velocity.z -= this.velocity.z * this.moveDamp * updateArgs.delta;
 
         if(this.enabled)
         {
@@ -193,9 +193,9 @@ export default class AvatarControls
             this.direction.z = Number( this.forward ) - Number( this.backward );
             this.direction.normalize();
 
-            if ( this.forward || this.backward ) this.velocity.z -= this.direction.z * this.moveSensitivity * delta;
-            // if ( this.up || this.down ) this.velocity.y -= this.direction.y * this.moveSensitivity * delta;
-            if ( this.left || this.right ) this.velocity.x -= this.direction.x * this.moveSensitivity * delta;
+            if ( this.forward || this.backward ) this.velocity.z -= this.direction.z * this.moveSensitivity * updateArgs.delta;
+            // if ( this.up || this.down ) this.velocity.y -= this.direction.y * this.moveSensitivity * updateArgs.delta;
+            if ( this.left || this.right ) this.velocity.x -= this.direction.x * this.moveSensitivity * updateArgs.delta;
             
         }
         if(!this.user.animMovementLock)

@@ -26,10 +26,10 @@ export default class HUDExploreMode extends ScreenBase
         super.showScreen(active);
     }
 
-    update(delta, input, raycaster)
+    update(updateArgs)
     {
-        super.update(delta, input, raycaster);
-        if(this.interact.object && input.isPressed('INTERACT'))
+        super.update(updateArgs);
+        if(this.interact.object && updateArgs.input.isPressed('INTERACT'))
         {
             if(this.interact.type === INTERACT_TYPES.USER)
             {

@@ -149,27 +149,27 @@ export default class ScreenElementScroll extends ScreenElementBase
             this.onScrollerCallback();
     }
 
-    update(delta, input, raycaster)
+    update(updateArgs)
     {
-        super.update(delta, input, raycaster);
+        super.update(updateArgs);
 
-        let intersections = raycaster.intersectObject(this.background, false);
+        let intersections = updateArgs.mouseRaycaster.intersectObject(this.background, false);
         if(intersections.length > 0)
         {
-            if(input.scroll)
-                this.scrollerScroll(input.scroll * 2);
+            if(updateArgs.input.scroll)
+                this.scrollerScroll(updateArgs.input.scroll * 2);
             if(this.scrollerClicked)
                 this.scrollerClick(this.group.worldToLocal(intersections[0].point));
         }
 
-        intersections = raycaster.intersectObject(this.scrollerTarget, false);
+        intersections = updateArgs.mouseRaycaster.intersectObject(this.scrollerTarget, false);
         if(intersections.length > 0)
-            if(input.isDown('MOUSELEFT', true))
+            if(updateArgs.input.isDown('MOUSELEFT', true))
                 this.scrollerClick(this.group.worldToLocal(intersections[0].point));
-            else if(input.isPressed('MOUSELEFT', true))
+            else if(updateArgs.input.isPressed('MOUSELEFT', true))
                 this.scrollerClicked = true;
 
-        if(this.scrollerClicked && input.isReleased('MOUSELEFT', true))
+        if(this.scrollerClicked && updateArgs.input.isReleased('MOUSELEFT', true))
             this.scrollerClicked = false;
     }
 }
