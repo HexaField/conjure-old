@@ -5,11 +5,11 @@ import ScreenElementLabelled from './elements/ScreenElementLabelled';
 
 export default class ScreenProfile extends ScreenBase
 {  
-    constructor(screenManager, camera, world, args)
+    constructor(screenManager, args)
     {
-        super(screenManager, camera, world, args);
+        super(screenManager, args);
         
-        this.profile = this.screenManager.conjure.localProfile;
+        this.profile = this.screenManager.conjure.getProfile();
 
         this.buttonHeight = 0.1
         this.buttonWidth = 0.5

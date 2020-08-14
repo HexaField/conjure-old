@@ -13,9 +13,9 @@ import { POSTPROCESSING } from '../PostProcessing';
 
 export default class ScreenObjectCreate extends ScreenBase
 {  
-    constructor(screenManager, camera, world, args)
+    constructor(screenManager, args)
     {
-        super(screenManager, camera, world, args);
+        super(screenManager, args);
 
         this.group.add(this.background);
 
@@ -77,7 +77,7 @@ export default class ScreenObjectCreate extends ScreenBase
                 deformable: false
             }
             await this.world.createObject(newObject);
-            this.screenManager.conjure.controls.objectControls.attach(newObject, {detachOthers:true});
+            this.screenManager.conjure.getControls().objectControls.attach(newObject, {detachOthers:true});
         }
     }
 }

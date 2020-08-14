@@ -4,11 +4,11 @@ import TextRenderer3D from './text/TextRenderer3D'
 
 export default class ScreenBase
 {  
-    constructor(screenManager, camera, world, args = {})
+    constructor(screenManager, args = {})
     {
         this.screenManager = screenManager;
-        this.camera = camera;
-        this.world = world;
+        this.camera = screenManager.conjure.camera;
+        this.world = screenManager.conjure.world;
         this.id = this.screenManager.screens === undefined ? -1 : this.screenManager.screens.length;
         this.screenName = args.name || "";
         this.anchor = Boolean(args.anchor) // this locks the x to be absolute from -1 to 1

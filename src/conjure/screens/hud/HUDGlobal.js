@@ -6,17 +6,15 @@ import HUDElementNotification from './HUDElementNotification';
 
 export default class HUDGlobal extends ScreenBase
 {  
-    constructor(screenManager, camera, world, args)
+    constructor(screenManager, args)
     {
-        super(screenManager, camera, world, args)
+        super(screenManager, args)
 
         this.screenTitle.mesh.visible = false
-        global.CONSOLE = this
 
         this.watcher = new HUDElementWatcher(this)
         this.console = new HUDElementConsole(this)
         this.notification = new HUDElementNotification(this)
-        
     }
 
     addWatchItem(label, reference, key)

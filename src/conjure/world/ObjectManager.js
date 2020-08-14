@@ -84,25 +84,25 @@ export default class ObjectManager
         if(!oldTopParent || !newTopParent) return;
         
         // success if you made it this far, now lets group...
-        this.conjure.controls.objectControls.detachAll()
+        this.conjure.getControls().objectControls.detachAll()
         newChild.parent.remove(newChild);
         let newObject = newChild.clone();
         
         // update old top parent (so long as it isn't the same as the new one, in which case we're only updating one top parent)
         if(newTopParent !== oldTopParent)
             if(this.getObject(oldTopParent)) // if newChild is a top level object and isn't anymore, need to remove it from the database
-                await this.conjure.world.destroyObject(oldTopParent);
+                await this.conjure.getWorld().destroyObject(oldTopParent);
             else // otherwise just update it
-                await this.conjure.world.updateObject(oldTopParent)
+                await this.conjure.getWorld().updateObject(oldTopParent)
 
         // update new top parent
         newParent.add(newObject);
         if(newObject.userData.hash)
             newObject.userData.hash = null;
-        await this.conjure.world.updateObject(newTopParent)
+        await this.conjure.getWorld().updateObject(newTopParent)
 
-        this.conjure.screenManager.screenObjectsHierarchy.updateObjects();
-        // this.conjure.world.sendData(PROTOCOLS.OBJECT.UPDATE, {newParentUUID: newParent.UUID, newChildUUID: newObject.UUID}) // shouldn't need to use this as the two updateObjects should take care of this
+        this.conjure.getScreens().screenObjectsHierarchy.updateObjects();
+        // this.conjure.getWorld().sendData(PROTOCOLS.OBJECT.UPDATE, {newParentUUID: newParent.UUID, newChildUUID: newObject.UUID}) // shouldn't need to use this as the two updateObjects should take care of this
     }
 
     getObject(obj)
@@ -130,8 +130,8 @@ export default class ObjectManager
     {
         this.objects.push(object);
         this.scene.add(object);
-        this.conjure.controls.addTransformObject(object);
-        this.conjure.screenManager.screenObjectsHierarchy.updateObjects();
+        this.conjure.getControls().addTransformObject(object);
+        this.conjure.getScreens().screenObjectsHierarchy.updateObjects();
     }
     // find a group in this.objects that contains 'obj'
     getTopGroupObject(obj)
@@ -202,7 +202,7 @@ export default class ObjectManager
             object.material.dispose();
         if(object.geometry)
             object.geometry.dispose();
-        this.conjure.screenManager.screenObjectsHierarchy.updateObjects();
+        this.conjure.getScreens().screenObjectsHierarchy.updateObjects();
         this.conjure.renderer.renderLists.dispose();
     }
 
@@ -235,7 +235,7 @@ export default class ObjectManager
                 this.teleport(o, 0, 10, 0);
             }
         }
-        if(this.conjure.controls.activeControl === 0 && !this.conjure.screenManager.mouseOver)
+        if(this.conjure.getControls().activeControl === 0 && !this.conjure.getScreens().mouseOver)
         {
             let intersects = raycaster.intersectObjects(this.objects, true);
             if(intersects.length > 0)

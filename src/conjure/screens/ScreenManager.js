@@ -28,7 +28,7 @@ export default class ScreenManager
     {
         this.conjure = conjure;
         this.domElement = conjure.renderer.domElement;
-        this.world = conjure.world;
+        this.world = conjure.getWorld();
         this.camera = conjure.camera;
         
         this.group = new THREE.Group();
@@ -37,31 +37,36 @@ export default class ScreenManager
         this.hideLastOpenScreen = this.hideLastOpenScreen.bind(this) // for text entry screen callback
 
         // TODO: rename this to explore mode HUD and add conjure mode HUD
-        this.hudGlobal = new HUDGlobal(this, this.camera, this.world, {name:'Global', width:2, height:1});
-        this.hudExplore = new HUDExploreMode(this, this.camera, this.world, {name:'Explore', width:2, height:1});
-        this.hudConjure = new HUDConjureMode(this, this.camera, this.world, {name:'Conjure', width:2, height:1});
+        this.hudGlobal = new HUDGlobal(this, {name:'Global', width:2, height:1});
+        this.hudExplore = new HUDExploreMode(this, {name:'Explore', width:2, height:1});
+        this.hudConjure = new HUDConjureMode(this, {name:'Conjure', width:2, height:1});
         this.hudGlobal.showScreen(false)
         this.hudExplore.showScreen(false)
         this.hudConjure.showScreen(false)
 
         this.screens = [];
         
-        this.screenHomeMenu = this.createScreen(new ScreenHomeMenu(this, this.camera, this.world, {name:'Home Menu', width:1, height:1, pauses:true}));
-        this.screenRealmSettings = this.createScreen(new ScreenRealmSettings(this, this.camera, this.world, {name:'Realm Settings', width:1.5, height:1, pauses:true}));
-        this.screenObjectCreate = this.createScreen(new ScreenObjectCreate(this, this.camera, this.world, {name:'Create Object', width:0.8, height:0.4}));
-        this.screenObjectEdit = this.createScreen(new ScreenObjectEdit(this, this.camera, this.world, {name:'Object Edit', width:0.8, height:1.6, x:0.75, anchor:true}));
-        this.screenObjectsHierarchy = this.createScreen(new ScreenObjectsHierarchy(this, this.camera, this.world, {name:'Objects Hierarchy', width:0.8, height:1.6, x:-0.6, anchor:true}));
-        this.screenSettings = this.createScreen(new ScreenSettings(this, this.camera, this.world, {name:'Settings', width:1.6, height:0.8, pauses:true}));
-        this.screenProfile = this.createScreen(new ScreenProfile(this, this.camera, this.world, {name:'Profile', width:1.6, height:0.8, pauses:true}));
-        this.screenServices = this.createScreen(new ScreenServices(this, this.camera, this.world, {name:'Services', width:1.6, height:0.8, pauses:true}));
-        this.screenRealms = this.createScreen(new ScreenRealms(this, this.camera, this.world, {name:'Realms', width:1.5, height:1.5, pauses:true}));
-        this.screenAssets = this.createScreen(new ScreenAssets(this, this.camera, this.world, {name:'Assets', width:2.4, height:1.0, pauses:true}));
-        this.screenAssetSelect = this.createScreen(new ScreenAssetSelect(this, this.camera, this.world, {name:'Assets Select', width:0.8, height:1.6}));
-        this.screenTextureEditor = this.createScreen(new ScreenTextureEditor(this, this.camera, this.world, {name:'Edit Texture', width:1.6, height:1.6}));
-        this.screenUserInteract = this.createScreen(new ScreenUserInteract(this, this.camera, this.world, {name:'User Interact', width:1.5, height:1, pauses:true}));
-        this.screenUserPay = this.createScreen(new ScreenUserPay(this, this.camera, this.world, { name:'Pay User', width:1.5, height:0.6, pauses:true }))
-        this.screenPayID = this.createScreen(new ScreenPayID(this, this.camera, this.world, { name:'PayID', width:2.8, height:1.2, pauses:true }));
-        this.screenTextEntry = this.createScreen(new ScreenTextEntry(this, this.camera, this.world, { name:'Enter Value', width:0.8, height:0.4 }))
+        this.screenHomeMenu = this.createScreen(new ScreenHomeMenu(this, {name:'Home Menu', width:1, height:1, pauses:true}));
+        this.screenRealmSettings = this.createScreen(new ScreenRealmSettings(this, {name:'Realm Settings', width:1.5, height:1, pauses:true}));
+        this.screenObjectCreate = this.createScreen(new ScreenObjectCreate(this, {name:'Create Object', width:0.8, height:0.4}));
+        this.screenObjectEdit = this.createScreen(new ScreenObjectEdit(this, {name:'Object Edit', width:0.8, height:1.6, x:0.75, anchor:true}));
+        this.screenObjectsHierarchy = this.createScreen(new ScreenObjectsHierarchy(this, {name:'Objects Hierarchy', width:0.8, height:1.6, x:-0.6, anchor:true}));
+        this.screenSettings = this.createScreen(new ScreenSettings(this, {name:'Settings', width:1.6, height:0.8, pauses:true}));
+        this.screenProfile = this.createScreen(new ScreenProfile(this, {name:'Profile', width:1.6, height:0.8, pauses:true}));
+        this.screenServices = this.createScreen(new ScreenServices(this, {name:'Services', width:1.6, height:0.8, pauses:true}));
+        this.screenRealms = this.createScreen(new ScreenRealms(this, {name:'Realms', width:1.5, height:1.5, pauses:true}));
+        this.screenAssets = this.createScreen(new ScreenAssets(this, {name:'Assets', width:2.4, height:1.0, pauses:true}));
+        this.screenAssetSelect = this.createScreen(new ScreenAssetSelect(this, {name:'Assets Select', width:0.8, height:1.6}));
+        this.screenTextureEditor = this.createScreen(new ScreenTextureEditor(this, {name:'Edit Texture', width:1.6, height:1.6}));
+        this.screenUserInteract = this.createScreen(new ScreenUserInteract(this, {name:'User Interact', width:1.5, height:1, pauses:true}));
+
+        if(this.conjure.getProfile().getServiceManager().getService('PayID'))
+        {
+            this.screenUserPay = this.createScreen(new ScreenUserPay(this, { name:'Pay User', width:1.5, height:0.6, pauses:true }))
+            this.screenPayID = this.createScreen(new ScreenPayID(this, { name:'PayID', width:2.8, height:1.2, pauses:true }));
+        }
+        
+        this.screenTextEntry = this.createScreen(new ScreenTextEntry(this, { name:'Enter Value', width:0.8, height:0.4 }))
 
         this.openScreens = [];
         this.mouseOver = false;

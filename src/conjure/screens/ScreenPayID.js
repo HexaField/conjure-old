@@ -8,11 +8,11 @@ import ScreenElementText from './elements/ScreenElementText'
 
 export default class ScreenPayID extends ScreenBase
 {  
-    constructor(screenManager, camera, world, args)
+    constructor(screenManager, args)
     {
-        super(screenManager, camera, world, args)
+        super(screenManager, args)
 
-        this.payIDHandler = this.screenManager.conjure.localProfile.getService('PayID').payIDHandler
+        this.payIDHandler = this.screenManager.conjure.getProfile().getServiceManager().getService('PayID').payIDHandler
 
         this.buttonWidth = 0.4
         this.buttonHeight = 0.1

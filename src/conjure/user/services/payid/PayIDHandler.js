@@ -46,7 +46,7 @@ export default class PayIDHandler
             console.log(response)
             if(response.error)
             {
-                global.CONSOLE.log(response.message)
+                this.conjure.getGlobalHUD().log(response.message)
                 return
             }
             let newAccount = domain.addAccount(accountName)
@@ -129,6 +129,7 @@ export default class PayIDHandler
 
     refreshScreen()
     {
-        global.CONJURE.screenManager.screenPayID.refresh()
+        // replace this with callback
+        // global.conjure.getScreens().screenPayID.refresh()
     }
 }

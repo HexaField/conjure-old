@@ -3,7 +3,7 @@ import { REALM_PROTOCOLS } from '../world/realm/Realm'
 
 export default class User
 {
-    constructor(conjure, scene, camera)
+    constructor(conjure)
     {
         this.vec = new THREE.Vector3();
         this.quat = new THREE.Quaternion();
@@ -11,8 +11,7 @@ export default class User
         this.isRemote = false;
         
         this.conjure = conjure;
-        this.scene = scene;
-        this.camera = camera;
+        this.scene = conjure.scene;
 
         this.group = new ExtendedObject3D();
         this.group.name = 'user'
@@ -42,22 +41,10 @@ export default class User
         this.focusPoint.position.z = -2;
         this.group.add(this.focusPoint);
 
-        // this.focusPoint.add(new THREE.Mesh( new THREE.SphereGeometry( 0.05, 8, 8 ), new THREE.MeshLambertMaterial( {color: 0xffffff} ) ));
-
         this.previewMeshPoint = new ExtendedObject3D();
         this.previewMeshPoint.position.y = 1;
         this.previewMeshPoint.position.z = -1.5;
         this.group.add(this.previewMeshPoint);
-
-        
-        // this.cameraBoom = new ExtendedObject3D();
-        // this.cameraBoom.position.set(0, 3, 5);
-        // this.cameraOrigin.add(this.cameraBoom);
-        
-        // this.cameraOrigin = new ExtendedObject3D();
-        // this.cameraOrigin.position.set(0, this.eyeHeight, 0);
-        // this.group.add(this.cameraOrigin);
-        this.scene = scene;
 
         this.scene.add(this.group);
 
@@ -139,7 +126,7 @@ export default class User
             this.setAction('idle', 0.1);
             this.turnedTooMuch = false;
             this.onCreate();
-            this.conjure.controls.controlsEnabled = true;
+            this.conjure.getControls().controlsEnabled = true;
         });
     }
 
@@ -315,7 +302,7 @@ export default class User
         this.getMovementLock()
         this.group.animation.play(name, fadeTime * 1000, !Boolean(once));
         if(!this.isRemote)
-            this.conjure.world.sendData(REALM_PROTOCOLS.USER.ANIMATION, {name, fadeTime, once, startTime, discordID:this.conjure.localProfile.discordID});
+            this.conjure.getWorld().sendData(REALM_PROTOCOLS.USER.ANIMATION, {name, fadeTime, once, startTime, discordID:this.conjure.getProfile().discordID});
     }
 
     getMovementLock()

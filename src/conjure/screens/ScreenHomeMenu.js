@@ -5,9 +5,9 @@ import ScreenElementText from './elements/ScreenElementText'
 
 export default class ScreenHomeMenu extends ScreenBase
 {  
-    constructor(screenManager, camera, world, args)
+    constructor(screenManager, args)
     {
-        super(screenManager, camera, world, args)
+        super(screenManager, args)
 
         this.segments = []
         this.segmentTargets = []

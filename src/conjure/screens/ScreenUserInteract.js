@@ -4,9 +4,9 @@ import ScreenElementButton from './elements/ScreenElementButton';
 
 export default class ScreenUserInteract extends ScreenBase
 {  
-    constructor(screenManager, camera, world, args)
+    constructor(screenManager, args)
     {
-        super(screenManager, camera, world, args);
+        super(screenManager, args);
 
         this.background.visible = true;
         this.group.add(this.background);
@@ -33,7 +33,7 @@ export default class ScreenUserInteract extends ScreenBase
         this.user = user;
         this.screenTitle.setText('Interacting with ' + user.username)
         this.screenManager.screenUserPay.setUser(user)
-        this.screenManager.conjure.world.realm.sendTo(REALM_PROTOCOLS.PROFILE.SERVICE.PAYID.REQUESTID, '', user.peerID)
+        this.screenManager.conjure.getWorld().realm.sendTo(REALM_PROTOCOLS.PROFILE.SERVICE.PAYID.REQUESTID, '', user.peerID)
     }
 
     showScreen(active)

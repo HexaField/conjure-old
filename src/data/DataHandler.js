@@ -13,20 +13,23 @@ export default class DataHandler
 {
     constructor()
     {
-        this.hasIPFS = true
     }
 
     async initialise()
     {
-        if(global.isBrowser)
-        {
-            await this.findNode()
-        }
-        else
-        {
-            await this.loadDataHandler()
-            this.createWebSocket()
-        }
+        await this.loadDataHandler()
+        
+        // TODO: figure out how to pipe IPFS directly from node to browser, if impossible then add protocols for all ipfs actions (networking etc)
+        
+        // if(global.isBrowser)
+        // {
+        //     await this.findNode()
+        // }
+        // else
+        // {
+        //     await this.loadDataHandler()
+        //     this.createWebSocket()
+        // }
     }
 
     // Try and connect to the node server
@@ -54,6 +57,9 @@ export default class DataHandler
         this.ipfs = await IPFS.loadIPFS()
         this.peerID = await this.ipfs.id()
         console.log('IPFS ' + (await this.ipfs.version()).version + ' node ready with id ' + this.peerID.id)
+        this.ipfsInfo = {}
+        this.ipfsInfo.peersCount = 0;
+        this.showStats();
      
         this.files = global.isBrowser ? new FileStorageBrowser() : new FileStorageNode()
         // this.files = new FileStorageDHT() // untested & not fully implemented
@@ -67,6 +73,18 @@ export default class DataHandler
 
         this.profileManager = new ProfileManager(this.files, this.networkManager)
         await this.profileManager.initialise()
+    }
+
+    showStats()
+    {
+        setInterval(async () => {
+            try {
+                const peers = await this.ipfs.swarm.peers()
+                this.ipfsInfo.peersCount = peers.length
+            } catch (err) {
+                console.log('An error occurred trying to check our peers:', err)
+            }
+        }, 1000)
     }
 
     parseNetworkData(data)
@@ -83,7 +101,8 @@ export default class DataHandler
 
     addDataListener(callback)
     {
-        this.webSocket.addDataListener(callback)
+        if(this.webSocket)
+            this.webSocket.addDataListener(callback)
     }
 
     parseWebsocketData(data)
@@ -95,4 +114,12 @@ export default class DataHandler
     {
         this.webSocket.sendData(data)
     }
+
+    getIPFS() { return this.ipfs }
+
+    getGlobalNetwork() { return this.getNetworkManager().globalNetwork }
+
+    getNetworkManager() { return this.networkManager }
+
+    getProfileManager() { return this.profileManager }
 }

@@ -1,9 +1,11 @@
 import { THREE, ExtendedGroup } from 'enable3d';
+import { iterateChildrenWithFunction } from '../util/iterateRecursive'
 
 export default class ObjectControls
 {  
     constructor(controlManager, controlInfo, controls)
     {
+        this.conjure = controlManager.conjure
         this.controlManager = controlManager;
         this.controlInfo = controlInfo;
         this.controls = controls;
@@ -73,7 +75,7 @@ export default class ObjectControls
                 obj.parent.remove(obj);
                 newGroup.add(obj);
             }
-            global.CONJURE.scene.add(newGroup);
+            this.conjure.scene.add(newGroup);
             this.detachAll();
         }
     }
@@ -83,55 +85,55 @@ export default class ObjectControls
         console.log(object)
         if(params.detachOthers) 
             this.detachAll();
-        global.ITERATE.iterateChildrenWithFunction(object, (o) => {
+        iterateChildrenWithFunction(object, (o) => {
             if(o.body)
             {
-                global.CONJURE.physics.destroy(o.body);
+                this.conjure.physics.destroy(o.body);
             }
         })
 
         this.controls.attach(object);
-        global.CONJURE.postProcessing.addSelectedObject(object);
+        this.conjure.postProcessing.addSelectedObject(object);
         if(!params.ignoreScreenUpdate)
-            global.CONJURE.screenManager.screenObjectsHierarchy.selectObject(true, object);
-        global.CONJURE.screenManager.showScreen(global.CONJURE.screenManager.screenObjectEdit);
-        global.CONJURE.screenManager.screenObjectEdit.setObject(object);
+            this.conjure.getScreens().screenObjectsHierarchy.selectObject(true, object);
+        this.conjure.getScreens().showScreen(this.conjure.getScreens().screenObjectEdit);
+        this.conjure.getScreens().screenObjectEdit.setObject(object);
     }
 
     detachAll(params = {})
     {
         if(params.isDeleting)
             for(let object of this.controls.objects)
-                global.CONJURE.world.destroyObject(object);
+                this.conjure.getWorld().destroyObject(object);
         else
             for(let object of this.controls.objects)
             {
                 if(!params.ignoreScreenUpdate)
-                    global.CONJURE.screenManager.screenObjectsHierarchy.selectObject(false, object);
-                global.ITERATE.iterateChildrenWithFunction(object, (o) => {
-                    global.CONJURE.world.restorePhysics(o);
+                    this.conjure.getScreens().screenObjectsHierarchy.selectObject(false, object);
+                iterateChildrenWithFunction(object, (o) => {
+                    this.conjure.getWorld().restorePhysics(o);
                 });
                 object.userData.needsUpdate = true;
             }
 
         this.controls.detachAll();
-        global.CONJURE.postProcessing.clearSelectedObjects();
-        global.CONJURE.screenManager.hideScreen(global.CONJURE.screenManager.screenObjectEdit);
+        this.conjure.postProcessing.clearSelectedObjects();
+        this.conjure.getScreens().hideScreen(this.conjure.getScreens().screenObjectEdit);
     }
 
     detach(object, params = {})
     {
         this.controls.detach(object);
         
-        global.ITERATE.iterateChildrenWithFunction(object, (o) => {
-            global.CONJURE.world.restorePhysics(o);
+        iterateChildrenWithFunction(object, (o) => {
+            this.conjure.getWorld().restorePhysics(o);
         });
         object.userData.needsUpdate = true;
-        global.CONJURE.postProcessing.removeSelectedObject(object);
+        this.conjure.postProcessing.removeSelectedObject(object);
         
         if(!params.ignoreScreenUpdate)
-            global.CONJURE.screenManager.screenObjectsHierarchy.selectObject(false, object)
-        global.CONJURE.screenManager.hideScreen(global.CONJURE.screenManager.screenObjectEdit);
+            this.conjure.getScreens().screenObjectsHierarchy.selectObject(false, object)
+        this.conjure.getScreens().hideScreen(this.conjure.getScreens().screenObjectEdit);
     }
 
     update()

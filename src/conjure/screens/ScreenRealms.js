@@ -6,9 +6,9 @@ import ScreenElementScroll from './elements/ScreenElementScroll';
 
 export default class ScreenRealms extends ScreenBase
 {  
-    constructor(screenManager, camera, world, args)
+    constructor(screenManager, args)
     {
-        super(screenManager, camera, world, args);
+        super(screenManager, args);
 
         this.buttonWidth = 0.4;
         this.buttonHeight = 0.1;
@@ -49,7 +49,7 @@ export default class ScreenRealms extends ScreenBase
     createRealm()
     {
         this.screenManager.hideAllScreens()
-        this.screenManager.conjure.world.createRealm()
+        this.screenManager.conjure.getWorld().createRealm()
     }
 
     // TODO: add realm icons
@@ -97,7 +97,7 @@ export default class ScreenRealms extends ScreenBase
         if(!realmInfo)
         try{
             this.screenManager.hideAllScreens()
-            this.screenManager.conjure.world.joinRealmByID(Number(this.discordIdTextbox.getValue())) // for joining a private realm
+            this.screenManager.conjure.getWorld().joinRealmByID(Number(this.discordIdTextbox.getValue())) // for joining a private realm
             return
         }
         catch(error)
@@ -105,7 +105,7 @@ export default class ScreenRealms extends ScreenBase
             global.console.log('Error! Realm ID must be a number!')
         }
         this.screenManager.hideAllScreens()
-        this.screenManager.conjure.world.joinRealm(realmInfo) // for joining a public realm
+        this.screenManager.conjure.getWorld().joinRealm(realmInfo) // for joining a public realm
     }
 
     update(delta, input, raycaster)

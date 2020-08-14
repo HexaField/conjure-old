@@ -4,9 +4,9 @@ import ScreenElementButton from './elements/ScreenElementButton'
 
 export default class ScreenObjectsHierarchy extends ScreenBase
 {  
-    constructor(screenManager, camera, world, args)
+    constructor(screenManager, args)
     {
-        super(screenManager, camera, world, args);
+        super(screenManager, args);
 
         this.group.add(this.background);
 
@@ -40,18 +40,18 @@ export default class ScreenObjectsHierarchy extends ScreenBase
 
     onDestroyObject()
     {
-        this.screenManager.conjure.controls.objectControls.detachAll({isDeleting: true});
+        this.screenManager.conjure.getControls().objectControls.detachAll({isDeleting: true});
     }
 
     updateObjects()
     {
         if(!this.active) return;
-        this.jsonTree.updateTree(this.screenManager.conjure.world.objectManager.objects, this.updateObjects);
+        this.jsonTree.updateTree(this.screenManager.conjure.getWorld().objectManager.objects, this.updateObjects);
     }
 
     groupingCallback(newParent, newChild)
     {
-        if(!this.screenManager.conjure.world.objectManager.groupObjects(newParent, newChild))
+        if(!this.screenManager.conjure.getWorld().objectManager.groupObjects(newParent, newChild))
             return false;
         return true
     }
@@ -59,15 +59,15 @@ export default class ScreenObjectsHierarchy extends ScreenBase
     itemSelected(selected, item)
     {
         if(selected)
-            global.CONJURE.controls.objectControls.attach(item, { ignoreScreenUpdate: true, detachOthers: !global.CONJURE.input.isDown('SHIFT', true)})
+            this.screen.screenManager.conjure.getControls().objectControls.attach(item, { ignoreScreenUpdate: true, detachOthers: !this.screen.screenManager.conjure.input.isDown('SHIFT', true)})
         else
-            global.CONJURE.controls.objectControls.detach(item, { ignoreScreenUpdate: true })
+            this.screen.screenManager.conjure.getControls().objectControls.detach(item, { ignoreScreenUpdate: true })
     }
     
     itemHover(hover, item)
     {
         if(hover)
-            global.CONJURE.postProcessing.setHoverObject(item);
+            this.screen.screenManager.conjure.postProcessing.setHoverObject(item);
     }
 
     selectObject(select, object)

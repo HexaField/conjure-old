@@ -401,7 +401,7 @@ var TransformControls = function ( camera, domElement ) {
     
 
 	this.pointerMove = function ( pointer ) {
-        if(global.CONJURE.screenManager.mouseOver) return;
+        // if(global.conjure.getScreens().mouseOver) return;
 
         for(let object of this.objects)
         {
@@ -708,7 +708,7 @@ var TransformControls = function ( camera, domElement ) {
 	function onPointerHover( event ) {
 
 		if ( ! scope.enabled ) return;
-        if(global.CONJURE.screenManager.mouseOver) return;
+        // if(global.conjure.getScreens().mouseOver) return;
 		scope.pointerHover( getPointer( event ) );
 
 	}
@@ -716,7 +716,7 @@ var TransformControls = function ( camera, domElement ) {
 	function onPointerDown( event ) {
 
 		if ( ! scope.enabled ) return;
-        if(global.CONJURE.screenManager.mouseOver) return;
+        // if(global.conjure.getScreens().mouseOver) return;
 
 		document.addEventListener( "mousemove", onPointerMove, false );
 
@@ -728,7 +728,7 @@ var TransformControls = function ( camera, domElement ) {
 	function onPointerMove( event ) {
 
 		if ( ! scope.enabled ) return;
-        if(global.CONJURE.screenManager.mouseOver) return;
+        // if(global.conjure.getScreens().mouseOver) return;
 		scope.pointerMove( getPointer( event ) );
 
 	}
@@ -736,7 +736,7 @@ var TransformControls = function ( camera, domElement ) {
 	function onPointerUp( event ) {
 
 		if ( ! scope.enabled ) return;
-        if(global.CONJURE.screenManager.mouseOver) return;
+        // if(global.conjure.getScreens().mouseOver) return;
 
 		document.removeEventListener( "mousemove", onPointerMove, false );
 

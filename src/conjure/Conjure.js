@@ -16,27 +16,50 @@ export const CONJURE_MODE = {
     CONJURE: 'Conjure',
 }
 
-export default class Conjure extends Scene3D
+export class Conjure extends Scene3D
 {
     constructor()
     {
-        super('Conjure')
+        super({ key: 'Conjure'})
     }
 
     async preload()
     {
         await this.load.preload('playerModel', 'assets/models/ybot_anims.glb')
+        // await this.load.preload('font_helvetiker', 'assets/fonts/helvetiker.json')
         await this.load.preload('missing_texture', 'assets/textures/missing_texture.png')
         await this.load.preload('menger_texture', 'assets/textures/menger_texture.png')
         await this.load.preload('ponder_texture', 'assets/textures/ponder_texture.png')
         await this.load.preload('default_texture', 'assets/textures/default_texture.png')
     }
 
+    setDataHandler(dataHandler) {
+        this.dataHandler = dataHandler
+    }
+    
+    // getters
+    
+    getWorld() { return this.world }
+    getScreens() { return this.screenManager }
+    getControls() { return this.controlManager }
+    getFonts() { return this.fonts }
+    getProfile() { return this.profile }
+    getDataHandler() { return this.dataHandler }
+    getIPFS() { return this.getDataHandler().getIPFS() }
+    getGlobalNetwork() { return this.getDataHandler().getGlobalNetwork() }
+    getGlobalHUD() { return this.screenManager.hudGlobal }
+
     async init()
     {
         global.THISFRAME = Date.now()
         this.loadTimer = global.THISFRAME
         this.conjureMode = CONJURE_MODE.LOADING
+
+        this.fonts = new Fonts(this)
+        await this.fonts.addFont('Helvetiker', 'assets/fonts/helvetiker.json')
+
+        this.loadingScreen = new LoadingScreen(this)
+        this.loadingScreen.create()
 
         this.initRenderer()
         this.initCamera()
@@ -124,45 +147,39 @@ export default class Conjure extends Scene3D
         this.scene.add(dirLight)
     }
 
+    // this is for creating conjure-specific things
     async create()
     {
-        this.fonts = new Fonts()
-
         console.log('Took', (Date.now() - this.loadTimer)/1000, ' seconds to load.')
         this.loadingScreen.setText('Loading default assets...')
         this.assetManager = new AssetManager(this)
 
         await this.assetManager.createDefaultAssets(); // we want to do this now as some screens may use default assets or grab references in initialisation
         
-        this.localProfile = new Profile(this)
+        this.profile = new Profile(this)
         
         this.world = new World(this)
-        this.controls = new ControlManager(this)
+        this.controlManager = new ControlManager(this)
         this.screenManager = new ScreenManager(this)
 
         this.resizeCanvas() // trigger this to set up screen anchors
         this.screenManager.hudGlobal.showScreen(true)
-        global.CONSOLE.addWatchItem('Connected Peers', this.networkInfo, 'peersCount')
-        global.CONSOLE.addWatchItem('Online Users', this.conjureDatabase.network.roomStats, 'peersCount')
+        this.getGlobalHUD().addWatchItem('Connected Peers', this.getDataHandler().ipfsInfo, 'peersCount')
+        this.getGlobalHUD().addWatchItem('Online Users', this.getGlobalNetwork().roomStats, 'peersCount')
 
         this.loadingScreen.setText('Loading World...')
         // Now load stuff in
         this.setConjureMode(CONJURE_MODE.LOADING)
-        await this.localProfile.loadFromDatabase()
-        await this.localProfile.initialiseServices()
-        await this.conjureDatabase.load()
-        await this.world.loadWorld() // loads local realm
+        await this.profile.loadFromDatabase()
+        await this.profile.getServiceManager().initialiseServices()
+        // await this.world.loadWorld() // loads local realm
         this.setConjureMode(CONJURE_MODE.EXPLORE)
 
-        this.loadInfo = document.getElementById( 'loadInfo' )
-        this.loadInfo.hidden = true
+        // this.loadInfo = document.getElementById( 'loadInfo' )
+        // this.loadInfo.hidden = true
         
-        global.CONSOLE.log('Took', (Date.now() - this.loadTimer)/1000, ' seconds to load.')
+        this.getGlobalHUD().log('Took', (Date.now() - this.loadTimer)/1000, ' seconds to load.')
     }
-
-    getWorld() { return this.world }
-    getScreens() { return this.screenManager }
-    getControls() { return this.controls }
 
     toggleConjureMode()
     {
@@ -177,19 +194,19 @@ export default class Conjure extends Scene3D
         switch(mode)
         {
             default: case CONJURE_MODE.LOADING: 
-                this.controls.enableCurrentControls(false)
+                this.controlManager.enableCurrentControls(false)
                 this.screenManager.hideHud()
 
             break;
 
             case CONJURE_MODE.EXPLORE: 
-                this.controls.setControlScheme(CONTROL_SCHEME.AVATAR)
+                this.controlManager.setControlScheme(CONTROL_SCHEME.AVATAR)
                 this.screenManager.showHud()
 
             break;
 
             case CONJURE_MODE.CONJURE:
-                this.controls.setControlScheme(CONTROL_SCHEME.ORBIT)
+                this.controlManager.setControlScheme(CONTROL_SCHEME.ORBIT)
                 this.screenManager.showHud()
             break;
         }
@@ -267,12 +284,17 @@ export default class Conjure extends Scene3D
     }
 }
 
-const config = {
-    scenes: [Conjure],
-    renderer: new THREE.WebGLRenderer({ alpha: true, antialias: true }),
-    gravity: { x: 0, y: -9.81, z: 0},
-    maxSubSteps: 100,
-    fixedTimeStep: 1 / 180
-  }
+export function startConjure(dataHandler)
+{
+    PhysicsLoader('lib', () => {
+        const project = new Project({
+            scenes: [Conjure],
+            renderer: new THREE.WebGLRenderer({ alpha: true, antialias: true }),
+            gravity: { x: 0, y: -9.81, z: 0},
+            maxSubSteps: 100,
+            fixedTimeStep: 1 / 180
+        })
+        project.scenes.get('Conjure').setDataHandler(dataHandler)
+    })
 
-PhysicsLoader('lib', () => new Project(config))
+}

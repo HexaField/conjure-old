@@ -17,18 +17,18 @@ export default class ControlManager
     constructor(conjure)
     {
         this.conjure = conjure;
-        this.world = conjure.world;
+        this.world = conjure.getWorld();
         this.scene = conjure.scene;
         this.camera = conjure.camera;
         this.domElement = conjure.renderer.domElement;
         
         this.controlsEnabled = false;
 
-        this.flyControls = new FlyControls(camera, this.domElement);        
+        this.flyControls = new FlyControls(this.camera, this.domElement);        
         this.avatarControls = new AvatarControls(conjure, this.world.user, this.domElement)
 
-        this.transformControls = this.buildTransformControls(camera);
-        this.orbit = new OrbitControls( camera, this.domElement );
+        this.transformControls = this.buildTransformControls();
+        this.orbit = new OrbitControls( this.camera, this.domElement );
         this.orbit.target.copy(this.world.user.focusPoint.position);
         this.orbit.enabled = false;
         this.objectControls = new ObjectControls(this, this.transformControls);
@@ -50,7 +50,7 @@ export default class ControlManager
         this.conjure.input.addKey('JUMP', 'SPACEBAR');
     }
 
-    buildTransformControls(camera)
+    buildTransformControls()
     {
         const controls = new TransformControls( this.camera, this.domElement );
         controls.addEventListener( 'dragging-changed', function ( event ) {
@@ -64,7 +64,7 @@ export default class ControlManager
     getPointerLock()
     {
         if(!document.hasFocus()) return
-        if(this.conjure.screenManager.hudExplore.active || (this.conjure.screenManager.hudConjure.active && this.currentControlScheme === CONTROL_SCHEME.FLY))
+        if(this.conjure.getScreens().hudExplore.active || (this.conjure.getScreens().hudConjure.active && this.currentControlScheme === CONTROL_SCHEME.FLY))
             this.domElement.requestPointerLock()
     }
 
@@ -102,7 +102,7 @@ export default class ControlManager
                     this.transformControls.enabled = true;
                     this.orbit.enabled = true;
                     this.orbit.update();
-                    // this.conjure.screenManager.hudConjure.showScreen(true)
+                    // this.conjure.getScreens().hudConjure.showScreen(true)
                 }
                 else
                 {
@@ -120,7 +120,7 @@ export default class ControlManager
                 if(enable)
                 {
                     this.flyControls.connect();
-                    this.conjure.screenManager.hudConjure.showScreen(false)
+                    this.conjure.getScreens().hudConjure.showScreen(false)
                 }
                 else
                 {
@@ -206,12 +206,12 @@ export default class ControlManager
     {
         if(!this.controlsEnabled) 
         {
-            if(this.conjure.screenManager.controlsEnabled)
+            if(this.conjure.getScreens().controlsEnabled)
                 this.enableControls(true)
             else
                 return
         }
-        else if(!this.conjure.screenManager.controlsEnabled)
+        else if(!this.conjure.getScreens().controlsEnabled)
         {
             this.enableControls(false)
             return
@@ -228,8 +228,8 @@ export default class ControlManager
         //     if(this.currentControlScheme === CONTROL_SCHEME.FLY)
         //     {
         //         this.setControlScheme(CONTROL_SCHEME.ORBIT)
-        //         // if(!this.conjure.screenManager.hudConjure.active)
-        //         //     this.conjure.screenManager.hudConjure.showScreen(true)
+        //         // if(!this.conjure.getScreens().hudConjure.active)
+        //         //     this.conjure.getScreens().hudConjure.showScreen(true)
         //     }
         // }
 
@@ -247,7 +247,7 @@ export default class ControlManager
         //         {
         //             // if(!this.transformControls.axis)
         //             // {
-        //                 let object = global.CONJURE.world.objectManager.getTopGroupObject(intersections[0].object);
+        //                 let object = this.conjure.getWorld().objectManager.getTopGroupObject(intersections[0].object);
         //                 if(object)
         //                 {
         //                     if(input.isDown('SHIFT', true))
@@ -303,10 +303,10 @@ export default class ControlManager
         // INPUT UPDATE
         if(this.currentControlScheme === CONTROL_SCHEME.ORBIT)
         {  
-            if(this.conjure.screenManager.openScreens.length > 0)
+            if(this.conjure.getScreens().openScreens.length > 0)
             {
-                this.transformControls.enabled = !this.conjure.screenManager.mouseOver;
-                this.orbit.enabled = !this.conjure.screenManager.mouseOver; 
+                this.transformControls.enabled = !this.conjure.getScreens().mouseOver;
+                this.orbit.enabled = !this.conjure.getScreens().mouseOver; 
             }   
             else
             {

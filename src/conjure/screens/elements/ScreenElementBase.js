@@ -28,7 +28,7 @@ export default class ScreenElementBase
         this.defaultColour3 = 0x1855A3
         this.defaultOpacity = 0.75
         
-        this.targetBounds = easyPlane({ width: width, height: height, color: 0xffffff });
+        this.targetBounds = easyPlane({ width: this.width, height: this.    height, color: 0xffffff });
         this.targetBounds.visible = false;
         this.group.add(this.targetBounds);
 

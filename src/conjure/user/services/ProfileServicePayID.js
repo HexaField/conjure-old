@@ -18,7 +18,7 @@ export default class ProfileServicePayID extends ProfileService
 
     openPayIDScreen()
     {
-        this.profile.conjure.screenManager.showScreen(this.profile.conjure.screenManager.screenPayID)
+        this.profile.conjure.getScreens().showScreen(this.profile.conjure.getScreens().screenPayID)
     }
 
     getPreferredID()
@@ -34,7 +34,7 @@ export default class ProfileServicePayID extends ProfileService
     sendPayment(amount, to, from)
     {
         if(this.payIDHandler.sendPayment(amount, to, from))
-            global.CONSOLE.log('Successfully sent ' + amount + ' from ' + from + ' to ' + to)
+            this.conjure.getGlobalHUD().log('Successfully sent ' + amount + ' from ' + from + ' to ' + to)
     }
 
     getSchema()

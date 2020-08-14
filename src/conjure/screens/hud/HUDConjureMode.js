@@ -4,9 +4,9 @@ import { CONJURE_MODE } from '../../Conjure';
 
 export default class HUDExploreMode extends ScreenBase
 {  
-    constructor(screenManager, camera, world, args)
+    constructor(screenManager, args)
     {
-        super(screenManager, camera, world, args)
+        super(screenManager, args)
 
         this.screenTitle.mesh.visible = false
         
@@ -41,7 +41,7 @@ export default class HUDExploreMode extends ScreenBase
             default: case this.tabs.EXIT: this.screenManager.conjure.setConjureMode(CONJURE_MODE.EXPLORE); break;
             case this.tabs.ASSETS: this.screenManager.showScreen(this.screenManager.screenAssets); break;
             case this.tabs.OBJECTS: this.screenManager.showScreen(this.screenManager.screenObjectsHierarchy); break;
-            case this.tabs.FLY: this.screenManager.conjure.controls.toggleConjureControls(); break;
+            case this.tabs.FLY: this.screenManager.conjure.getControls().toggleConjureControls(); break;
             case this.tabs.MANAGE: this.screenManager.showScreen(this.screenManager.screenRealmSettings); break;
 
         }

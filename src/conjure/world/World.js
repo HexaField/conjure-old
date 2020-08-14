@@ -1,6 +1,6 @@
 import { THREE, ExtendedGroup } from 'enable3d'
 import RealmManager from './realm/RealmManager'
-
+import User from '../user/User'
 export default class World
 {  
     constructor(conjure)
@@ -12,6 +12,7 @@ export default class World
         this.scene.add(this.group)
 
         this.realmManager = new RealmManager(this)
+        this.user = new User(conjure);
     }
 
 

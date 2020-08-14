@@ -6,11 +6,11 @@ import ScreenElementScroll from './elements/ScreenElementScroll'
 
 export default class ScreenServices extends ScreenBase
 {  
-    constructor(screenManager, camera, world, args)
+    constructor(screenManager, args)
     {
-        super(screenManager, camera, world, args);
+        super(screenManager, args);
 
-        this.profile = this.screenManager.conjure.localProfile;
+        this.serviceManager = this.screenManager.conjure.getProfile().getServiceManager();
 
         this.group.add(this.background);
 
@@ -28,7 +28,7 @@ export default class ScreenServices extends ScreenBase
 
     addServices()
     {
-        for(let service of Object.keys(this.profile.services))
+        for(let service of Object.keys(this.serviceManager.services))
         {
             let serviceButton = new ScreenElementButton(this, this.servicesScrollPanel, { width: this.buttonWidth, height: this.buttonHeight, text: service });
             serviceButton.setOnClickCallback(this.selectService, serviceButton)
@@ -56,8 +56,8 @@ export default class ScreenServices extends ScreenBase
         if(this.selectedService)
         {
             this.jsonTree.setHidden(false)
-            this.jsonTree.setSchema(this.screenManager.conjure.localProfile.getService(this.selectedService).getSchema());
-            this.jsonTree.updateTree(this.screenManager.conjure.localProfile.getService(this.selectedService).getData(), this.selectService);
+            this.jsonTree.setSchema(this.screenManager.conjure.getProfile().getServiceManager().getService(this.selectedService).getSchema());
+            this.jsonTree.updateTree(this.screenManager.conjure.getProfile().getServiceManager().getService(this.selectedService).getData(), this.selectService);
         }
         else
         {

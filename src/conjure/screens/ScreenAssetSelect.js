@@ -7,9 +7,9 @@ import ScreenElementMesh from './elements/ScreenElementMesh'
 
 export default class ScreenAssets extends ScreenBase
 {  
-    constructor(screenManager, camera, world, args)
+    constructor(screenManager, args)
     {
-        super(screenManager, camera, world, args);
+        super(screenManager, args);
 
         this.group.add(this.background);
 
@@ -49,7 +49,7 @@ export default class ScreenAssets extends ScreenBase
                     previewLabel.registerElement(new ScreenElementMesh(this, previewLabel, { x: -0.2, geometry: this.screenManager.conjure.assetManager.defaultGeometry, material: assets[key].data, rotate:true, scale:0.075 }))
                     break;
                 case ASSET_TYPE.GEOMETRY:
-                    previewLabel.registerElement(new ScreenElementMesh(this, previewLabel, { x: -0.2, geometry: assets[key].data, material: this.screenManager.conjure.world.defaultMaterial, rotate:true, scale:0.075 }))
+                    previewLabel.registerElement(new ScreenElementMesh(this, previewLabel, { x: -0.2, geometry: assets[key].data, material: this.screenManager.conjure.getWorld().defaultMaterial, rotate:true, scale:0.075 }))
                     break;
                 default:break;
             }

@@ -4,8 +4,9 @@ import createText from './createText'
 
 export default class TextRenderer3D
 {
-    constructor(font, parent, params = { string: '', x: 0, y: 0, scale: 1, anchorX: 'center', anchorY: 'center', renderSide: THREE.DoubleSide, color: 0xffffff })
+    constructor(conjure, parent, params = { font: 'Helvetiker', string: '', x: 0, y: 0, scale: 1, anchorX: 'center', anchorY: 'center', renderSide: THREE.DoubleSide, color: 0xffffff })
     {
+        this.conjure = conjure
         this.x = params.x
         this.y = params.y
         this.scale = params.scale
@@ -17,7 +18,7 @@ export default class TextRenderer3D
         this.string = String(params.string)
 
         this.group = new THREE.Group()
-        this.font = font
+        this.font = conjure.getFonts().getFont(params.font || 'Helvetiker')
         this.geometry = createText(this.font, params)
         
         this.mesh = new THREE.Mesh(this.geometry, this.material)

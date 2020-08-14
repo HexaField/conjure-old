@@ -1,13 +1,16 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
+const webpack = require("webpack");
 
 module.exports = {
-    entry: path.resolve(__dirname, 'src/index'),
+    entry: [
+      path.resolve(__dirname, 'src/index.js'),
+      'webpack-dev-server/client?http://localhost:3000',
+    ],
     output: {
       path: path.resolve(__dirname, 'dist'),
       filename: 'bundle.js',
-      publicPath: ''
     },
     module: {
       rules: [{
@@ -17,12 +20,21 @@ module.exports = {
       }]
     },
     devServer: {
-      publicPath: '',
-      contentBase: path.resolve(__dirname),
-      // contentBase:  path.resolve(__dirname, 'src'),  
+      contentBase: 'dist',
       port: 3000,
-      watchContentBase: true,
-      hot: true,
+      open: true,
+      stats: "errors-only",
+      // overlay: true,
+      historyApiFallback: true,
+      proxy: {
+        '/*': {
+          target: 'http://localhost:3000',
+        },
+      },
+      watchOptions: {
+        aggregateTimeout: 300,
+        poll: 1000,
+      },
     },
     plugins: [
       new HtmlWebpackPlugin({
@@ -33,6 +45,9 @@ module.exports = {
           { from: 'public', to: '' },
         ],
       }),
+      new webpack.WatchIgnorePlugin([
+        path.join(__dirname, "node_modules")
+      ]),
     ],
     node: {
       fs: 'empty'

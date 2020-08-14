@@ -38,7 +38,7 @@ export default class RealmManager
         }
 
         this.saveRecentRealms()
-        // this.conjure.screenManager.screenRealms.updateRecentRealms(this.knownRealms)
+        // this.conjure.getScreens().screenRealms.updateRecentRealms(this.knownRealms)
         if(!ignoreBroadcast)
             this.network.sendData(GLOBAL_PROTOCOLS.BROADCAST_REALMS, this.knownRealms)
     }
@@ -62,7 +62,7 @@ export default class RealmManager
             this.knownRealms.push(realm)
             // this.knownRealms.sort()
             this.saveRecentRealms()
-            // this.conjure.screenManager.screenRealms.updateRecentRealms(this.knownRealms)
+            // this.conjure.getScreens().screenRealms.updateRecentRealms(this.knownRealms)
             this.network.sendData(GLOBAL_PROTOCOLS.BROADCAST_REALMS, this.knownRealms)
         }
     }
@@ -73,7 +73,7 @@ export default class RealmManager
             this.files.writeFile('recent_realms.json', JSON.stringify(this.knownRealms))
         } catch (error) {
             console.log('ConjureDatabase: could not save recent realms', this.knownRealms, 'with error', error);
-            // global.CONSOLE.log('Failed to read recent realms')
+            // this.conjure.getGlobalHUD().log('Failed to read recent realms')
         }
     }
 
@@ -88,7 +88,7 @@ export default class RealmManager
         }
         catch (error) {
             console.log('ConjureDatabase: could not read recent realms with error', error);
-            // global.CONSOLE.log('Failed to load recent realms list')
+            // this.conjure.getGlobalHUD().log('Failed to load recent realms list')
             return
         }
     }

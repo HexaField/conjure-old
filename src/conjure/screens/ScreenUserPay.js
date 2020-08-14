@@ -7,14 +7,14 @@ import ScreenElementLabelled from './elements/ScreenElementLabelled';
 
 export default class ScreenUserPay extends ScreenBase
 {  
-    constructor(screenManager, camera, world, args)
+    constructor(screenManager, args)
     {
-        super(screenManager, camera, world, args);
+        super(screenManager, args);
 
         this.background.position.setZ(-0.1)
         this.group.add(this.background);
 
-        this.payidservice = this.screenManager.conjure.localProfile.getService('PayID')
+        this.payidservice = this.screenManager.conjure.getProfile().getServiceManager().getService('PayID')
 
         this.user = undefined
         this.pay = this.pay.bind(this)
@@ -76,8 +76,8 @@ export default class ScreenUserPay extends ScreenBase
         this.textMyPayidBalance.setText('Loading...')
         this.onPayCallback = (() => {
             console.log('here we gooooooo!!!!!')
-            global.CONJURE.world.realm.sendData(REALM_PROTOCOLS.REALM.TRONIFY)
-            global.CONJURE.world.realm.tron()
+            this.screen.screenManager.conjure.getWorld().realm.sendData(REALM_PROTOCOLS.REALM.TRONIFY)
+            this.screen.screenManager.conjure.getWorld().realm.tron()
             object.visible = false
         })
     }

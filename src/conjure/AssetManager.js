@@ -221,16 +221,19 @@ export default class AssetManager
 
     async saveAsset(type, path, data, name, metaData = {})
     {
-        let ipfsHash = this.getHashByTypeAndData(type, data)
-        if(ipfsHash)
-            return ipfsHash;
+        let id = this.getHashByTypeAndData(type, data)
+        if(id)
+            return id;
         const file = {
             path: path,
             content: JSON.stringify({ data: data, metaData:metaData }),
         }
-        ipfsHash = (await this.conjure.ipfs.add(file)).cid.toString();
-        this.setByIPFSHash(type, ipfsHash, data, name, metaData);
-        return ipfsHash;
+        if(this.useIPFS)
+            id = (await this.conjure.ipfs.add(file)).cid.toString();
+        else
+            id = String(Date.now())
+        this.setByIPFSHash(type, id, data, name, metaData);
+        return id;
     }
 
     async saveAssets(object)
@@ -292,10 +295,10 @@ export default class AssetManager
         this.assets[type][hash].data.userData.hash = hash;
         this.assets[type][hash].metaData.hash = hash;
         // console.log('AssetManager: added new asset: ', this.assets[type][hash])
-        if(this.conjure.screenManager)
+        if(this.conjure.getScreens())
         {
-            this.conjure.screenManager.screenAssets.updateAssets();
-            this.conjure.screenManager.screenAssetSelect.updateAssets();
+            this.conjure.getScreens().screenAssets.updateAssets();
+            this.conjure.getScreens().screenAssetSelect.updateAssets();
         }
         return this.assets[type][hash];
     }

@@ -66,7 +66,7 @@ export default class UserRemote extends User
 
     destroy()
     {
-        // this.conjure.world.onUserLeave(this.peerID)
+        // this.conjure.getWorld().onUserLeave(this.peerID)
         // this.conjure.physics.destroy(this.group.body)
         // this.scene.remove(this.group)
         this.timedOut = true;

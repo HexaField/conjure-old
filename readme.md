@@ -1,6 +1,6 @@
 # Conjure Prototype
 
-[Try it out](https://dev.conjure.world/)
+[Try it out](https://dev.conjure.getWorld()/)
 
 [![Netlify Status](https://api.netlify.com/api/v1/badges/cc732b95-d887-4a2d-8a33-2a8e94d46808/deploy-status)](https://app.netlify.com/sites/devconjureworld/deploys)
 

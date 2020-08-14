@@ -1,19 +1,20 @@
 import { WEB_SOCKET_PROTOCOL } from "../data/WebSocketServer"
-import Conjure from "./Conjure"
 
-export default class App
+export class App
 {
     constructor(dataHandler)
     {
         this.dataHandler = dataHandler
         this.recieveWebsocketData = this.recieveWebsocketData.bind(this)
         this.dataHandler.addDataListener(this.recieveWebsocketData)
+        this.start()
     }
 
     start()
     {
         console.log('Starting conjure...')
-        this.conjure = new Conjure()
+        const { startConjure } = require('./Conjure')
+        startConjure(this.dataHandler)
     }
 
     recieveWebsocketData(data)

@@ -13,9 +13,9 @@ export default class NetworkManager
         this.peerJoin = this.peerJoin.bind(this)
         this.peerLeave = this.peerLeave.bind(this)
 
-        this.network = new Network(ipfs, peerID, 'global', this.parseNetworkData, { showStats:true })
-        this.network.addPeerJoinCallback(this.peerJoin)
-        this.network.addPeerLeftCallback(this.peerLeave)
+        this.globalNetwork = new Network(ipfs, peerID, 'global', this.parseNetworkData, { showStats:true })
+        this.globalNetwork.addPeerJoinCallback(this.peerJoin)
+        this.globalNetwork.addPeerLeftCallback(this.peerLeave)
     }
 
     async initialise()
@@ -30,7 +30,7 @@ export default class NetworkManager
     peerJoin(peerID)
     {
         console.log('User ', peerID, ' has logged into conjure!')
-        this.network.sendTo(GLOBAL_PROTOCOLS.BROADCAST_REALMS, this.knownRealms, peerID)
+        this.globalNetwork.sendTo(GLOBAL_PROTOCOLS.BROADCAST_REALMS, this.knownRealms, peerID)
     }
 
     peerLeave(peerID)
@@ -40,16 +40,16 @@ export default class NetworkManager
 
     async leave()
     {
-        await this.network.leave()
+        await this.globalNetwork.leave()
     }
 
     async sendTo(protocol, content, peerID)
     {
-        await this.network.sendTo(protocol, content, peerID)
+        await this.globalNetwork.sendTo(protocol, content, peerID)
     }
 
     async sendData(protocol, content)
     {
-        await this.network.sendData(protocol, content)
+        await this.globalNetwork.sendData(protocol, content)
     }
 }

@@ -6,8 +6,8 @@
   "scripts": {
     "start": "concurrently \"yarn start-node\" \"yarn start-browser\"",
     "dev": "concurrently \"yarn dev-node\" \"yarn dev-browser\"",
-    "start-browser": "webpack-dev-server --define process.env.NODE_ENV='\"production\"' --mode development",
-    "dev-browser": "webpack-dev-server --mode development",
+    "start-browser": "webpack-dev-server --define process.env.NODE_ENV='\"production\"' --mode development --inline --progress --watch",
+    "dev-browser": "webpack-dev-server --mode development --inline --progress --watch",
     "start-node": "NODE_ENV=production nodemon --exec babel-node -- src/node.js",
     "dev-node": "NODE_ENV=development nodemon --exec babel-node -- src/node.js",
     "test": "echo \"Error: no test specified\" && exit 1",

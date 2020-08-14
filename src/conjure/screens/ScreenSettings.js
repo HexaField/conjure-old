@@ -2,9 +2,9 @@ import ScreenBase from './ScreenBase'
 
 export default class ScreenSettings extends ScreenBase
 {  
-    constructor(screenManager, camera, world, args)
+    constructor(screenManager, args)
     {
-        super(screenManager, camera, world, args);
+        super(screenManager, args);
 
         this.group.add(this.background);
     }

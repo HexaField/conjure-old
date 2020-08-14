@@ -1,18 +1,19 @@
 import { THREE, ExtendedGroup } from 'enable3d'
 export default class Fonts
 {  
-    constructor()
+    constructor(conjure)
     {
         this.fonts = {}
+        this.fontLoader = new THREE.FontLoader() 
     }
 
-    addFont(name, font)
+    async addFont(name, font)
     {
-        this.fonts[name] = font
+        this.fonts[String(name).toLowerCase()] = await this.fontLoader.loadAsync(font)
     }
 
     getFont(name)
     {
-        return this.fonts[name]
+        return this.fonts[String(name).toLowerCase()]
     }
 }

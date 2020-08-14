@@ -5,9 +5,9 @@ import HTMLObject from '../util/HTMLObject';
 
 export default class ScreenTextureEditor extends ScreenBase
 {  
-    constructor(screenManager, camera, world, args)
+    constructor(screenManager, args)
     {
-        super(screenManager, camera, world, args);
+        super(screenManager, args);
 
         this.group.add(this.background);
 

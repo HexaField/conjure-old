@@ -4,9 +4,9 @@ import { REALM_TERRAIN_GENERATORS } from '../world/realm/RealmManager'
 
 export default class ScreenRealmSettings extends ScreenBase
 {  
-    constructor(screenManager, camera, world, args)
+    constructor(screenManager, args)
     {
-        super(screenManager, camera, world, args);
+        super(screenManager, args);
 
         this.group.add(this.background);
 
@@ -67,13 +67,13 @@ export default class ScreenRealmSettings extends ScreenBase
         this.jsonTree.setActive(active)
         if(active)
         {
-            this.jsonTree.updateTree(this.screenManager.conjure.world.realm.settings.settings, this.updateRealmSettings);
+            this.jsonTree.updateTree(this.screenManager.conjure.getWorld().realm.settings.settings, this.updateRealmSettings);
         }
     }
 
     updateRealmSettings()
     {
-        this.screenManager.conjure.world.realm.settings.updateSettings();
+        this.screenManager.conjure.getWorld().realm.settings.updateSettings();
     }
 
     update(delta, input, raycaster)
