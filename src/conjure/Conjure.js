@@ -109,7 +109,7 @@ export class Conjure extends Scene3D
     {
         this.camera.fov = 80
         this.camera.near = 0.1
-        this.camera.far = 2000 
+        this.camera.far = 2000
 
         this.cameraFollow = new THREE.Group()
         this.cameraFollow.position.setZ(-0.25)

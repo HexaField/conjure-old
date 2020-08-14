@@ -15,6 +15,11 @@ export default class World
         this.user = new User(conjure);
     }
 
+    sendData()
+    {
+        
+    }
+
 
     async loadRealm()
     {
