@@ -260,7 +260,7 @@ export class Conjure extends Scene3D
         this.cameraScreenAttach.position.copy(this.cameraFollow.getWorldPosition(this.vec3))
         this.cameraScreenAttach.quaternion.copy(this.cameraFollow.getWorldQuaternion(this.quat))
 
-        // update screens
+        // update screens   
 
         this.camera.updateMatrix() // TODO: check if this is necessary
     }

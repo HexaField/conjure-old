@@ -1,29 +1,27 @@
 const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 module.exports = {
-    entry: path.resolve(__dirname, 'src/index'),
+    entry: './src/index.js',
     output: {
-      path: path.resolve(__dirname, 'dist'),
+      path: path.resolve('dist'),
       filename: 'bundle.js',
-      publicPath: ''
     },
     module: {
       rules: [{
         test: /\.js$/,
         include: path.resolve(__dirname, 'src'),
         use: ['babel-loader']
-      }]
+      }]  
     },
+    devtool: 'inline-source-map',
     devServer: {
-      contentBase:  path.resolve(__dirname, 'dist'),  
-      port: 3000
+      open: true,
+      port: 3000,
     },
     plugins: [
-      new HtmlWebpackPlugin({
-        template: "public/index.html" //source html
-      }),
+      new CleanWebpackPlugin(),
       new CopyPlugin({
         patterns: [
           { from: 'public', to: '' },

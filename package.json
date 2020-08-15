@@ -6,8 +6,8 @@
   "scripts": {
     "start": "concurrently \"yarn start-node\" \"yarn start-browser\"",
     "dev": "concurrently \"yarn dev-node\" \"yarn dev-browser\"",
-    "start-browser": "webpack-dev-server --define process.env.NODE_ENV='\"production\"' --mode development --inline --progress --watch",
-    "dev-browser": "webpack-dev-server --mode development --inline --progress --watch",
+    "start-browser": "webpack-dev-server --define process.env.NODE_ENV='\"production\"' --mode development --progress --watch",
+    "dev-browser": "webpack-dev-server --mode development --progress --watch",
     "start-node": "NODE_ENV=production nodemon --exec babel-node -- src/node.js",
     "dev-node": "NODE_ENV=development nodemon --exec babel-node -- src/node.js",
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -22,12 +22,15 @@
     "@babel/node": "^7.10.5",
     "@babel/preset-env": "^7.11.0",
     "babel-loader": "^8.1.0",
+    "clean-webpack-plugin": "^3.0.0",
     "concurrently": "^5.2.0",
     "copy-webpack-plugin": "^6.0.3",
+    "express": "^4.17.1",
     "html-webpack-plugin": "^4.3.0",
     "nodemon": "^2.0.4",
     "webpack": "^4.44.1",
     "webpack-cli": "^3.3.12",
+    "webpack-dev-middleware": "^3.7.2",
     "webpack-dev-server": "^3.11.0"
   },
   "dependencies": {

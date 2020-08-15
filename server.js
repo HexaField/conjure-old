@@ -1,31 +1,18 @@
-'use strict'
+const express = require('express');
+const webpack = require('webpack');
+const webpackDevMiddleware = require('webpack-dev-middleware');
 
-const webpack = require('webpack')
-const WebpackDevServer = require('webpack-dev-server')
-const config = require('./webpack.config')
+const app = express();
+const config = require('./webpack.config.js');
+const compiler = webpack(config);
 
-const wds = new WebpackDevServer(webpack(config), {
-  hot: true,
-  historyApiFallback: true,
-  open: true,
-  stats: "errors-only",
-  overlay: true,
-//   historyApiFallback: true,
-//   proxy: {
-//     '/*': {
-//       target: 'http://localhost:3000',
-//     },
-//   },
-//   watchOptions: {
-//     aggregateTimeout: 300,
-//     poll: 1000,
-//   },
-})
+// Tell express to use the webpack-dev-middleware and use the webpack.config.js
+// configuration file as a base.
+app.use(webpackDevMiddleware(compiler, {
+  publicPath: config.output.publicPath,
+}));
 
-wds.listen(3000, 'localhost', (err) => {
-  if (err) {
-    throw err
-  }
-
-  console.log('Listening at localhost:3000')
-})
+// Serve the files on port 3000.
+app.listen(3000, function () {
+  console.log('Conjure dev server listening on port 3000!\n');
+});

@@ -158,10 +158,10 @@ export default class ControlManager
 
                 if(this.currentControlScheme === CONTROL_SCHEME.FLY)
                 {
-                    this.orbit.target.copy(this.flyControls.updateArgs.mouseRaycaster.ray.at(10, this.vec3));
+                    this.orbit.target.copy(this.flyControls.raycaster.ray.at(10, this.vec3));
                 }
                 if(this.currentControlScheme === CONTROL_SCHEME.AVATAR)
-                    this.orbit.target.copy(this.avatarControls.updateArgs.mouseRaycaster.ray.at(10, this.vec3));
+                    this.orbit.target.copy(this.avatarControls.raycaster.ray.at(10, this.vec3));
                 
                 this.currentControlScheme = scheme
                 this.enableCurrentControls(true)
