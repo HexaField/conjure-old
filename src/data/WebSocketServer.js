@@ -1,9 +1,5 @@
 import WebSocket from 'ws'
-
-export const WEB_SOCKET_PROTOCOL = {
-    SERVER_CONNECT: 'server_connect',
-    CLIENT_CONNECT: 'client_connect',
-}
+import { WEBSOCKET_PROTOCOLS } from "./DataHandler"
 
 export default class WebSocketServer
 {
@@ -25,7 +21,6 @@ export default class WebSocketServer
     {
         ws.on('message', this.onData)
         this.connection = ws
-        this.sendData(WEB_SOCKET_PROTOCOL.SERVER_CONNECT)
     }
 
     onDisconnect()
@@ -34,13 +29,13 @@ export default class WebSocketServer
     }
 
     onData(data)
-    {
-        this.dataHandler.parseWebsocketData(data)
+    {   
+        this.dataHandler.parseWebsocketData(JSON.parse(data))
     }
 
     sendData(data)
     {
         if(this.connection)
-            this.connection.send(data)
+            this.connection.send(JSON.stringify(data))
     }
 }

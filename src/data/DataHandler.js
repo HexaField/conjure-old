@@ -1,5 +1,5 @@
 import WebSocketClient from './WebSocketClient'
-import WebSocketServer from './WebSocketServer'
+import WebSocketServer, { WEB_SOCKET_PROTOCOL } from './WebSocketServer'
 import IPFS from './IPFS'
 import FileStorageBrowser from './FileStorageBrowser'
 import FileStorageNode from './FileStorageNode'
@@ -15,33 +15,36 @@ export default class DataHandler
     {
     }
 
-    async initialise()
+    async initialise(runAppCallback)
     {
-        await this.loadDataHandler()
+        // await this.loadDataHandler()
         
         // TODO: figure out how to pipe IPFS directly from node to browser, if impossible then add protocols for all ipfs actions (networking etc)
         
-        // if(global.isBrowser)
-        // {
-        //     await this.findNode()
-        // }
-        // else
-        // {
-        //     await this.loadDataHandler()
-        //     this.createWebSocket()
-        // }
+        if(global.isBrowser)
+        {
+            await this.findNode(runAppCallback)
+        }
+        else
+        {
+            await this.loadDataHandler()
+            this.createWebSocket()
+        }
     }
 
     // Try and connect to the node server
-    async findNode()
+    async findNode(runAppCallback)
     {
-        let callback = ((error) => {
+        let callback = (async function(error) {
             if(error)
             {
                 console.log(error)
-                this.loadDataHandler()
+                this.runningNode = false
+                await this.loadDataHandler()
             }
+            runAppCallback()
         })
+        this.runningNode = true
         this.webSocket = new WebSocketClient(callback)
     }
 
@@ -99,15 +102,12 @@ export default class DataHandler
         }
     }
 
-    addDataListener(callback)
+    // Adds data callback for the client from the server
+    // { protocol, requestTimestamp, data }
+    addDataListener(requestTimestamp, callback)
     {
         if(this.webSocket)
-            this.webSocket.addDataListener(callback)
-    }
-
-    parseWebsocketData(data)
-    {
-        // convert back to function calls
+            this.webSocket.addDataListener(requestTimestamp, callback)
     }
 
     sendWebsocketData(data)
@@ -115,11 +115,61 @@ export default class DataHandler
         this.webSocket.sendData(data)
     }
 
-    getIPFS() { return this.ipfs }
-
     getGlobalNetwork() { return this.getNetworkManager().globalNetwork }
 
     getNetworkManager() { return this.networkManager }
 
     getProfileManager() { return this.profileManager }
+
+    // creates a promise and waits for 
+    async awaitNodeResponse(protocol, data)
+    {
+        if(!data) data = ''
+        return await new Promise((resolve, reject) => {
+
+            // create timestamp that acts as an identifier for the request
+            const requestTimestamp = Date.now()
+            
+            // create callback to listen for node server responses
+            this.addDataListener(requestTimestamp, (_returnedData) => { 
+                
+                _returnedData === undefined 
+                    ? reject('DATAHANDLER: WebSocket request timed out')
+                    : resolve(_returnedData.data) 
+            })
+
+            // send a request to node server
+            this.sendWebsocketData({ protocol: protocol, requestTimestamp: requestTimestamp, data: data })
+        })
+    }
+
+    async loadProfile()
+    {
+        if(this.runningNode)
+            return await this.awaitNodeResponse('loadProfile')
+        else 
+            return await this.getProfileManager().loadProfile()
+    }
+    
+    async saveProfile(data)
+    {
+        if(this.runningNode)
+            return await this.awaitNodeResponse('saveProfile', data)
+        else
+            return await this.getProfileManager().saveProfile(data)
+    }
+
+    // Runs only on the server - receiving from the client
+    // { protocol, requestTimestamp, data }
+    async parseWebsocketData(data)
+    {
+        switch(data.protocol)
+        {   
+            case 'ping': this.sendWebsocketData({ data: 'pong', requestTimestamp: data.requestTimestamp}); break;
+            case 'loadProfile': this.sendWebsocketData({ data: await this.loadProfile(), requestTimestamp: data.requestTimestamp}); break;
+            case 'saveProfile': this.sendWebsocketData({ data: await this.saveProfile(data.data), requestTimestamp: data.requestTimestamp}); break;
+            default: return;
+        }
+    }
+
 }

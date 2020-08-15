@@ -1,4 +1,4 @@
-import { WEB_SOCKET_PROTOCOL } from "./WebSocketServer"
+import { WEBSOCKET_PROTOCOLS } from "./DataHandler"
 
 export default class WebSocketClient
 {
@@ -8,6 +8,8 @@ export default class WebSocketClient
         this.onDisconnect = this.onDisconnect.bind(this)
         this.onData = this.onData.bind(this)
         this.connectCallback = connectCallback
+
+        this.dataCallbacks = {}
 
         try {
             
@@ -24,7 +26,6 @@ export default class WebSocketClient
     onConnect(event)
     {   
         this.connectCallback()
-        this.sendData(WEB_SOCKET_PROTOCOL.CLIENT_CONNECT)
     }
 
     onDisconnect(event)
@@ -40,17 +41,24 @@ export default class WebSocketClient
 
     onData(event)
     {
-        if(this.dataCallback)
-            this.dataCallback(event.data)
+        let data = JSON.parse(event.data)
+
+        // call the callback function
+        this.dataCallbacks[data.requestTimestamp](data)
+
+        // remove it from our list
+        delete this.dataCallbacks[data.requestTimestamp]
     }
     
-    addDataListener(callback)
+    addDataListener(requestTimestamp, callback)
     {
-        this.dataCallback = callback
+        // right now this creates a memory leak where unfulfilled requests pile up
+        // TODO: add interval callback, check if entry exists, then delete and return undefined to reject promise
+        this.dataCallbacks[requestTimestamp] = callback
     }
 
     sendData(data)
     {
-        this.webSocket.send(data)
+        this.webSocket.send(JSON.stringify(data))
     }
 }

@@ -82,7 +82,7 @@ export default class Profile
 
     async loadFromDatabase()
     {
-        let data = await this.conjure.getDataHandler().getProfileManager().loadProfile()
+        let data = await this.conjure.getDataHandler().loadProfile()
         
         if(!data || data.timestamp < this.lastUpdated || !data.data) return
         this.lastUpdated = data.timestamp
@@ -96,7 +96,7 @@ export default class Profile
 
     saveProfile()
     {
-        this.conjure.getDataHandler().getProfileManager().saveProfile({ profile:this.profileData, services:this.getServiceManager().getServiceAsJson() })
+        this.conjure.getDataHandler().saveProfile({ profile:this.profileData, services:this.getServiceManager().getServiceAsJson() })
         this.conjure.getWorld().sendData(REALM_PROTOCOLS.USER.UPDATE, { username: this.getUsername() })
     }
 

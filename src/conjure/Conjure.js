@@ -45,8 +45,6 @@ export class Conjure extends Scene3D
     getFonts() { return this.fonts }
     getProfile() { return this.profile }
     getDataHandler() { return this.dataHandler }
-    getIPFS() { return this.getDataHandler().getIPFS() }
-    getGlobalNetwork() { return this.getDataHandler().getGlobalNetwork() }
     getGlobalHUD() { return this.screenManager.hudGlobal }
 
     async init()
