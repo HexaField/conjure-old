@@ -1,16 +1,12 @@
 import { THREE } from 'enable3d'
 
-export default function(font, {
-            string = 'empty string',
-            // outline = false,
-        } = {}
-    )
+export default function(font, args = {})
 {
-    var shapes = font.generateShapes(string, 1);
+    var shapes = font.generateShapes(args.string || '-empty string-', 0.05);
     var geometry = new THREE.ShapeBufferGeometry(shapes);
 
     geometry.computeBoundingBox();
-    geometry.translate(-0.5 * (geometry.boundingBox.max.x - geometry.boundingBox.min.x), 0, 0);
+    geometry.translate(-0.5 * (geometry.boundingBox.max.x - geometry.boundingBox.min.x), -0.5 * (geometry.boundingBox.max.y - geometry.boundingBox.min.y), 0);
     return geometry
 
     // if(outline)

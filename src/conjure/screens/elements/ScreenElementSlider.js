@@ -2,6 +2,7 @@ import { THREE } from 'enable3d'
 import TextRenderer3D from '../text/TextRenderer3D'
 import { easyBox, easyPlane } from '../../util/MeshTemplates'
 import ScreenElementBase from './ScreenElementBase'
+import { number } from '../../util/number'
 
 export default class ScreenElementSlider extends ScreenElementBase
 {  
@@ -9,19 +10,19 @@ export default class ScreenElementSlider extends ScreenElementBase
     {
         super(screen, parent, args);
 
-        this.background = easyBox({ width: this.width, height: this.height, depth: 0.1, color: 0x2685ff });
+        this.background = easyBox({ width: this.width, height: this.height, depth: 0.1 }, { color: 0x2685ff });
         this.background.castShadow = false;
         this.background.receiveShadow = false;
         this.background.material.transparent = true;
         this.background.material.opacity = 0.5;
 
         this.isEditing = false;
-        this.slider = easyPlane({ width: this.width, height: this.height, color: 0xffffff });
+        this.slider = easyPlane({ width: this.width, height: this.height }, { color: 0xffffff });
         this.slider.castShadow = false;
         this.slider.receiveShadow = false;
         this.slider.position.setZ(0.06);
 
-        this.sliderTarget = easyPlane({ width: this.width*1.2, height: this.height, color: 0xffffff, transparent: true, opacity: 0 });
+        this.sliderTarget = easyPlane({ width: this.width*1.2, height: this.height }, { color: 0xffffff, transparent: true, opacity: 0 });
         this.sliderTarget.castShadow = false;
         this.sliderTarget.receiveShadow = false;
         this.sliderTarget.position.setZ(0.06);
@@ -55,9 +56,9 @@ export default class ScreenElementSlider extends ScreenElementBase
     getValue()
     {
         if(this.step)
-            return Number(Math.round(THREE.Math.lerp(this.minValue, this.maxValue, this.sliderPercent)));
+            return number(Math.round(THREE.Math.lerp(this.minValue, this.maxValue, this.sliderPercent)));
         else
-            return Number(THREE.Math.lerp(this.minValue, this.maxValue, this.sliderPercent));
+            return number(THREE.Math.lerp(this.minValue, this.maxValue, this.sliderPercent));
     }
 
     setValues(args)

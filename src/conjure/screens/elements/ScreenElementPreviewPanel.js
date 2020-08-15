@@ -15,7 +15,7 @@ export default class ScreenElementPreviewPanel extends ScreenElementBase
         this.worldPosition = new THREE.Vector3();
         this.intersection = new THREE.Vector3();
         
-        this.background = easyPlane({ width:this.width, height: 0.3, color: 0x2685ff });
+        this.background = easyPlane({ width:this.width, height: 0.3 }, { color: 0x2685ff });
         this.background.position.setY(-0.45);
         this.background.castShadow = false;
         this.background.receiveShadow = false;

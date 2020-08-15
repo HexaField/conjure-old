@@ -3,6 +3,7 @@ import ScreenElementButton from './elements/ScreenElementButton';
 import ScreenElementLabelled from './elements/ScreenElementLabelled';
 import ScreenElementTextBox from './elements/ScreenElementTextBox';
 import ScreenElementScroll from './elements/ScreenElementScroll';
+import { number } from '../util/number'
 
 export default class ScreenRealms extends ScreenBase
 {  
@@ -97,7 +98,7 @@ export default class ScreenRealms extends ScreenBase
         if(!realmInfo)
         try{
             this.screenManager.hideAllScreens()
-            this.screenManager.conjure.getWorld().joinRealmByID(Number(this.discordIdTextbox.getValue())) // for joining a private realm
+            this.screenManager.conjure.getWorld().joinRealmByID(number(this.discordIdTextbox.getValue())) // for joining a private realm
             return
         }
         catch(error)

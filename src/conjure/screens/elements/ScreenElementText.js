@@ -15,7 +15,7 @@ export default class ScreenElementText extends ScreenElementBase
 
         if(args.background)
         {
-            this.background = easyPlane({ width: this.width, height: this.height, color: 0x2685ff, transparent: true, opacity: args.backgroundOpacity === undefined ? 0.5 : args.backgroundOpacity });
+            this.background = easyPlane({ width: this.width, height: this.height }, { color: 0x2685ff, transparent: true, opacity: args.backgroundOpacity === undefined ? 0.5 : args.backgroundOpacity });
             this.background.visible = true;
             this.group.add(this.background);
         }

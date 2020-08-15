@@ -1,4 +1,5 @@
 import { THREE, ExtendedMesh } from 'enable3d'
+import { number } from '../util/number'
 
 export const PHYSICS_TYPES = {
     NONE: 'None',
@@ -217,7 +218,7 @@ export default class ObjectManager
 
     rgbToHex (rgb)
     { 
-        var hex = Number(rgb).toString(16);
+        var hex = number(rgb).toString(16);
         if (hex.length < 2)
         {
             hex = "0" + hex;

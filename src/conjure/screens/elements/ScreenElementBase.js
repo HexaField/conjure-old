@@ -1,5 +1,6 @@
 import { THREE } from 'enable3d'
 import { easyPlane } from '../../util/MeshTemplates'
+import { number } from '../../util/number'
 
 export default class ScreenElementBase
 {  
@@ -10,17 +11,17 @@ export default class ScreenElementBase
         this.innerWidth = this.width; // these are used for things like panels to change where bounds are
         this.innerHeight = this.height;
 
-        this.scale = args.scale || 1
-        this._x = args.x || 0;
-        this.x = args.x * screen.aspectRatio;
-        this.y = args.y || 0;
-        this.z = args.z || 0;
+        this.scale = number(args.scale) || 1
+        this._x = number(args.x || 0);
+        this.x = this._x * screen.aspectRatio;
+        this.y = number(args.y || 0);
+        this.z = number(args.z || 0);
         this.anchorX = Boolean(args.anchor) // this locks the x to be absolute from -1 to 1
         this.screen = screen;
         this.parent = parent;
         this.group = new THREE.Group();
         this.vec3 = new THREE.Vector3();
-        this.group.position.set(this.x, this.y, this.depth);
+        this.group.position.set(this.x, this.y, this.z);
         this.parent.group.add(this.group);
         
         this.defaultColour = 0x2685ff
@@ -28,7 +29,7 @@ export default class ScreenElementBase
         this.defaultColour3 = 0x1855A3
         this.defaultOpacity = 0.75
         
-        this.targetBounds = easyPlane({ width: this.width, height: this.    height, color: 0xffffff });
+        this.targetBounds = easyPlane({ width: this.width, height: this.height }, { color: 0xffffff, transparent: true, opacity: 0.1 });
         this.targetBounds.visible = false;
         this.group.add(this.targetBounds);
 
@@ -78,19 +79,19 @@ export default class ScreenElementBase
         this.border = new THREE.Group();
         this.border.position.setZ(this.z);
 
-        this.borderTop = easyPlane({ width: this.width, height: thickness, color: 0xffffff });
+        this.borderTop = easyPlane({ width: this.width, height: thickness }, { color: 0xffffff });
         this.borderTop.position.setY(this.height/2);
         this.border.add(this.borderTop);
 
-        this.borderBottom = easyPlane({ width: this.width, height: thickness, color: 0xffffff });
+        this.borderBottom = easyPlane({ width: this.width, height: thickness }, { color: 0xffffff });
         this.borderBottom.position.setY(-this.height/2);
         this.border.add(this.borderBottom);
 
-        this.borderLeft = easyPlane({ width: thickness, height: this.height, color: 0xffffff });
+        this.borderLeft = easyPlane({ width: thickness, height: this.height }, { color: 0xffffff });
         this.borderLeft.position.setX(this.width/2);
         this.border.add(this.borderLeft);
 
-        this.borderRight = easyPlane({ width: thickness, height: this.height, color: 0xffffff });
+        this.borderRight = easyPlane({ width: thickness, height: this.height }, { color: 0xffffff });
         this.borderRight.position.setX(-this.width/2);
         this.border.add(this.borderRight);
         this.group.add(this.border);

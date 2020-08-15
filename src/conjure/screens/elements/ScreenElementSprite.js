@@ -9,7 +9,7 @@ export default class ScreenElementSprite extends ScreenElementBase
 
         this.load = this.load.bind(this)
 
-        this.icon = easyPlane({ width: this.width, height: this.height, color: 0xffffff });
+        this.icon = easyPlane({ width: this.width, height: this.height }, { color: 0xffffff });
         this.group.add(this.icon);
 
         this.texture = undefined;

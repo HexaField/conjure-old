@@ -9,17 +9,17 @@ export default class ScreenElementScroll extends ScreenElementBase
     {
         super(screen, parent, args);
 
-        this.background = easyPlane({ width: this.width, height: this.height, color: 0x2685ff, transparent: true, opacity: 0 });
+        this.background = easyPlane({ width: this.width, height: this.height }, { color: 0x2685ff, transparent: true, opacity: 0 });
         this.group.add(this.background);
 
         this.frameBorder = args.frameBorder || 0.05;
         this.onScrollerCallback = args.onScrollerCallback;
         
-        this.scroller = easyPlane({ width: 0.05, height: 0.1, color: 0x2685ff, transparent: true, opacity: 0.5 });
+        this.scroller = easyPlane({ width: 0.05, height: 0.1 }, { color: 0x2685ff, transparent: true, opacity: 0.5 });
         this.scroller.position.set((args.scrollSide === 'left' ? -1 : 1) * (this.width / 2 - this.frameBorder), this.height / 2 - this.frameBorder, 0);
         this.group.add(this.scroller);
 
-        this.scrollerTarget = easyPlane({ width: 0.05, height: this.height - this.frameBorder - this.frameBorder, color: 0x2685ff, transparent: true, opacity: 0.1 });
+        this.scrollerTarget = easyPlane({ width: 0.05, height: this.height - this.frameBorder - this.frameBorder }, { color: 0x2685ff, transparent: true, opacity: 0.1 });
         this.scrollerTarget.position.set((args.scrollSide === 'left' ? -1 : 1) * (this.width / 2 - this.frameBorder), 0, 0);
         this.group.add(this.scrollerTarget);
 

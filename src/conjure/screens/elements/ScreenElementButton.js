@@ -8,7 +8,7 @@ export default class ScreenElementButton extends ScreenElementBase
     {
         super(screen, parent, args);
 
-        this.button = easyBox({ width: this.width, height: this.height, depth: 0.025, color: this.defaultColour3 });
+        this.button = easyBox({ width: this.width, height: this.height, depth: 0.025 }, { color: this.defaultColour3 });
         this.button.material.transparent = true;
         this.button.material.opacity = this.defaultOpacity;
 

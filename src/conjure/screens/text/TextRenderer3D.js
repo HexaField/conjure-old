@@ -1,27 +1,35 @@
 
 import { THREE } from 'enable3d'
 import createText from './createText'
+import { number } from '../../util/number'
 
 export default class TextRenderer3D
 {
-    constructor(conjure, parent, params = { font: 'Helvetiker', string: '', x: 0, y: 0, scale: 1, anchorX: 'center', anchorY: 'center', renderSide: THREE.DoubleSide, color: 0xffffff })
+    constructor(conjure, parent, params = {})
     {
         this.conjure = conjure
-        this.x = params.x
-        this.y = params.y
-        this.scale = params.scale
-        this.anchorX = params.anchorX
-        this.anchorY = params.anchorY
-        this.renderSide = params.renderSide
-        this.colour = params.color
+        this.x = number(params.x)
+        this.y = number(params.y)
+        this.scale = number(params.scale) || 1
+        this.anchorX = params.anchorX || 'center'
+        this.anchorY = params.anchorY || 'center'
+        this.renderSide = params.renderSide || THREE.DoubleSide
+        this.color = params.color || 0xffffff
         
-        this.string = String(params.string)
+        this.string = String(params.string || params.text || 'string')
 
         this.group = new THREE.Group()
         this.font = conjure.getFonts().getFont(params.font || 'Helvetiker')
-        this.geometry = createText(this.font, params)
+        this.geometry = createText(this.font, { string: this.string })
         
+        this.material = new THREE.MeshBasicMaterial({
+            // transparent: true,
+            color: this.color,
+            side: this.renderSide,
+        })
+
         this.mesh = new THREE.Mesh(this.geometry, this.material)
+        this.mesh.scale.set(this.scale, this.scale, this.scale)
         this.group.add(this.mesh)
         parent.add(this.group)
         // this.group.add(easySphere(0.01)) // use this for debugging
@@ -32,7 +40,7 @@ export default class TextRenderer3D
         if(font !== undefined)
             this.font = font
         this.string = String(text)
-        this.geometry = createText(this.font, text)
+        this.geometry = createText(this.font, { string: this.string })
         this.mesh.geometry = this.geometry
     }
 

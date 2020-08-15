@@ -32,7 +32,7 @@ export default class ScreenTextureEditor extends ScreenBase
 
         this.texture = new THREE.CanvasTexture(this.drawingCanvas);
 
-        this.textureRender = easyPlane(this.width, this.height, 0xffffff)
+        this.textureRender = easyPlane({ width: this.width, height: this.height, }, { color: 0xffffff })
         this.group.add(this.textureRender);
         this.textureRender.material.map = this.texture;
     }

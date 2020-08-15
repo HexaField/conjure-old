@@ -13,6 +13,7 @@ import { THREE } from 'enable3d'
 import ScreenElementLoadFile from './elements/ScreenElementLoadFile'
 import ScreenElementSprite from './elements/ScreenElementSprite'
 import ScreenElementTextureEditor from './elements/ScreenElementTextureEditor'
+import { number } from '../util/number'
 
 const pi = Math.PI;
 const tau = pi * 2;
@@ -194,8 +195,8 @@ export default class ScreenAssets extends ScreenBase
         for(let item of this.detailsPanel.items)
         {
             let value = item.getValue()
-            if(Number(value))
-                value = Number(value)
+            if(number(value))
+                value = number(value)
             values[item.getText()] = value;
         }
         let preset = this.assetPresetButton.getValue(true)

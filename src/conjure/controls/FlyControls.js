@@ -1,5 +1,6 @@
 import { THREE } from 'enable3d'
 // import Events from './Events'
+import { number } from '../util/number'
 
 export default class FlyControls
 {  
@@ -110,9 +111,9 @@ export default class FlyControls
         this.velocity.y -= this.velocity.y * this.moveDamp * updateArgs.delta;
         this.velocity.z -= this.velocity.z * this.moveDamp * updateArgs.delta;
 
-        this.direction.x = Number( this.right ) - Number( this.left );
-        this.direction.y = Number( this.up ) - Number( this.down );
-        this.direction.z = Number( this.forward ) - Number( this.backward );
+        this.direction.x = number( this.right ) - number( this.left );
+        this.direction.y = number( this.up ) - number( this.down );
+        this.direction.z = number( this.forward ) - number( this.backward );
         this.direction.normalize(); // this ensures consistent movements in all directions
 
         if ( this.forward || this.backward ) this.velocity.z -= this.direction.z * this.moveSensitivity * updateArgs.delta;

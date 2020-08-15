@@ -1,6 +1,7 @@
 import { THREE } from 'enable3d'
 import _ from 'lodash'
 import { createGeometry, createMaterial } from './util/wireframe'
+import { number } from './util/number'
 
 export const ASSET_TYPE = {
     TEXTURE: 'Texture',
@@ -276,7 +277,7 @@ export default class AssetManager
         let keys = Object.keys(this.assets[type])
         for(let key of keys)
             assets.push(this.assets[type][key])
-        assets.sort(function(a, b){return Number(b.lastUsed) - Number(a.lastUsed)})
+        assets.sort(function(a, b){return number(b.lastUsed) - number(a.lastUsed)})
         return assets;
     }
 

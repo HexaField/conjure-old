@@ -1,5 +1,6 @@
 import { THREE } from 'enable3d'
 import { MathUtils } from '@enable3d/three-wrapper/dist'
+import { number } from '../util/number'
 
 export default class AvatarControls
 {  
@@ -188,9 +189,9 @@ export default class AvatarControls
             if(Math.abs(this.velocity.z) < 0.01)
                 this.velocity.z = 0;
 
-            this.direction.x = Number( this.right ) - Number( this.left );
-            // this.direction.y = Number( this.up ) - Number( this.down );
-            this.direction.z = Number( this.forward ) - Number( this.backward );
+            this.direction.x = number( this.right ) - number( this.left );
+            // this.direction.y = number( this.up ) - number( this.down );
+            this.direction.z = number( this.forward ) - number( this.backward );
             this.direction.normalize();
 
             if ( this.forward || this.backward ) this.velocity.z -= this.direction.z * this.moveSensitivity * updateArgs.delta;

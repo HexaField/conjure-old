@@ -1,4 +1,5 @@
 import ScreenElementButton from './ScreenElementButton';
+import { number } from '../../util/number'
 
 export default class ScreenElementToggleButton extends ScreenElementButton
 {  
@@ -11,7 +12,7 @@ export default class ScreenElementToggleButton extends ScreenElementButton
 
     setValue(value)
     {
-        this.value = Number(value);
+        this.value = number(value);
         this.setText(this.value ? 'True' : 'False');
         if(this.onChangeCallback)
             this.onChangeCallback(this.getValue())

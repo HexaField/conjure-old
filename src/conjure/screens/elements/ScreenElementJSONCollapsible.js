@@ -12,7 +12,7 @@ export default class ScreenElementJSONCollapsible extends ScreenElementBase
         this.tree = args.tree;
         this.selectable = args.selectable;
 
-        this.button = easyPlane({ width: args.width, height: args.height, color: 0xffffff });
+        this.button = easyPlane({ width: args.width, height: args.height }, { color: 0xffffff });
         this.button.castShadow = false;
         this.button.receiveShadow = false;
         this.button.material.transparent = true;

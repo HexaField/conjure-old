@@ -21,7 +21,7 @@ export default class ScreenElementTexture extends ScreenElementBase
         this.textBox.setText('https://cdn.discordapp.com/attachments/711163360175194154/715404619177525269/Screen_Shot_2020-05-28_at_13.22.00.png');
         this.textBox.setActive(false);
 
-        this.icon = easyPlane({ width: 0.2, height: 0.2, color: 0xffffff });
+        this.icon = easyPlane({ width: 0.2, height: 0.2 }, { color: 0xffffff });
         this.icon.position.set(-0.2, 0, 0)
         this.group.add(this.icon);
 

@@ -1,6 +1,7 @@
 import { THREE } from 'enable3d'
 import { easyPlane, easyLine } from '../util/MeshTemplates'
 import TextRenderer3D from './text/TextRenderer3D'
+import { number } from '../util/number'
 
 export default class ScreenBase
 {  
@@ -12,10 +13,10 @@ export default class ScreenBase
         this.id = this.screenManager.screens === undefined ? -1 : this.screenManager.screens.length;
         this.screenName = args.name || "";
         this.anchor = Boolean(args.anchor) // this locks the x to be absolute from -1 to 1
-        this.x = Number(args.x) || 0;
-        this.y = Number(args.y) || 0;
-        this.width = Number(args.width);
-        this.height = Number(args.height);
+        this.x = number(args.x);
+        this.y = number(args.y);
+        this.width = number(args.width);
+        this.height = number(args.height);
         this.pauses = args.pauses;
 
         this.buttonWidth = 0.4
@@ -24,7 +25,7 @@ export default class ScreenBase
         this.defaultColour2 = 0x1E6ACC
         this.defaultColour3 = 0x1855A3
         this.defaultOpacity = 0.75
-        this.background = easyPlane({ width: this.width, height: this.height, depth: this.defaultColour, transparent: true, opacity: this.defaultOpacity })
+        this.background = easyPlane({ width: this.width, height: this.height}, { color: this.defaultColour, transparent: true, opacity: this.defaultOpacity })
         this.background.receiveShadow = false
         // this.background.material.blending = THREE.MultiplyBlending
 
@@ -135,12 +136,12 @@ export default class ScreenBase
         for (let i = -grid_count; i <= grid_count; i++)
         {   
             group.add(easyLine({
-                points: [
-                    new THREE.Vector3(rotated ? -grid_count : i, rotated ? i : -grid_count, 0),
-                    new THREE.Vector3(rotated ? grid_count : i, rotated ? i : grid_count, 0)
-                ],
-                color: 0xffffff
-            }))
+                    points: [
+                        new THREE.Vector3(rotated ? -grid_count : i, rotated ? i : -grid_count, 0),
+                        new THREE.Vector3(rotated ? grid_count : i, rotated ? i : grid_count, 0)
+                    ]
+                }, { color: 0xffffff}
+            ))
         }
         return group;
     }

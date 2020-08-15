@@ -2,6 +2,7 @@ import ScreenBase from './ScreenBase';
 import { THREE } from 'enable3d'
 import { Vector2 } from 'three'
 import ScreenElementText from './elements/ScreenElementText'
+import { number } from '../util/number'
 
 export default class ScreenHomeMenu extends ScreenBase
 {  
@@ -75,7 +76,7 @@ export default class ScreenHomeMenu extends ScreenBase
             let hoverTarget = intersections[0].object
             for(let i in this.segmentTargets)
                 if(this.segmentTargets[i] === hoverTarget)
-                    this.hoverNumber = Number(i)
+                    this.hoverNumber = number(i)
 
             this.segments[this.hoverNumber].scale.set(this.expandScale, this.expandScale, this.expandScale)
             if(updateArgs.input.isPressed('MOUSELEFT', true))

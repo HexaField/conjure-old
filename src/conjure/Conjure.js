@@ -164,8 +164,8 @@ export class Conjure extends Scene3D
 
         this.resizeCanvas() // trigger this to set up screen anchors
         this.screenManager.hudGlobal.showScreen(true)
-        this.getGlobalHUD().addWatchItem('Connected Peers', this.getDataHandler().ipfsInfo, 'peersCount')
-        this.getGlobalHUD().addWatchItem('Online Users', this.getGlobalNetwork().roomStats, 'peersCount')
+        // this.getGlobalHUD().addWatchItem('Connected Peers', this.getDataHandler().ipfsInfo, 'peersCount')
+        // this.getGlobalHUD().addWatchItem('Online Users', this.getGlobalNetwork().roomStats, 'peersCount')
 
         this.loadingScreen.setText('Loading World...')
         // Now load stuff in

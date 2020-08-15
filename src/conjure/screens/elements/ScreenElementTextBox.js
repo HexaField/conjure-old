@@ -9,7 +9,7 @@ export default class ScreenElementTextBox extends ScreenElementBase
     {
         super(screen, parent, args);
 
-        this.background = easyPlane({ width: this.width, height: this.height, color: 0x2685ff, transparent: true, opacity: 0.2 });
+        this.background = easyPlane({ width: this.width, height: this.height }, { color: 0x2685ff, transparent: true, opacity: 0.2 });
         this.background.castShadow = false;
         this.background.receiveShadow = false;
 

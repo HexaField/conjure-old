@@ -10,7 +10,7 @@ export default class ScreenElementScaler extends ScreenElementBase
     {
         super(screen, parent, args);
 
-        this.background = easyPlane({ width: this.width, height: this.height, color: 0x2685ff });
+        this.background = easyPlane({ width: this.width, height: this.height }, { color: 0x2685ff });
         this.background.castShadow = false;
         this.background.receiveShadow = false;
         this.background.material.transparent = true;

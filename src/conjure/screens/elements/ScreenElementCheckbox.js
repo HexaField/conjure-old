@@ -8,7 +8,7 @@ export default class ScreenElementCheckbox extends ScreenElementBase
     {
         super(screen, parent, args);
 
-        this.button = easyPlane({ width: args.width, height: args.height, color: 0x2685ff });
+        this.button = easyPlane({ width: args.width, height: args.height }, { color: 0x2685ff });
         this.button.castShadow = false;
         this.button.receiveShadow = false;
         this.button.material.transparent = true;

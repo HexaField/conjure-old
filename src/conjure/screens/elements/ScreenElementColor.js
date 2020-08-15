@@ -1,6 +1,7 @@
 import { THREE } from 'enable3d'
 import ScreenElementBase from './ScreenElementBase';
 import ScreenElementScaler from './ScreenElementScaler';
+import { number } from '../../util/number'
 
 export default class ScreenElementColor extends ScreenElementBase
 {  
@@ -36,7 +37,7 @@ export default class ScreenElementColor extends ScreenElementBase
             this.onClickCallback(this.onClickCallbackArgs, this.value)
     }
     
-    hex = d => Number(d).toString(16).padStart(2, '0')
+    hex = d => number(d).toString(16).padStart(2, '0')
     dec = d => parseInt(d, 16);
 
     

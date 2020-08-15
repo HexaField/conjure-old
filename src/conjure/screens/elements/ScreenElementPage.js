@@ -16,7 +16,7 @@ export default class ScreenElementPage extends ScreenElementBase
         this.worldPosition = new THREE.Vector3();
         this.intersection = new THREE.Vector3();
         
-        this.background = easyPlane({ width: this.width, height: this.height, color: 0x2685ff});
+        this.background = easyPlane({ width: this.width, height: this.height }, { color: 0x2685ff});
         this.background.material.transparent = true;
         this.background.material.opacity = 0.5;
         this.group.add(this.background);
