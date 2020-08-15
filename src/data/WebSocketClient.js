@@ -16,7 +16,7 @@ export default class WebSocketClient
             this.webSocket = new WebSocket('ws://localhost:9700')
 
             this.webSocket.onopen = this.onConnect
-            this.webSocket.onerror = function(error) { connectCallback(error.message); }
+            this.webSocket.onerror = function(error) { connectCallback(error); }
             this.webSocket.onmessage = this.onData
             this.webSocket.onclose = this.onDisconnect
             
@@ -32,10 +32,10 @@ export default class WebSocketClient
     {
         if (event.wasClean) {
             console.log(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`)
-            this.connectCallback(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`)
+            // this.connectCallback(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`)
         } else {
             console.log('[close] Connection died')
-            this.connectCallback('[close] Connection died')
+            // this.connectCallback('[close] Connection died')
         }
     }
 

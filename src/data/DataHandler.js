@@ -16,9 +16,7 @@ export default class DataHandler
     }
 
     async initialise(runAppCallback)
-    {
-        // await this.loadDataHandler()
-        
+    {        
         // TODO: figure out how to pipe IPFS directly from node to browser, if impossible then add protocols for all ipfs actions (networking etc)
         
         if(global.isBrowser)
@@ -35,16 +33,19 @@ export default class DataHandler
     // Try and connect to the node server
     async findNode(runAppCallback)
     {
-        let callback = (async function(error) {
+        this.runningNode = false
+        let callback = async (error) => {
             if(error)
             {
-                console.log(error)
-                this.runningNode = false
+                console.log('Data Module: Could not find local node', error)
                 await this.loadDataHandler()
             }
+            else
+            {
+                this.runningNode = true
+            }
             runAppCallback()
-        })
-        this.runningNode = true
+        }
         this.webSocket = new WebSocketClient(callback)
     }
 
@@ -76,6 +77,8 @@ export default class DataHandler
 
         this.profileManager = new ProfileManager(this.files, this.networkManager)
         await this.profileManager.initialise()
+
+        console.log('Data Module: Successfully loaded data module!')
     }
 
     showStats()
@@ -134,7 +137,7 @@ export default class DataHandler
             this.addDataListener(requestTimestamp, (_returnedData) => { 
                 
                 _returnedData === undefined 
-                    ? reject('DATAHANDLER: WebSocket request timed out')
+                    ? reject('Data Module: WebSocket request timed out')
                     : resolve(_returnedData.data) 
             })
 

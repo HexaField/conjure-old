@@ -17,7 +17,7 @@ export default class ProfileManager
             return JSON.parse(await this.files.readFile('profile'))
         }
         catch (error) {
-            console.log('ConjureDatabase: could not load profile with error', error);
+            console.log('ProfileManager: could not load profile with error', error);
             this.conjure.getGlobalHUD().log('Failed to load profile')
             return
         }
