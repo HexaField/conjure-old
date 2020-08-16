@@ -8,8 +8,8 @@
     "dev": "concurrently \"yarn dev-node\" \"yarn dev-browser\"",
     "start-browser": "webpack-dev-server --define process.env.NODE_ENV='\"production\"' --mode development --progress --watch",
     "dev-browser": "webpack-dev-server --mode development --progress --watch",
-    "start-node": "NODE_ENV=production nodemon --watch src/data --exec babel-node -- src/node.js",
-    "dev-node": "NODE_ENV=development nodemon --watch src/data --exec babel-node -- src/node.js",
+    "start-node": "NODE_ENV=production nodemon --watch src/data --exec babel-node -- src/data",
+    "dev-node": "NODE_ENV=development nodemon --watch src/data --exec babel-node -- src/data",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack --mode production"
   },

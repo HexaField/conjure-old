@@ -21,6 +21,7 @@ export default class WebSocketServer
     {
         ws.on('message', this.onData)
         this.connection = ws
+        console.log('WebSocketServer: Successfully connected to client!')
     }
 
     onDisconnect()

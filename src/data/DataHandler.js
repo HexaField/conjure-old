@@ -44,6 +44,7 @@ export default class DataHandler
             }
             else
             {
+                console.log('Data Module: Successfully connected to local node!')
                 this.runningNode = true
             }
             runAppCallback()

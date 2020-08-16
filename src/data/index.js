@@ -1,4 +1,4 @@
-import DataHandler from './data/DataHandler'
+import DataHandler from './DataHandler'
 
 global.isBrowser = false
 global.isDevelopment = process.env.NODE_ENV === 'development'

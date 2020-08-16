@@ -1,4 +1,4 @@
-import DataHandler from './data/DataHandler'
+import DataHandler from '../data/DataHandler'
 
 global.isBrowser = true
 global.isDevelopment = process.env.NODE_ENV === 'development'
@@ -9,7 +9,7 @@ async function start()
 
     const dataHandler = new DataHandler()
     
-    const App = require('./conjure/App').App
+    const App = require('./App').App
     const conjure = new App(dataHandler)
 
     await dataHandler.initialise(conjure.start)
