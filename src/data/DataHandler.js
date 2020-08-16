@@ -8,6 +8,7 @@ import NetworkManager from './NetworkManager'
 import RealmManager from './RealmManager'
 import ProfileManager from './ProfileManager'
 import { GLOBAL_PROTOCOLS } from './NetworkManager'
+import GlobalNetwork from './GlobalNetwork'
 
 export default class DataHandler
 {
@@ -71,13 +72,14 @@ export default class DataHandler
         // this.files = new FileStorageDHT() // untested & not fully implemented
         await this.files.initialise()
         
-        this.networkManager = new NetworkManager(this, this.ipfs, this.peerID)
-        await this.networkManager.initialise()
+        this.networkManager = new NetworkManager(this)
 
-        this.realmManager = new RealmManager(this.files, this.networkManager)
+        this.globalNetwork = new GlobalNetwork(this)
+
+        this.realmManager = new RealmManager(this)
         await this.realmManager.initialise()
 
-        this.profileManager = new ProfileManager(this.files, this.networkManager)
+        this.profileManager = new ProfileManager(this)
         await this.profileManager.initialise()
 
         console.log('Data Module: Successfully loaded data module!')
@@ -108,11 +110,15 @@ export default class DataHandler
         this.webSocket.sendData(data)
     }
 
-    getGlobalNetwork() { return this.getNetworkManager().globalNetwork }
+    getFiles() { return this.files }
+
+    getGlobalNetwork() { return this.globalNetwork }
 
     getNetworkManager() { return this.networkManager }
 
     getProfileManager() { return this.profileManager }
+
+    getRealmManager() { return this.realmManager }
 
     getIPFS() { return this.ipfs }
 

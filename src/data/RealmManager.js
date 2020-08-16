@@ -2,15 +2,14 @@ import { GLOBAL_PROTOCOLS } from './GlobalNetwork'
 
 export default class RealmManager
 {
-    constructor(dataHandler, files, globalNetwork)
+    constructor(dataHandler)
     {
-        this.globalNetwork = globalNetwork
-        this.files = files
+        this.dataHandler = dataHandler
         this.knownRealms = [] // just a list of IDs - need to turn this into a list of RealmInfo or something - id, name, icon
 
         this.receiveRealms = this.receiveRealms.bind(this)
 
-        this.globalNetwork.setProtocolCallback(GLOBAL_PROTOCOLS.BROADCAST_REALMS, this.receiveRealms)
+        this.dataHandler.getGlobalNetwork().setProtocolCallback(GLOBAL_PROTOCOLS.BROADCAST_REALMS, this.receiveRealms)
     }
     
     async initialise()
@@ -48,7 +47,7 @@ export default class RealmManager
         this.saveRealms()
         // this.conjure.getScreens().screenRealms.updateRecentRealms(this.knownRealms)
         if(!ignoreBroadcast)
-            this.globalNetwork.sendData(GLOBAL_PROTOCOLS.BROADCAST_REALMS, this.knownRealms)
+            this.dataHandler.getGlobalNetwork().sendData(GLOBAL_PROTOCOLS.BROADCAST_REALMS, this.knownRealms)
     }
 
     addRealm(realm)
@@ -71,14 +70,14 @@ export default class RealmManager
             // this.knownRealms.sort()
             this.saveRealms()
             // this.conjure.getScreens().screenRealms.updateRecentRealms(this.knownRealms)
-            this.globalNetwork.sendData(GLOBAL_PROTOCOLS.BROADCAST_REALMS, this.knownRealms)
+            this.dataHandler.getGlobalNetwork().sendData(GLOBAL_PROTOCOLS.BROADCAST_REALMS, this.knownRealms)
         }
     }
 
     saveRealms()
     {
         try {
-            this.files.writeFile('recent_realms.json', JSON.stringify(this.knownRealms))
+            this.dataHandler.getFiles().writeFile('recent_realms.json', JSON.stringify(this.knownRealms))
         } catch (error) {
             console.log('ConjureDatabase: could not save recent realms', this.knownRealms, 'with error', error);
             // this.conjure.getGlobalHUD().log('Failed to read recent realms')
@@ -89,7 +88,7 @@ export default class RealmManager
     {
         try
         {
-            const data = await this.files.readFile('recent_realms.json')
+            const data = await this.dataHandler.getFiles().readFile('recent_realms.json')
             if(!data) 
                 return []
             return JSON.parse(data)
