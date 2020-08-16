@@ -2,12 +2,13 @@ import { WEBSOCKET_PROTOCOLS } from "./DataHandler"
 
 export default class WebSocketClient
 {
-    constructor(connectCallback)
+    constructor(connectCallback, dataCallback)
     {
         this.onConnect = this.onConnect.bind(this)
         this.onDisconnect = this.onDisconnect.bind(this)
         this.onData = this.onData.bind(this)
         this.connectCallback = connectCallback
+        this.dataCallback = dataCallback
 
         this.dataCallbacks = {}
 
@@ -43,11 +44,18 @@ export default class WebSocketClient
     {
         let data = JSON.parse(event.data)
 
-        // call the callback function
-        this.dataCallbacks[data.requestTimestamp](data)
+        if(data.requestTimestamp) // if this is a valid request
+        {
+            // call the callback function
+            this.dataCallbacks[data.requestTimestamp](data)
 
-        // remove it from our list
-        delete this.dataCallbacks[data.requestTimestamp]
+            // remove it from our list
+            delete this.dataCallbacks[data.requestTimestamp]
+        }
+        else // this might be a one way event from
+        {
+            this.dataCallback(data)
+        }
     }
     
     addDataListener(requestTimestamp, callback)

@@ -38,6 +38,7 @@ export default class DataHandler
             if(error)
             {
                 console.log('Data Module: Could not find local node', error)
+                this.networkCallbacks = {}
                 await this.loadDataHandler()
             }
             else
@@ -46,7 +47,8 @@ export default class DataHandler
             }
             runAppCallback()
         }
-        this.webSocket = new WebSocketClient(callback)
+        this.receiveWebsocketData = this.receiveWebsocketData.bind(this)
+        this.webSocket = new WebSocketClient(callback, this.receiveWebsocketData)
     }
 
     // Creates a web socket for the browser to communicate with
@@ -93,18 +95,6 @@ export default class DataHandler
         }, 1000)
     }
 
-    parseNetworkData(data)
-    {
-        switch(data.protocol)
-        {
-            case GLOBAL_PROTOCOLS.BROADCAST_REALMS:
-                this.realmManager.addRecentRealms(data.content, true)
-            break;
-
-            default:break;
-        }
-    }
-
     // Adds data callback for the client from the server
     // { protocol, requestTimestamp, data }
     addDataListener(requestTimestamp, callback)
@@ -123,6 +113,10 @@ export default class DataHandler
     getNetworkManager() { return this.networkManager }
 
     getProfileManager() { return this.profileManager }
+
+    getIPFS() { return this.ipfs }
+
+    getPeerID() { return this.peerID }
 
     // creates a promise and waits for 
     async awaitNodeResponse(protocol, data)
@@ -146,6 +140,8 @@ export default class DataHandler
         })
     }
 
+    // technically this could be genericified
+
     async loadProfile()
     {
         if(this.runningNode)
@@ -162,15 +158,88 @@ export default class DataHandler
             return await this.getProfileManager().saveProfile(data)
     }
 
-    // Runs only on the server - receiving from the client
+    async joinNetwork(data)
+    {
+        if(this.runningNode)
+        {
+            if(this.networkCallbacks[data.network]) return true // we have already joined this network
+
+            this.networkCallbacks[data.network] = {
+                onMessage: data.onMessage,
+                onPeerJoin: data.onPeerJoin,
+                onPeerLeave: data.onPeerLeave,
+            }
+            return await this.awaitNodeResponse('joinNetwork', data.network)
+        }
+        else
+            return await this.getNetworkManager().joinNetwork(data.network, data.onMessage, data.onPeerJoin, data.onPeerLeave)
+    }
+
+    async sendDataNetwork(data)
+    {
+        if(this.runningNode)
+            return await this.awaitNodeResponse('sendDataNetwork', data)
+        else
+            return await this.getNetworkManager().sendData(data.network, data.protocol, data.content)
+    }
+
+    async sendToNetwork(data)
+    {
+        if(this.runningNode)
+            return await this.awaitNodeResponse('sendToNetwork', data)
+        else
+            return await this.getNetworkManager().sendTo(data.network, data.protocol, data.content, data.peerID)
+    }
+
+    async leaveNetwork(data)
+    {
+        if(this.runningNode)
+        {
+            if(await this.awaitNodeResponse('leaveNetwork', data))
+            {
+                if(this.networkCallbacks[data.network]) 
+                    delete this.networkCallbacks[data.network]
+                return true
+            }
+            return false
+        }
+        else
+            return await this.getNetworkManager().leaveNetwork(data.network)
+    }
+
+    // ===  only on the client - receiving from the server === //
+    
+    // { data, network }
+
+    receiveWebsocketData(data)
+    {
+        if(data.network && this.networkCallbacks[data.network] && this.networkCallbacks[data.network][data.event])
+            this.networkCallbacks[data.network][data.event](data.data)
+    }
+
+    // ===  only on the server - receiving from the client === //
+
     // { protocol, requestTimestamp, data }
+    
     async parseWebsocketData(data)
     {
         switch(data.protocol)
         {   
             case 'ping': this.sendWebsocketData({ data: 'pong', requestTimestamp: data.requestTimestamp}); break;
+
             case 'loadProfile': this.sendWebsocketData({ data: await this.loadProfile(), requestTimestamp: data.requestTimestamp}); break;
             case 'saveProfile': this.sendWebsocketData({ data: await this.saveProfile(data.data), requestTimestamp: data.requestTimestamp}); break;
+
+            case 'joinNetwork': this.sendWebsocketData({ data: await this.joinNetwork({
+                network: data.data.network,
+                onMessage: (_data) => this.sendWebsocketData({ data: _data, network: data.data.network, event: 'onMessage' }),
+                onPeerJoin: (_data) => this.sendWebsocketData({ data: _data, network: data.data.network, event: 'onPeerJoin' }),
+                onPeerLeave: (_data) => this.sendWebsocketData({ data: _data, network: data.data.network, event: 'onPeerLeave' }),
+            }), requestTimestamp: data.requestTimestamp}); break;
+            case 'sendDataNetwork': this.sendWebsocketData({ data: await this.sendDataNetwork(data.data), requestTimestamp: data.requestTimestamp}); break;
+            case 'sendToNetwork': this.sendWebsocketData({ data: await this.sendToNetwork(data.data), requestTimestamp: data.requestTimestamp}); break;
+            case 'leaveNetwork': this.sendWebsocketData({ data: await this.leaveNetwork(data.data), requestTimestamp: data.requestTimestamp}); break;
+
             default: return;
         }
     }

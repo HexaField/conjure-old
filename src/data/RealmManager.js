@@ -1,21 +1,29 @@
-import { GLOBAL_PROTOCOLS } from './NetworkManager'
+import { GLOBAL_PROTOCOLS } from './GlobalNetwork'
 
 export default class RealmManager
 {
-    constructor(files, network)
+    constructor(dataHandler, files, globalNetwork)
     {
-        this.network = network
+        this.globalNetwork = globalNetwork
         this.files = files
         this.knownRealms = [] // just a list of IDs - need to turn this into a list of RealmInfo or something - id, name, icon
+
+        this.receiveRealms = this.receiveRealms.bind(this)
+
+        this.globalNetwork.setProtocolCallback(GLOBAL_PROTOCOLS.BROADCAST_REALMS, this.receiveRealms)
     }
     
     async initialise()
     {
-        this.addRecentRealms(await this.readRecentRealms())
+        this.addRealms(await this.loadRealms())
     }
 
+    receiveRealms(realms)
+    {
+        this.addRealms(realms, true)
+    }
 
-    addRecentRealms(realms, ignoreBroadcast)
+    addRealms(realms, ignoreBroadcast)
     {
         if(!realms) return;
         for(let realm of realms)
@@ -37,13 +45,13 @@ export default class RealmManager
             }
         }
 
-        this.saveRecentRealms()
+        this.saveRealms()
         // this.conjure.getScreens().screenRealms.updateRecentRealms(this.knownRealms)
         if(!ignoreBroadcast)
-            this.network.sendData(GLOBAL_PROTOCOLS.BROADCAST_REALMS, this.knownRealms)
+            this.globalNetwork.sendData(GLOBAL_PROTOCOLS.BROADCAST_REALMS, this.knownRealms)
     }
 
-    addRecentRealm(realm)
+    addRealm(realm)
     {
         if(!realm || !realm.id) return;
         let exists = false
@@ -61,13 +69,13 @@ export default class RealmManager
         {
             this.knownRealms.push(realm)
             // this.knownRealms.sort()
-            this.saveRecentRealms()
+            this.saveRealms()
             // this.conjure.getScreens().screenRealms.updateRecentRealms(this.knownRealms)
-            this.network.sendData(GLOBAL_PROTOCOLS.BROADCAST_REALMS, this.knownRealms)
+            this.globalNetwork.sendData(GLOBAL_PROTOCOLS.BROADCAST_REALMS, this.knownRealms)
         }
     }
 
-    saveRecentRealms()
+    saveRealms()
     {
         try {
             this.files.writeFile('recent_realms.json', JSON.stringify(this.knownRealms))
@@ -77,7 +85,7 @@ export default class RealmManager
         }
     }
 
-    async readRecentRealms()
+    async loadRealms()
     {
         try
         {

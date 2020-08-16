@@ -75,6 +75,11 @@ export default class RealmManager
         
     }
 
+    async createRealm()
+    {
+        
+    }
+
     // { delta, input, mouseRaycaster, worldRaycaster }
     update(args)
     {

@@ -1,55 +1,40 @@
 import Network from './Network'
 
-export const GLOBAL_PROTOCOLS = {
-    BROADCAST_REALMS: 'broadcast_realms',
-}
-
 export default class NetworkManager
 {
-    constructor(dataHandler, ipfs, peerID)
+    constructor(dataHandler)
     {
         this.dataHandler = dataHandler
-        this.parseNetworkData = this.parseNetworkData.bind(this)
-        this.peerJoin = this.peerJoin.bind(this)
-        this.peerLeave = this.peerLeave.bind(this)
-
-        this.globalNetwork = new Network(ipfs, peerID, 'global', this.parseNetworkData, { showStats:true })
-        this.globalNetwork.addPeerJoinCallback(this.peerJoin)
-        this.globalNetwork.addPeerLeftCallback(this.peerLeave)
+        this.networks = {}
     }
 
-    async initialise()
+    joinNetwork(network, onMessage, onPeerJoin, onPeerLeave)
     {
+        if(this.networks[network]) return
+        this.networks[network] = new Network(this.dataHandler.getIPFS(), this.dataHandler.getPeerID(), network, onMessage, onPeerJoin, onPeerLeave, { showStats: true })
     }
 
-    parseNetworkData(data)
+    async leaveNetwork(network)
     {
-        this.dataHandler.parseNetworkData(data)
+        if(!this.networks[network]) return
+        try { 
+            await this.networks[network].leave() 
+            delete this.networks[network]
+            return true
+        } catch (error) {
+            return false
+        }
     }
 
-    peerJoin(peerID)
+    async sendTo(network, protocol, content, peerID)
     {
-        console.log('User ', peerID, ' has logged into conjure!')
-        this.globalNetwork.sendTo(GLOBAL_PROTOCOLS.BROADCAST_REALMS, this.knownRealms, peerID)
+        if(!this.networks[network]) return
+        await this.networks[network].sendTo(protocol, content, peerID)
     }
 
-    peerLeave(peerID)
+    async sendData(network, protocol, content)
     {
-        console.log('User ', peerID, ' has left conjure.')
-    }
-
-    async leave()
-    {
-        await this.globalNetwork.leave()
-    }
-
-    async sendTo(protocol, content, peerID)
-    {
-        await this.globalNetwork.sendTo(protocol, content, peerID)
-    }
-
-    async sendData(protocol, content)
-    {
-        await this.globalNetwork.sendData(protocol, content)
+        if(!this.networks[network]) return
+        await this.networks[network].sendData(protocol, content)
     }
 }
