@@ -49,8 +49,7 @@ export default class ScreenRealms extends ScreenBase
 
     createRealm()
     {
-        this.screenManager.hideAllScreens()
-        this.screenManager.conjure.getWorld().realmManager.createRealm()
+        this.screenManager.showScreen(this.screenManager.screenRealmSettings, { isCreating: true })
     }
 
     // TODO: add realm icons

@@ -1,17 +1,6 @@
 import { THREE, ExtendedGroup } from 'enable3d'
 import Realm from './Realm'
 
-export const REALM_TERRAIN_GENERATORS = {
-    NONE: 'None',
-    INFINITE_TERRAIN: 'Infinite Terrain',
-    PAYID_DEMO: 'PayID Demo',
-}
-
-export const REALM_VISIBILITY = {
-    PUBLIC: 'Public',
-    PRIVATE: 'Private'
-}
-
 export const REALM_PROTOCOLS = {
     HEARTBEAT: 'heartbeat', // {}
     DATABASE: {
@@ -67,7 +56,12 @@ export default class RealmManager
         this.world = world
         this.conjure = this.world.conjure
 
-        this.realms = []
+        this.currentRealm = undefined
+    }
+
+    getCurrentRealm()
+    {
+        return this.currentRealm
     }
 
     async loadRealm()

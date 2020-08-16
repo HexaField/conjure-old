@@ -131,7 +131,7 @@ export default class ScreenManager
         }   
     }
 
-    showScreen(screen)
+    showScreen(screen, args = {})
     {
         if(!screen) return;
         if(typeof screen === 'string')
@@ -146,7 +146,7 @@ export default class ScreenManager
             this.controlsEnabled = false
             this.hideHud();
         }
-        screen.showScreen(true);
+        screen.showScreen(true, args);
         this.openScreens.push(screen);
     }
 

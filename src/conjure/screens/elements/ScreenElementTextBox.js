@@ -33,13 +33,14 @@ export default class ScreenElementTextBox extends ScreenElementBase
         element.style.opacity = 1;
         element.style.background = new THREE.Color(0xffffff); //0x2685ff
         element.textContent = 'text';
-        element.style.fontFamily = 'Verdana'
+        // element.style.fontFamily = 'Verdana'
         element.style.fontSize = '32px'
         element.style.lineHeight = '40px'
         element.style.textAlign = 'center';
         element.style.verticalAlign = 'text-bottom';
+        console.log(element)
 
-        this.cssObj = new HTMLObject(screen.screenManager.conjure.sceneCSS, this.group, element, { width: this.width, height: this.height, scale: 0.1, resolution: this.resolution });
+        this.cssObj = new HTMLObject(screen.screenManager.conjure.sceneCSS, this.group, element, { width: this.width, height: this.height, resolution: this.resolution });
         this.cssObj.objectCSS.element.addEventListener("blur", ()=>{ this.edit(false); }, true);
         this.addHTML(this.cssObj)
         this.edit(false);

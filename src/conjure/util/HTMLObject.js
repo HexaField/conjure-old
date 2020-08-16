@@ -3,15 +3,16 @@ import { CSS3DObject } from 'three/examples/jsm/renderers/CSS3DRenderer.js'
 
 export default class HTMLObject
 {
-    constructor(cssParent, objectParent, element, args = { width: 1, height: 1, scale: 1, resolution: 100, anchorX: 0, anchorY: 0 })
+    constructor(cssParent, objectParent, element, args = {})
     {
-        this.width = args.width
-        this.height = args.height
-        this.scale = args.scale
-        this.resolution = args.resolution;
+        this.width = args.width || 1
+        this.height = args.height || 1
+        this.scale = args.scale || 1
+        this.resolution = args.resolution || 100
         this.inverseRes = 1/this.resolution;
         
         this.objectCSS = new CSS3DObject(element);
+        this.objectCSS.frustumCulled = false
         this.objectCSS.castShadow = false;
         this.objectCSS.receiveShadow = false;
         cssParent.add(this.objectCSS);
@@ -28,7 +29,7 @@ export default class HTMLObject
         this.planeMesh.castShadow = false;
         this.planeMesh.receiveShadow = false;
         this.anchor = new THREE.Group();
-        this.anchor.position.set(args.anchorX, 0, 0);
+        this.anchor.position.set(args.anchorX || 0, 0, 0);
         this.anchor.add(this.planeMesh);
         objectParent.add(this.anchor);
 

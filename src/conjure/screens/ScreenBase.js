@@ -107,7 +107,7 @@ export default class ScreenBase
                 this.elements.splice(i, 1);
     }
 
-    showScreen(active)
+    showScreen(active, args = {})
     {
         this.active = active;
         this.group.visible = active;

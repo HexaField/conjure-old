@@ -1,20 +1,22 @@
-import ScreenBase from './ScreenBase';
+import ScreenBase from './ScreenBase'
 import ScreenElementJSONTree from './elements/ScreenElementJSONTree'
-import { REALM_TERRAIN_GENERATORS } from '../world/realm/RealmManager'
+import { REALM_TERRAIN_GENERATORS, REALM_VISIBILITY } from '../world/realm/RealmInfo'
+import RealmInfo from '../world/realm/RealmInfo'
 
 export default class ScreenRealmSettings extends ScreenBase
 {  
     constructor(screenManager, args)
     {
-        super(screenManager, args);
+        super(screenManager, args)
 
-        this.group.add(this.background);
+        this.group.add(this.background)
 
-        this.updateRealmSettings = this.updateRealmSettings.bind(this)
+        this.updateRealm = this.updateRealm.bind(this)
+        this.updateNewRealm = this.updateNewRealm.bind(this)
+        this.isCreating = false
 
         this.jsonTree = new ScreenElementJSONTree(this, this, { width: this.width, height: this.height, alwaysUpdate: true })
-        this.registerElement(this.jsonTree);
-        this.jsonTree.setSchema(this.getSchema());
+        this.registerElement(this.jsonTree)
     }
 
     getSchema()
@@ -23,23 +25,22 @@ export default class ScreenRealmSettings extends ScreenBase
             type: 'json',
             label: 'name',
             items: {
-                info: {
-                    type: 'json',
-                    label: 'Info',
-                    items: {
-                        id: {
-                            type: 'static',
-                            label: 'ID',
-                        },
-                        name: {
-                            type: 'text',
-                            label: 'Name',
-                        },
-                        iconURL: {
-                            type: 'text',
-                            label: 'Icon',
-                        },
-                    }
+                id: {
+                    type: 'static',
+                    label: 'ID',
+                },
+                name: {
+                    type: 'text',
+                    label: 'Name',
+                },
+                iconURL: {
+                    type: 'text',
+                    label: 'Icon',
+                },
+                visibility: {
+                    type: this.isCreating ? 'list' : 'static',
+                    label: 'Visibility',
+                    items: Object.values(REALM_VISIBILITY)
                 },
                 architectures: {
                     type: 'list',
@@ -61,23 +62,36 @@ export default class ScreenRealmSettings extends ScreenBase
         }
     }
 
-    showScreen(active)
+    showScreen(active, args = {})
     {
-        super.showScreen(active);
+        super.showScreen(active)
+        this.isCreating = Boolean(args.isCreating)
         this.jsonTree.setActive(active)
+        this.jsonTree.setSchema(this.getSchema())
         if(active)
         {
-            this.jsonTree.updateTree(this.screenManager.conjure.getWorld().realm.settings.settings, this.updateRealmSettings);
+            if(this.isCreating)
+            {
+                this.info = new RealmInfo()
+                this.jsonTree.updateTree(this.info.getInfo(), this.updateNewRealm)
+            }
+            else
+                this.jsonTree.updateTree(this.screenManager.conjure.getWorld().realm.settings.settings, this.updateRealm)
         }
     }
 
-    updateRealmSettings()
+    updateNewRealm()
     {
-        this.screenManager.conjure.getWorld().realm.settings.updateSettings();
+        
+    }
+
+    updateRealm()
+    {
+        this.screenManager.conjure.getWorld().realm.settings.updateSettings()
     }
 
     update(updateArgs)
     {
-        super.update(updateArgs);
+        super.update(updateArgs)
     }
 }

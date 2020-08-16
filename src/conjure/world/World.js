@@ -1,6 +1,8 @@
 import { THREE, ExtendedGroup } from 'enable3d'
 import RealmManager from './realm/RealmManager'
 import User from '../user/User'
+import Platform from './Platform'
+
 export default class World
 {  
     constructor(conjure)
@@ -13,6 +15,8 @@ export default class World
 
         this.realmManager = new RealmManager(this)
         this.user = new User(conjure);
+
+        this.platform = new Platform(this.conjure, this.group);
     }
 
     sendData()

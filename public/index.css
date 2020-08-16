@@ -2,6 +2,6 @@ body {
 	font-family: Monospace;
 	overscroll-behavior: none;
     width:100%;
-    display: flex;
+    display: block;
     margin: 0;
 }
