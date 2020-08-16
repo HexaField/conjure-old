@@ -3,7 +3,7 @@ import WebSocketServer, { WEB_SOCKET_PROTOCOL } from './WebSocketServer'
 import IPFS from './IPFS'
 import FileStorageBrowser from './FileStorageBrowser'
 import FileStorageNode from './FileStorageNode'
-import FileStorageDHT from './FileStorageDHT'
+import FileStorageLibp2p from './FileStorageLibp2p'
 import NetworkManager from './NetworkManager'
 import RealmManager from './RealmManager'
 import ProfileManager from './ProfileManager'
@@ -59,6 +59,21 @@ export default class DataHandler
         this.webSocket = new WebSocketServer(this)
     }
 
+    async waitForIPFSPeers(minPeersCount)
+    {
+        console.log('Trying to connect to the network...')
+        return await new Promise((resolve, reject) => {
+            const interval = setInterval(() => {
+                console.log('Found', this.ipfsInfo.peersCount, 'peers')
+                if(this.ipfsInfo.peersCount >= minPeersCount) 
+                {
+                    resolve(true)
+                    clearInterval(interval);
+                }
+            }, 1000)
+        })
+    }
+
     // Load all the data things
     async loadDataHandler()
     {
@@ -68,10 +83,13 @@ export default class DataHandler
         this.ipfsInfo = {}
         this.ipfsInfo.peersCount = 0;
         this.showStats();
+
+        const minPeersCount = global.isBrowser ? 3 : 1 // refactor this into a config eventually
+        await this.waitForIPFSPeers(minPeersCount)
      
-        this.files = global.isBrowser ? new FileStorageBrowser() : new FileStorageNode()
-        // this.files = new FileStorageDHT() // untested & not fully implemented
-        await this.files.initialise()
+        this.localStorage = global.isBrowser ? new FileStorageBrowser() : new FileStorageNode()
+        await this.localStorage.initialise()
+        // this.files = new FileStorageLibp2p(this.ipfs.libp2p)
         
         this.networkManager = new NetworkManager(this)
 
@@ -111,7 +129,7 @@ export default class DataHandler
         this.webSocket.sendData(data)
     }
 
-    getFiles() { return this.files }
+    getFiles() { return this.localStorage }
 
     getGlobalNetwork() { return this.globalNetwork }
 

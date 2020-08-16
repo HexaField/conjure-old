@@ -1,12 +1,11 @@
 
 // import BaseStorage from '@forlagshuset/simple-fs/src/storages/base'
 
-export default class DHT {
-  constructor (storageName = 'default', dht) {
-    // super(storageName)
+export default class simple_fs_libp2p {
+  constructor (storageName = 'default', libp2p) {
 
-    this.dht = dht
-    this.name = 'indexeddb'
+    this.contentRouting = libp2p.contentRouting
+    this.name = storageName
   }
 
   create (path, node, parentId) {
@@ -14,11 +13,11 @@ export default class DHT {
   }
 
   async remove (path) {
-    return this.dht.put(path, {})
+    return this.contentRouting.put(path, {})
   }
 
   put (path, node, parentId) {
-    return this.dht.put(path, { path: path, node: node, parentId: parentId })
+    return this.contentRouting.put(path, { path: path, node: node, parentId: parentId })
   }
 
   transaction (mode, cb) {
@@ -26,7 +25,7 @@ export default class DHT {
   }
 
   get (path) {
-    return this.dht.get(path)
+    return this.contentRouting.get(path)
   }
 
   getBy (key, value) {

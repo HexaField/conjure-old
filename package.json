@@ -39,7 +39,7 @@
     "discord-oauth2": "^2.3.0",
     "enable3d": "^0.19.1",
     "fs": "^0.0.1-security",
-    "ipfs": "^0.48.1",
+    "ipfs": "^0.49.0",
     "ipfs-pubsub-room": "^2.0.1",
     "lodash": "^4.17.19",
     "three": "^0.119.1",
