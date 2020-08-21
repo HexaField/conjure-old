@@ -12,7 +12,7 @@ export default class Network
         this.roomStats.peers = []
         this.roomStats.peersCount = 0
 
-        console.log('Joining p2p networking for topic', this.topic, 'with peer ID', this.myPeerID.id)
+        console.log('Joining p2p networking for topic', this.topic, 'with peer ID', this.myPeerID)
 
         this.room.on('subscribed', () => {
             console.log('Now connected!')
@@ -52,7 +52,7 @@ export default class Network
             if(data.intendedRecipient !== undefined && data.intendedRecipient !== this.myPeerID) 
                 return
             
-            onMessage(data, message.from);
+            onMessage({ data: data, from: message.from });
         })
 
         if(params.showStats)

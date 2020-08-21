@@ -131,6 +131,7 @@ export default class World
 
     receiveDataFromPeer(data, peerID)
     {
+        console.log(data, peerID)
         /// send through a list of objects that are your copy
         // if(data.protocol !== REALM_PROTOCOLS.USER.MOVE) console.log('parsing data from user', data)
         switch(data.protocol) {

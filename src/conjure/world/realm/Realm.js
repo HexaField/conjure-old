@@ -57,11 +57,14 @@ export default class Realm
 
         this.realmData = realmData
         this.realmID = realmData.getID()
+        this.receiveDataFromPeer = this.receiveDataFromPeer.bind(this)
+        this.onPeerJoin = this.onPeerJoin.bind(this)
+        this.onPeerLeave = this.onPeerLeave.bind(this)
     }
 
     async connect()
     {
-        this.conjure.getDataHandler().joinNetwork(this.realmID, this.receiveDataFromPeer, this.onPeerJoin, this.onPeerLeave)
+        this.conjure.getDataHandler().joinNetwork({ network: this.realmID, onMessage: this.receiveDataFromPeer, onPeerJoin: this.onPeerJoin, onPeerLeave: this.onPeerLeave })
         this.terrain = new Terrain(this.conjure, this.world.group, this.realmData.getTerrainSettings())
         // global.CONSOLE.addWatchItem('Users in ' + this.realmFolder, this.network.roomStats, 'peersCount')
     }
@@ -80,13 +83,13 @@ export default class Realm
 
     // networking
 
-    receiveDataFromPeer(data)
+    receiveDataFromPeer(message)
     {
-        this.world.receiveDataFromPeer(data.data, data.from)
+        this.world.receiveDataFromPeer(message.data, message.from)
     }
 
     
-    peerJoin(peerID)
+    onPeerJoin(peerID)
     {
         if(this.loaded)
         {
@@ -98,7 +101,7 @@ export default class Realm
         }
     }
 
-    peerLeft(peerID)
+    onPeerLeave(peerID)
     {
         console.log('User ', peerID, ' has disconnected from the realm')
         this.world.onUserLeave(peerID)

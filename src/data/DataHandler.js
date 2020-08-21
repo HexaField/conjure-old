@@ -78,8 +78,9 @@ export default class DataHandler
     async loadDataHandler()
     {
         this.ipfs = await IPFS.loadIPFS()
-        this.peerID = await this.ipfs.id()
-        console.log('IPFS ' + (await this.ipfs.version()).version + ' node ready with id ' + this.peerID.id)
+        this._peerID = await this.ipfs.id()
+        this.peerIDstring = this._peerID.id
+        console.log('IPFS ' + (await this.ipfs.version()).version + ' node ready with id ' + this.peerIDstring)
         this.ipfsInfo = {}
         this.ipfsInfo.peersCount = 0;
         this.showStats();
@@ -141,7 +142,7 @@ export default class DataHandler
 
     getIPFS() { return this.ipfs }
 
-    getPeerID() { return this.peerID }
+    getPeerID() { return this.peerIDstring }
 
     // creates a promise and waits for 
     async awaitNodeResponse(protocol, data)
@@ -226,7 +227,7 @@ export default class DataHandler
                 onPeerJoin: data.onPeerJoin,
                 onPeerLeave: data.onPeerLeave,
             }
-            return await this.awaitNodeResponse('joinNetwork', data.network)
+            return await this.awaitNodeResponse('joinNetwork', { network: data.network })
         }
         else
             return await this.getNetworkManager().joinNetwork(data.network, data.onMessage, data.onPeerJoin, data.onPeerLeave)

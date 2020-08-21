@@ -43,7 +43,6 @@ export default class WebSocketClient
     onData(event)
     {
         let data = JSON.parse(event.data)
-
         try{
 
             if(data.requestTimestamp) // if this is a valid request
