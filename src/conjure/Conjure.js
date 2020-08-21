@@ -166,15 +166,13 @@ export class Conjure extends Scene3D
 
         this.resizeCanvas() // trigger this to set up screen anchors
         this.screenManager.hudGlobal.showScreen(true)
-        // this.getGlobalHUD().addWatchItem('Connected Peers', this.getDataHandler().ipfsInfo, 'peersCount')
-        // this.getGlobalHUD().addWatchItem('Online Users', this.getGlobalNetwork().roomStats, 'peersCount')
 
         this.loadingScreen.setText('Loading World...')
         // Now load stuff in
         this.setConjureMode(CONJURE_MODE.LOADING)
         await this.profile.loadFromDatabase()
         await this.profile.getServiceManager().initialiseServices()
-        // await this.world.loadWorld() // loads local realm
+        await this.world.joinRealmByID(this.profile.getLastJoinedRealm())
         this.setConjureMode(CONJURE_MODE.EXPLORE)
 
         // this.loadInfo = document.getElementById( 'loadInfo' )
@@ -262,8 +260,12 @@ export class Conjure extends Scene3D
         }
         
         this.getScreens().update(args)
-        this.getWorld().update(args)
-        this.getControls().update(args)
+
+        if(this.conjureMode !== CONJURE_MODE.LOADING)
+        {
+            this.getWorld().update(args)
+            this.getControls().update(args)
+        }
 
         this.cameraScreenAttach.position.copy(this.cameraFollow.getWorldPosition(this.vec3))
         this.cameraScreenAttach.quaternion.copy(this.cameraFollow.getWorldQuaternion(this.quat))

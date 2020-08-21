@@ -44,17 +44,24 @@ export default class WebSocketClient
     {
         let data = JSON.parse(event.data)
 
-        if(data.requestTimestamp) // if this is a valid request
-        {
-            // call the callback function
-            this.dataCallbacks[data.requestTimestamp](data)
+        try{
 
-            // remove it from our list
-            delete this.dataCallbacks[data.requestTimestamp]
+            if(data.requestTimestamp) // if this is a valid request
+            {
+                // call the callback function
+                this.dataCallbacks[data.requestTimestamp](data)
+                
+                // remove it from our list
+                delete this.dataCallbacks[data.requestTimestamp]
+            }
+            else // this might be a one way event from
+            {
+                this.dataCallback(data)
+            }
         }
-        else // this might be a one way event from
+        catch(error)
         {
-            this.dataCallback(data)
+            console.log(error, event)
         }
     }
     

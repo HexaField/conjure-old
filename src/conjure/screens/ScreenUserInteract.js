@@ -1,5 +1,5 @@
 import ScreenBase from './ScreenBase';
-import { REALM_PROTOCOLS } from '../world/realm/Realms';
+import { REALM_PROTOCOLS } from '../world/realm/Realm';
 import ScreenElementButton from './elements/ScreenElementButton';
 
 export default class ScreenUserInteract extends ScreenBase

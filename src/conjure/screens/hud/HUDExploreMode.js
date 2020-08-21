@@ -1,7 +1,7 @@
 import ScreenBase from '../ScreenBase';
 import HUDInteract, { INTERACT_TYPES } from './HUDInteract'
 import { THREE } from 'enable3d'
-import { REALM_PROTOCOLS } from '../../world/realm/Realms';
+import { REALM_PROTOCOLS } from '../../world/realm/Realm';
 
 export default class HUDExploreMode extends ScreenBase
 {  

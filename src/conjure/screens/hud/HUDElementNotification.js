@@ -12,9 +12,8 @@ export default class HUDElementNotification
         this.group = new THREE.Group()
         this.screen.group.add(this.group)
 
-        this.textElement = new ScreenElementText(screen, this, { y: 0.75, width: 0.5, height: 0.2, autoUpdateSize:true })
+        this.textElement = new ScreenElementText(screen, this, { text: 'empty notification', y: 0.75, width: 0.5, height: 0.2, autoUpdateSize:true })
         this.textElement.setHidden(true)
-        this.screen.registerElement(this.textElement)
 
         this.timer = 0
         this.hasNotification = false
@@ -23,6 +22,7 @@ export default class HUDElementNotification
 
     showNotification(message, duration = 3) // 3 seconds
     {
+        console.log(message, duration)
         this.textElement.setText(message)
         this.textElement.setHidden(false)
         this.hasNotification = true

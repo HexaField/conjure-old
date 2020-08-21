@@ -1,9 +1,9 @@
-import ScreenBase from './ScreenBase';
-import ScreenElementButton from './elements/ScreenElementButton';
-import ScreenElementLabelled from './elements/ScreenElementLabelled';
-import ScreenElementTextBox from './elements/ScreenElementTextBox';
-import ScreenElementScroll from './elements/ScreenElementScroll';
-import { number } from '../util/number'
+import ScreenBase from './ScreenBase'
+import ScreenElementButton from './elements/ScreenElementButton'
+import ScreenElementLabelled from './elements/ScreenElementLabelled'
+import ScreenElementTextBox from './elements/ScreenElementTextBox'
+import ScreenElementScroll from './elements/ScreenElementScroll'
+import RealmData from '../world/realm/RealmData'
 
 export default class ScreenRealms extends ScreenBase
 {  
@@ -79,10 +79,9 @@ export default class ScreenRealms extends ScreenBase
     async joinRealm(id)
     {
         let realmData = await this.screenManager.conjure.getDataHandler().getRealm(id || this.discordIdTextbox.getValue())
-        console.log(realmData)
         if(realmData)
         {
-            this.screenManager.conjure.getWorld().loadRealm(realmData) // for joining a private realm
+            this.screenManager.conjure.getWorld().joinRealm(new RealmData(realmData)) // for joining a private realm
             this.screenManager.hideAllScreens()
         }
         else

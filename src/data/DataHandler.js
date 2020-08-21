@@ -39,12 +39,12 @@ export default class DataHandler
             if(error)
             {
                 console.log('Data Module: Could not find local node', error)
-                this.networkCallbacks = {}
                 await this.loadDataHandler()
             }
             else
             {
                 console.log('Data Module: Successfully connected to local node!')
+                this.networkCallbacks = {}
                 this.runningNode = true
             }
             runAppCallback()
@@ -84,7 +84,7 @@ export default class DataHandler
         this.ipfsInfo.peersCount = 0;
         this.showStats();
 
-        const minPeersCount = global.isBrowser ? 3 : 1 // refactor this into a config eventually
+        const minPeersCount = global.isBrowser ? 3 : 0 // refactor this into a config eventually
         await this.waitForIPFSPeers(minPeersCount)
      
         this.localStorage = global.isBrowser ? new FileStorageBrowser() : new FileStorageNode()

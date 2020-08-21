@@ -1,4 +1,4 @@
-import { REALM_PROTOCOLS } from "../world/realm/Realms"
+import { REALM_PROTOCOLS } from "../world/realm/Realm"
 import ServiceManager from './services/ServiceManager'
 
 export default class Profile
@@ -11,35 +11,25 @@ export default class Profile
 
         // data
         this.profileData = {
-            //username: 'New User ' + Math.round(Math.random() * 10000)
         }
      
         this.serviceManager = new ServiceManager(conjure)
     }
 
-    getServiceManager()
-    {
-        return this.serviceManager
-    }
-
-    getProfile()
-    {
-        return this.profileData
-    }
-
-    getID()
-    {
-        return this.profileData.id
-    }
-
-    getUsername()
-    {
-        return this.profileData.username
-    }
-
+    getServiceManager() { return this.serviceManager }
+    getProfile() { return this.profileData }
+    getID() { return this.profileData.id }
+    getUsername() { return this.profileData.username }
+    getLastJoinedRealm() { return this.profileData.lastJoinedRealm }
+    
     setUsername(newName)
     {
         this.profileData.username = newName
+    }
+
+    setLastJoinedRealm(id)
+    {
+        this.profileData.lastJoinedRealm = id
     }
 
     createProfile()
@@ -75,10 +65,10 @@ export default class Profile
             this.getServiceManager().setServicesFromDatabase(data.data.services)
     }
 
-    requestFromPeer(id)
-    {
-        this.conjure.getWorld().sendData(REALM_PROTOCOLS.PROFILE.REQUEST, id)
-    }
+    // requestFromPeer(id)
+    // {
+    //     this.conjure.getWorld().sendData(REALM_PROTOCOLS.PROFILE.REQUEST, id)
+    // }
 
     async loadFromDatabase()
     {
@@ -96,7 +86,7 @@ export default class Profile
 
     saveProfile()
     {
-        this.conjure.getDataHandler().saveProfile({ profile:this.profileData, services:this.getServiceManager().getServiceAsJson() })
+        this.conjure.getDataHandler().saveProfile({ profile: this.profileData, services: this.getServiceManager().getServiceAsJson() })
         this.conjure.getWorld().sendData(REALM_PROTOCOLS.USER.UPDATE, { username: this.getUsername() })
     }
 

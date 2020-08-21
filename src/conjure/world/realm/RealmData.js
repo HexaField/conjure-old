@@ -12,43 +12,53 @@ export const REALM_VISIBILITY = {
 
 export default class RealmData
 {  
-    constructor(info)
+    constructor(data)
     {
-        this.setInfo(info)
+        this.setData(data)
     }
 
-    setInfo(params = {})
+    setData(params = {})
     {
         const now = Date.now()
-        this.info = {
+        this.data = {
             id: params.id || now, // requiring a realm to be made adds extra security - network layer should only ever deal with data, not realms directly
             name: params.name || this.getName() || 'New Realm',
             timestamp: now,
             iconURL: params.iconURL || this.getIconURL(),
             visibility: REALM_VISIBILITY.PUBLIC,
             architectures: params.architectures || [],
-            worldSettings: params.worldSettings || {
+            terrainSettings: params.terrainSettings || {
                 terrainGeneratorType: REALM_TERRAIN_GENERATORS.INFINITE_TERRAIN 
             },
         }
     }
 
-    getInfo()
+    getTerrainSettings()
     {
-        return this.info
+        return this.data.terrainSettings
+    }
+
+    getData()
+    {
+        return this.data
+    }
+
+    getID()
+    {
+        return this.data.id
     }
 
     getName()
     {
-        if(this.info)
-            return this.info.name
+        if(this.data)
+            return this.data.name
         return ''
     }
 
     getIconURL()
     {
-        if(this.info)
-            return this.info.iconURL
+        if(this.data)
+            return this.data.iconURL
         return ''
     }
 }

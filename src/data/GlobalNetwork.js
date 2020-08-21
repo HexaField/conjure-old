@@ -1,5 +1,6 @@
 export const GLOBAL_PROTOCOLS = {
     BROADCAST_REALMS: 'broadcast_realms',
+    BROADCAST_INFO: 'broadcast_info'
 }
 
 export default class GlobalNetwork
@@ -16,6 +17,9 @@ export default class GlobalNetwork
         this.onPeerLeave = this.onPeerLeave.bind(this)
 
         this.dataHandler.networkManager.joinNetwork(this.networkID, this.parseReceiveData, this.onPeerJoin, this.onPeerLeave)
+        this.setProtocolCallback(GLOBAL_PROTOCOLS.BROADCAST_INFO, (data, id) => 
+            console.log(id, ' has connected via ' + data.env + ' on version ' + data.version)
+        )
     }
 
     // add callback for a certain protocol
@@ -33,13 +37,16 @@ export default class GlobalNetwork
     parseReceiveData(data)
     {
         if(this.protocolCallbacks[data.protocol] !== undefined)
-            this.protocolCallbacks[data.protocol](data, message.from);
+            this.protocolCallbacks[data.protocol](data);
     }
 
     onPeerJoin(peerID)
     {
-        console.log('User ', peerID, ' has logged into conjure!')
         this.sendTo(GLOBAL_PROTOCOLS.BROADCAST_REALMS, this.knownRealms, peerID)
+        this.sendTo(GLOBAL_PROTOCOLS.BROADCAST_INFO, {
+                env: global.isBrowser ? 'Browser' : 'Node',
+                version: global.conjureVersion
+            }, peerID)
     }
 
     onPeerLeave(peerID)

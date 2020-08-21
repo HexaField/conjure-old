@@ -88,7 +88,7 @@ export default class ScreenRealmSettings extends ScreenBase
                 this.createButton.setHidden(false)
                 this.cancelButton.setHidden(false)
                 this.info = new RealmData()
-                this.jsonTree.updateTree(this.info.getInfo())
+                this.jsonTree.updateTree(this.info.getData())
             }
             else
             {
@@ -101,14 +101,14 @@ export default class ScreenRealmSettings extends ScreenBase
 
     async createRealm()
     {
-        await this.screenManager.conjure.getDataHandler().createRealm(this.info.getInfo())
+        await this.screenManager.conjure.getDataHandler().createRealm(this.info.getData())
         console.log('Successfully made realm!')
         this.screenManager.showScreen(this.screenManager.screenRealms)
     }
 
     updateRealm()
     {
-        this.screenManager.conjure.getDataHandler().updateRealm(this.info.getInfo())
+        this.screenManager.conjure.getDataHandler().updateRealm(this.info.getData())
     }
 
     update(updateArgs)

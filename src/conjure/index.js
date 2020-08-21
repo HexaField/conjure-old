@@ -2,6 +2,7 @@ import DataHandler from '../data/DataHandler'
 
 global.isBrowser = true
 global.isDevelopment = process.env.NODE_ENV === 'development'
+global.conjureVersion = '0.0.0'
 
 async function start()
 {

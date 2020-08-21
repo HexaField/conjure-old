@@ -14,7 +14,7 @@ export default class ProfileManager
     async loadProfile()
     {
         try {
-            return JSON.parse(await this.dataHandler.getFiles().readFile('profile'))
+            return JSON.parse(await this.dataHandler.getFiles().readFile('profile.json'))
         }
         catch (error) {
             console.log('ProfileManager: could not load profile with error', error);
@@ -27,7 +27,7 @@ export default class ProfileManager
     {
         try {
             let newObject = { timestamp:String(Date.now()), data: data }
-            await this.dataHandler.getFiles().writeFile('profile', JSON.stringify(newObject))
+            await this.dataHandler.getFiles().writeFile('profile.json', JSON.stringify(newObject))
             console.log('ProfileManager: Successfully saved profile');
             // this.conjure.getGlobalHUD().log('Successfully saved profile')
             return true

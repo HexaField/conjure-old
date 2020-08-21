@@ -15,6 +15,7 @@ export default class RealmManager
     async initialise()
     {
         this.addRealms(await this.loadRealms())
+        console.log('Found', this.knownRealms.length, 'realms stored locally.')
     }
 
     receiveRealms(realms)

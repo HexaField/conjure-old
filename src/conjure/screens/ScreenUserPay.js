@@ -2,7 +2,7 @@ import ScreenBase from './ScreenBase';
 import ScreenElementText from './elements/ScreenElementText'
 import ScreenElementTextBox from './elements/ScreenElementTextBox'
 import ScreenElementButton from './elements/ScreenElementButton'
-import { REALM_PROTOCOLS } from '../world/realm/Realms';
+import { REALM_PROTOCOLS } from '../world/realm/Realm';
 import ScreenElementLabelled from './elements/ScreenElementLabelled';
 
 export default class ScreenUserPay extends ScreenBase
