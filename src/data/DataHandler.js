@@ -121,8 +121,7 @@ export default class DataHandler
     // { protocol, requestTimestamp, data }
     addDataListener(requestTimestamp, callback)
     {
-        if(this.webSocket)
-            this.webSocket.addDataListener(requestTimestamp, callback)
+        this.webSocket.addDataListener(requestTimestamp, callback)
     }
 
     sendWebsocketData(data)
@@ -151,7 +150,7 @@ export default class DataHandler
         return await new Promise((resolve, reject) => {
 
             // create timestamp that acts as an identifier for the request
-            const requestTimestamp = Date.now()
+            const requestTimestamp = Date.now() + '-' + Math.round(Math.random() * 1000)
             
             // create callback to listen for node server responses
             this.addDataListener(requestTimestamp, (_returnedData) => { 

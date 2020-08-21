@@ -1,5 +1,3 @@
-import { WEBSOCKET_PROTOCOLS } from "./DataHandler"
-
 export default class WebSocketClient
 {
     constructor(connectCallback, dataCallback)
@@ -60,7 +58,7 @@ export default class WebSocketClient
         }
         catch(error)
         {
-            console.log(error, event)
+            console.log(error, event, this.dataCallbacks)
         }
     }
     

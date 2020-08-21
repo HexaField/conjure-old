@@ -66,7 +66,7 @@ export default class Realm
     {
         await this.conjure.getDataHandler().joinNetwork({ network: this.realmID, onMessage: this.receiveDataFromPeer, onPeerJoin: this.onPeerJoin, onPeerLeave: this.onPeerLeave })
         this.terrain = new Terrain(this.conjure, this.world.group, this.realmData.getTerrainSettings())
-        this.sendData(REALM_PROTOCOLS.USER.JOIN, this.conjure.getProfile().getUsername() || '')
+        this.sendData(REALM_PROTOCOLS.USER.JOIN, this.conjure.getProfile().getUsername())
     }
 
     async leave()

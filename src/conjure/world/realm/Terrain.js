@@ -32,8 +32,8 @@ export default class Terrain
             {
                 vertices.push(
                     x * this.grid_scale, 
-                    data[index] * 0.1, 
-                    // 0,
+                    // data[index] * 0.1, 
+                    0,
                     y * this.grid_scale
                 )
                 if(x < width - 1 && y < height - 1)

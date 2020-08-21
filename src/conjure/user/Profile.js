@@ -10,10 +10,18 @@ export default class Profile
         this.lastUpdated = 0
 
         // data
-        this.profileData = {
-        }
+        this.profileData = {}
+        this.makeDefaultProfile()
      
         this.serviceManager = new ServiceManager(conjure)
+    }
+
+    makeDefaultProfile()
+    {
+        this.profileData = {
+            id: Date.now(),
+            username: 'New User ' + Math.round(Math.random() * 10000)
+        }
     }
 
     getServiceManager() { return this.serviceManager }
@@ -35,8 +43,6 @@ export default class Profile
     createProfile()
     {
         if(this.isLoaded) return
-        this.profileData.id = Date.now()
-        this.profileData.username = 'New User ' + Math.round(Math.random() * 10000)
         this.saveProfile()
         this.sendToPeers()
         this.setProfileLoaded(true)
@@ -45,7 +51,7 @@ export default class Profile
     removeProfile()
     {
         if(!this.isLoaded) return
-        this.profileData = {}
+        this.makeDefaultProfile()
         this.setProfileLoaded(false)
     }
 

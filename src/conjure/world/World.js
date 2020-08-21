@@ -186,7 +186,7 @@ export default class World
         else
         {
             this.sendTo(REALM_PROTOCOLS.USER.JOIN, {
-                username: this.conjure.getProfile().getUsername() || ''
+                username: this.conjure.getProfile().getUsername()
             }, peerID)
         }
         this.users.push(new UserRemote(this.conjure, data.username, peerID))
