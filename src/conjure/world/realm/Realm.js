@@ -64,9 +64,18 @@ export default class Realm
 
     async connect()
     {
-        this.conjure.getDataHandler().joinNetwork({ network: this.realmID, onMessage: this.receiveDataFromPeer, onPeerJoin: this.onPeerJoin, onPeerLeave: this.onPeerLeave })
+        await this.conjure.getDataHandler().joinNetwork({ network: this.realmID, onMessage: this.receiveDataFromPeer, onPeerJoin: this.onPeerJoin, onPeerLeave: this.onPeerLeave })
         this.terrain = new Terrain(this.conjure, this.world.group, this.realmData.getTerrainSettings())
-        // global.CONSOLE.addWatchItem('Users in ' + this.realmFolder, this.network.roomStats, 'peersCount')
+    }
+
+    async leave()
+    {
+        await this.conjure.getDataHandler().leaveNetwork({ network: this.realmID })
+        if(this.terrain)
+        {
+            this.terrain.destroy()
+        }
+        console.log('successfully left realm')
     }
     
     
@@ -83,10 +92,10 @@ export default class Realm
 
     // networking
 
-    receiveDataFromPeer(message)
+    receiveDataFromPeer(data, from)
     {
-        console.log('Realm: receiveDataFromPeer', message)
-        this.world.receiveDataFromPeer(message.data, message.from)
+        console.log('Realm: receiveDataFromPeer', data, from)
+        this.world.receiveDataFromPeer(data, from)
     }
 
     

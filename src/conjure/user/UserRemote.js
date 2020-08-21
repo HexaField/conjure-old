@@ -1,19 +1,19 @@
 import User from './User';
-import easyText2D from '../util/easyGeometry/easyText2D';
+import TextRenderer3D from '../screens/text/TextRenderer3D';
 import { THREE } from 'enable3d'
 
 export default class UserRemote extends User
 {
-    constructor(conjure, scene, camera, username, peerID)
+    constructor(conjure, username, peerID)
     {
-        super(conjure, scene, camera, true);
+        super(conjure, true);
         this.isRemote = true;
         this.username = username;
         this.peerID = peerID;
         this.remoteEntity = true;
         this.group.name = username;
 
-        this.nameplate = new easyText2D(this.group, username);
+        this.nameplate = new TextRenderer3D(conjure, this.group, { text: username });
         this.nameplate.group.position.setY(2);
         this.timeoutLimit = 60 * 60; // if don't receive a heartbeat for 60 seconds, die
         this.timeoutCount = 0;

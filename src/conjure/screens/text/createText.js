@@ -2,7 +2,7 @@ import { THREE } from 'enable3d'
 
 export default function(font, args = {})
 {
-    var shapes = font.generateShapes(args.string || '-empty string-', 0.05);
+    var shapes = font.generateShapes(args.string || '', 0.05);
     var geometry = new THREE.ShapeBufferGeometry(shapes);
 
     geometry.computeBoundingBox();

@@ -15,6 +15,8 @@ export default class HUDGlobal extends ScreenBase
         this.watcher = new HUDElementWatcher(this)
         this.console = new HUDElementConsole(this)
         this.notification = new HUDElementNotification(this)
+
+        global.CONSOLE = this
     }
 
     addWatchItem(label, reference, key)

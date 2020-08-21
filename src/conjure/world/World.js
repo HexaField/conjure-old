@@ -1,6 +1,7 @@
 import { THREE, ExtendedGroup } from 'enable3d'
 import Realm, { REALM_PROTOCOLS } from './realm/Realm'
 import User from '../user/User'
+import UserRemote from '../user/UserRemote'
 import Platform from './Platform'
 import { CONJURE_MODE } from '../Conjure';
 import { INTERACT_TYPES } from '../screens/hud/HUDInteract';
@@ -33,10 +34,21 @@ export default class World
 
     async joinRealm(realmData)
     {
-        if(this.platform) this.platform.destroy()
+        if(this.platform) 
+        {
+            this.platform.destroy()
+            this.platform = undefined
+        }
+        if(this.realm)
+        {
+            await this.realm.leave()
+        }
         this.realm = new Realm(this, realmData)
         this.conjure.getProfile().setLastJoinedRealm(realmData.getID())
-        this.realm.connect()
+        await this.realm.connect()
+        this.realm.sendData(REALM_PROTOCOLS.USER.JOIN, {
+            username: this.conjure.getProfile().getUsername()
+        })
 
         console.log('Joining realm', realmData)
     }
@@ -119,12 +131,11 @@ export default class World
                     angularVelocity:this.user.group.body.angularVelocity
                 }
             }
-            if(this.lastUserUpdate !== payload)
-            {
+            // if(this.lastUserUpdate !== payload)
+            // {
                 this.lastUserUpdate = payload;
-                if(this.realm && this.realm.network) 
-                   this.sendData(REALM_PROTOCOLS.USER.MOVE, payload);
-            }
+                this.sendData(REALM_PROTOCOLS.USER.MOVE, payload);
+            // }
         }
     }
 
@@ -141,11 +152,11 @@ export default class World
             case REALM_PROTOCOLS.USER.MOVE: this.onUserMove(data.content, peerID); break;
             case REALM_PROTOCOLS.USER.LEAVE: this.onUserLeave(peerID); break;
             case REALM_PROTOCOLS.USER.ANIMATION: this.onUserAnimation(data.content, peerID); break;
-            case REALM_PROTOCOLS.OBJECT.CREATE: this.onObjectCreate(data.content, peerID); break;
-            case REALM_PROTOCOLS.OBJECT.UPDATE: this.onObjectUpdate(data.content, peerID); break;
-            case REALM_PROTOCOLS.OBJECT.GROUP: this.onObjectGroup(data.content, peerID); break;
-            case REALM_PROTOCOLS.OBJECT.MOVE: this.onObjectMove(data.content, peerID); break;
-            case REALM_PROTOCOLS.OBJECT.DESTROY: this.onObjectDestroy(data.content, peerID); break;
+            // case REALM_PROTOCOLS.OBJECT.CREATE: this.onObjectCreate(data.content, peerID); break;
+            // case REALM_PROTOCOLS.OBJECT.UPDATE: this.onObjectUpdate(data.content, peerID); break;
+            // case REALM_PROTOCOLS.OBJECT.GROUP: this.onObjectGroup(data.content, peerID); break;
+            // case REALM_PROTOCOLS.OBJECT.MOVE: this.onObjectMove(data.content, peerID); break;
+            // case REALM_PROTOCOLS.OBJECT.DESTROY: this.onObjectDestroy(data.content, peerID); break;
             default: break;
         }
     }
@@ -177,10 +188,10 @@ export default class World
         else
         {
             this.realm.sendTo(REALM_PROTOCOLS.USER.JOIN, {
-                username: this.conjure.localProfile.getUsername()
+                username: this.conjure.getProfile().getUsername() || ''
             }, peerID)
         }
-        this.users.push(new UserRemote(this.conjure, this.conjure.scene, this.conjure.camera, data.username, peerID))
+        this.users.push(new UserRemote(this.conjure, data.username, peerID))
         global.CONSOLE.log('User ', data.username, ' has joined')
     }
     

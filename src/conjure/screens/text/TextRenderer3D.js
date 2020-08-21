@@ -16,7 +16,7 @@ export default class TextRenderer3D
         this.renderSide = params.renderSide || THREE.DoubleSide
         this.color = params.color || 0xffffff
         
-        this.string = String(params.string || params.text || 'string')
+        this.string = String(params.string || params.text || '')
 
         this.group = new THREE.Group()
         this.font = conjure.getFonts().getFont(params.font || 'Helvetiker')
