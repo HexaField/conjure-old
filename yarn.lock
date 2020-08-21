@@ -9870,10 +9870,10 @@ terser@^4.1.2, terser@^4.6.3:
     source-map "~0.6.1"
     source-map-support "~0.5.12"
 
-three-typeable-text@^0.1.2:
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/three-typeable-text/-/three-typeable-text-0.1.2.tgz#b5ad98cf76705b987b097699b77a5533be55e15c"
-  integrity sha512-Wigz+74e1uCXCQW0nthNpTk/1VCAAXzUi8U7OX/awrhjdim2AhsLgajM8gwOEiMhpWxJhorzUgXTQjYI/xDj0w==
+three-typeable-text@^0.1.3:
+  version "0.1.3"
+  resolved "https://registry.yarnpkg.com/three-typeable-text/-/three-typeable-text-0.1.3.tgz#fa84735fd6101d9a7df74d00abab22613169fac1"
+  integrity sha512-l5VPqBi5dgRWaU2v5zp/dL348GyE5zuX7JjaXLZqtYma+RUeR9RqwZLwN6f99XPVos3jJQQGIlXs3kHY61Rt0w==
 
 three@^0.119.1:
   version "0.119.1"

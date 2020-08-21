@@ -17,8 +17,11 @@ export default class GlobalNetwork
         this.onPeerLeave = this.onPeerLeave.bind(this)
 
         this.dataHandler.networkManager.joinNetwork(this.networkID, this.parseReceiveData, this.onPeerJoin, this.onPeerLeave)
-        this.setProtocolCallback(GLOBAL_PROTOCOLS.BROADCAST_INFO, (data, id) => 
-            console.log(id, ' has connected via ' + data.env + ' on version ' + data.version)
+        this.setProtocolCallback(GLOBAL_PROTOCOLS.BROADCAST_INFO, (data) => 
+        {
+            console.log(data)
+            console.log(data.peerID, ' has connected via ' + data.data.env + ' on version ' + data.data.version)
+        }
         )
     }
 
@@ -42,7 +45,7 @@ export default class GlobalNetwork
 
     onPeerJoin(peerID)
     {
-        this.sendTo(GLOBAL_PROTOCOLS.BROADCAST_REALMS, this.knownRealms, peerID)
+        this.sendTo(GLOBAL_PROTOCOLS.BROADCAST_REALMS, this.dataHandler.getRealmManager().knownRealms, peerID)
         this.sendTo(GLOBAL_PROTOCOLS.BROADCAST_INFO, {
                 env: global.isBrowser ? 'Browser' : 'Node',
                 version: global.conjureVersion
@@ -66,6 +69,6 @@ export default class GlobalNetwork
 
     async sendData(protocol, content)
     {
-        await this.dataHandler.networkManager.sendData(protocol, content)
+        await this.dataHandler.networkManager.sendData(this.networkID, protocol, content)
     }
 }
