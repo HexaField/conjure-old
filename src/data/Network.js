@@ -52,7 +52,7 @@ export default class Network
             if(data.intendedRecipient !== undefined && data.intendedRecipient !== this.myPeerID) 
                 return
             
-            onMessage({ data: data, from: message.from });
+            onMessage(data, message.from);
         })
 
         if(params.showStats)

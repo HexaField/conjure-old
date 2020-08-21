@@ -85,6 +85,7 @@ export default class Realm
 
     receiveDataFromPeer(message)
     {
+        console.log('Realm: receiveDataFromPeer', message)
         this.world.receiveDataFromPeer(message.data, message.from)
     }
 

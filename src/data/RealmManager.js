@@ -104,8 +104,7 @@ export default class RealmManager
 
     async createRealm(realmData)
     {
-        this.knownRealms.push(realmData)
-        await this.saveRealms()
+        // from a peer
         this.dataHandler.getGlobalNetwork().sendData(GLOBAL_PROTOCOLS.BROADCAST_REALMS, this.knownRealms)
     }
 

@@ -17,12 +17,9 @@ export default class GlobalNetwork
         this.onPeerLeave = this.onPeerLeave.bind(this)
 
         this.dataHandler.networkManager.joinNetwork(this.networkID, this.parseReceiveData, this.onPeerJoin, this.onPeerLeave)
-        this.setProtocolCallback(GLOBAL_PROTOCOLS.BROADCAST_INFO, (data) => 
-        {
-            console.log(data)
-            console.log(data.peerID, ' has connected via ' + data.data.env + ' on version ' + data.data.version)
-        }
-        )
+        this.setProtocolCallback(GLOBAL_PROTOCOLS.BROADCAST_INFO, (data, from) => {
+            console.log(from, ' has connected via ' + data.env + ' on version ' + data.version)
+        })
     }
 
     // add callback for a certain protocol
@@ -37,15 +34,15 @@ export default class GlobalNetwork
         delete this.protocolCallbacks[protocol]
     }
 
-    parseReceiveData(data)
+    parseReceiveData(data, from)
     {
         if(this.protocolCallbacks[data.protocol] !== undefined)
-            this.protocolCallbacks[data.protocol](data);
+            this.protocolCallbacks[data.protocol](data.content, from);
     }
 
     onPeerJoin(peerID)
     {
-        this.sendTo(GLOBAL_PROTOCOLS.BROADCAST_REALMS, this.dataHandler.getRealmManager().knownRealms, peerID)
+        this.sendTo(GLOBAL_PROTOCOLS.BROADCAST_REALMS, this.dataHandler.getRealmManager().getRealms(), peerID)
         this.sendTo(GLOBAL_PROTOCOLS.BROADCAST_INFO, {
                 env: global.isBrowser ? 'Browser' : 'Node',
                 version: global.conjureVersion
