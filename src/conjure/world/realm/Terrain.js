@@ -32,7 +32,7 @@ export default class Terrain
             {
                 vertices.push(
                     x * this.grid_scale, 
-                    data[index] * 0.5, 
+                    data[index] * 0.1, 
                     // 0,
                     y * this.grid_scale
                 )

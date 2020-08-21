@@ -66,6 +66,7 @@ export default class Realm
     {
         await this.conjure.getDataHandler().joinNetwork({ network: this.realmID, onMessage: this.receiveDataFromPeer, onPeerJoin: this.onPeerJoin, onPeerLeave: this.onPeerLeave })
         this.terrain = new Terrain(this.conjure, this.world.group, this.realmData.getTerrainSettings())
+        this.sendData(REALM_PROTOCOLS.USER.JOIN, this.conjure.getProfile().getUsername() || '')
     }
 
     async leave()
@@ -94,26 +95,19 @@ export default class Realm
 
     receiveDataFromPeer(data, from)
     {
-        console.log('Realm: receiveDataFromPeer', data, from)
         this.world.receiveDataFromPeer(data, from)
     }
 
     
     onPeerJoin(peerID)
     {
-        if(this.loaded)
-        {
-            console.log('User ', peerID, ' has connected to the realm')
-        }
-        else
-        {
-            this.sendTo(REALM_PROTOCOLS.USER.JOIN, {}, peerID)
-        }
+        global.CONSOLE.log('User ', peerID, ' has join the realm')
+        this.sendTo(REALM_PROTOCOLS.USER.JOIN, this.conjure.getProfile().getUsername() || '', peerID)
     }
 
     onPeerLeave(peerID)
     {
-        console.log('User ', peerID, ' has disconnected from the realm')
+        global.CONSOLE.log('User ', peerID, ' has left the realm')
         this.world.onUserLeave(peerID)
     }
 

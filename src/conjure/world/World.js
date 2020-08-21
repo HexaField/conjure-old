@@ -117,7 +117,6 @@ export default class World
         {
             this.updateCount = 0; 
             deltaUpdate = false;
-            console.log('doing update round')
         }
         if(this.updateCount % this.updateCountMax === 0) // TODO: add delta updating
         {
@@ -142,7 +141,6 @@ export default class World
 
     receiveDataFromPeer(data, peerID)
     {
-        console.log(data, peerID)
         /// send through a list of objects that are your copy
         // if(data.protocol !== REALM_PROTOCOLS.USER.MOVE) console.log('parsing data from user', data)
         switch(data.protocol) {
@@ -187,7 +185,7 @@ export default class World
         }
         else
         {
-            this.realm.sendTo(REALM_PROTOCOLS.USER.JOIN, {
+            this.sendTo(REALM_PROTOCOLS.USER.JOIN, {
                 username: this.conjure.getProfile().getUsername() || ''
             }, peerID)
         }
