@@ -30,7 +30,7 @@ export default class ScreenElementBase
         this.defaultOpacity = 0.75
         
         this.targetBounds = easyPlane({ width: this.width, height: this.height }, { color: 0xffffff, transparent: true, opacity: 0.1 });
-        this.targetBounds.visible = false;
+        this.targetBounds.material.visible = false;
         this.group.add(this.targetBounds);
 
         this.name = args.name || 'Element ' + screen.elements.length;
@@ -201,20 +201,12 @@ export default class ScreenElementBase
         if(this.disabled) return;
         if(!this.active) return;
         if(this.hidden) return;
+
         let intersections = updateArgs.mouseRaycaster.intersectObject(this.targetBounds, false);
-        if(intersections.length > 0)
-        {
-            this.hover(this, true);
-            if(updateArgs.input.isPressed('MOUSELEFT', true))
-                this.click(this, true);
-        }
-        else
-        {
-            if(updateArgs.input.isPressed('MOUSELEFT', true))
-                this.click(this, false);
-            this.hover(this, false);
-        }
-        if(updateArgs.input.isReleased('MOUSELEFT', true))
+        this.hover(this, intersections.length > 0)
+        if(updateArgs.input.isPressed('MOUSELEFT', true, true))
+            this.click(this, true);
+        if(updateArgs.input.isReleased('MOUSELEFT', true, true))
             this.click(this, false);
     }
 
@@ -224,6 +216,11 @@ export default class ScreenElementBase
         
         if(this.onClickCallback)
             this.onClickCallback(this.onClickCallbackArgs)
+    }
+
+    onClickOutside(clickable)
+    {
+        if(this.disabled) return;
     }
 
     onUnClick(clickable)
@@ -243,20 +240,20 @@ export default class ScreenElementBase
 
     click(clickable, isClicked)
     {
-        if(this.disabled) return;
-        if(!this.active) return;
-        if(!this.mouseOver) return;
+        if(this.disabled) return
+        if(!this.active) return
         if(isClicked)
         {
-            this.isClicked = true;
-            this.down = true;
-            this.onClick(clickable);
+            this.isClicked = true
+            if(this.mouseOver)
+                this.onClick(clickable)
+            else
+                this.onClickOutside(clickable)
         }
-        else
+        else if(this.isClicked)
         {
-            this.isClicked = false;
-            this.down = false;
-            this.onUnClick(clickable);
+            this.isClicked = false
+            this.onUnClick(clickable)
         }
     }
 

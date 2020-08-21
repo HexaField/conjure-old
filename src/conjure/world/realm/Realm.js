@@ -1,5 +1,5 @@
 import { THREE, ExtendedGroup } from 'enable3d'
-import RealmInfo from './RealmInfo'
+import RealmData from './RealmData'
 
 export default class RealmManager
 {  
@@ -9,7 +9,7 @@ export default class RealmManager
         this.world = world
         this.conjure = this.world.conjure
 
-        this.realmInfo = new RealmInfo()
+        this.realmData = new RealmData()
     }
 
     async loadRealm()

@@ -43,8 +43,13 @@ export default class ScreenRealms extends ScreenBase
     {
         super.showScreen(active);
         this.scrollPanel.setActive(active);
-        // if(active && !this.guilds.length)
-        //     this.profile.getRealmsFromConnectedServices(this.updateGuilds);
+        if(active)
+            this.getRealms()
+    }
+
+    async getRealms()
+    {
+        this.displayRealms(await this.screenManager.conjure.getDataHandler().getRealms())
     }
 
     createRealm()
@@ -53,10 +58,9 @@ export default class ScreenRealms extends ScreenBase
     }
 
     // TODO: add realm icons
-    updateRecentRealms(recentRealms)
+    displayRealms(recentRealms)
     {
         this.scrollPanel.removeAllItems()
-        // console.log(recentRealms)
         if(!recentRealms) return
         for(let realm of recentRealms)
         {
@@ -65,47 +69,26 @@ export default class ScreenRealms extends ScreenBase
             realmLabel.setIconFromURL(realm.iconURL ? realm.iconURL : 'https://cdn.discordapp.com/attachments/711163360175194154/736369287496728656/realm_default.png');
             realmLabel.setIconSize(0.1)
             realmLabel.icon.group.position.set(-0.2, 0, 0)
-            button.setOnClickCallback(this.joinRealm, realm); // return all the realm info data
+            button.setOnClickCallback(this.joinRealm, realm.id); // return all the realm info data
             button.setValue(realm.name);
             this.scrollPanel.registerItem(realmLabel);
         }
         this.scrollPanel.updateItems(0);
     }
-
-    updateGuilds(guilds)
+    
+    async joinRealm(id)
     {
-        // this.guilds = guilds;
-        // for(let i = 0; i < this.guilds.length; i++)
-        // {
-        //     const editable = new ScreenElementButton(this, this.scrollPanel, 0.4, 0, 0, this.buttonWidth, this.buttonHeight);
-        //     const guildNameLabel = new ScreenElementLabelled(this, this.scrollPanel, 0, 0, 0.1, this.buttonWidth * 2, this.buttonHeight, editable);
-        //     if(this.guilds[i].icon)
-        //         guildNameLabel.setIconFromURL('https://cdn.discordapp.com/icons/' + this.guilds[i].id + '/'+ this.guilds[i].icon + '.png');
-        //     else
-        //         guildNameLabel.setIconFromURL('https://cdn.clipart.email/718929dc3e24ec2fccef17c2134648c8_discord-logo-png-free-transparent-png-logos_512-512.png');
-        //     guildNameLabel.setIconSize(0.1)
-        //     guildNameLabel.icon.group.position.set(-0.2, 0, 0)
-        //     editable.setOnClickCallback(this.joinGuild, this.guilds[i].id);
-        //     editable.setValue(this.guilds[i].name);
-        //     this.scrollPanel.registerItem(guildNameLabel);
-        // }
-        // this.scrollPanel.updateItems(0);
-    }
-
-    joinRealm(realmInfo)
-    {
-        if(!realmInfo)
-        try{
-            this.screenManager.hideAllScreens()
-            this.screenManager.conjure.getWorld().joinRealmByID(number(this.discordIdTextbox.getValue())) // for joining a private realm
-            return
-        }
-        catch(error)
+        let realmData = await this.screenManager.conjure.getDataHandler().getRealm(id || this.discordIdTextbox.getValue())
+        console.log(realmData)
+        if(realmData)
         {
-            global.console.log('Error! Realm ID must be a number!')
+            this.screenManager.conjure.getWorld().loadRealm(realmData) // for joining a private realm
+            this.screenManager.hideAllScreens()
         }
-        this.screenManager.hideAllScreens()
-        this.screenManager.conjure.getWorld().joinRealm(realmInfo) // for joining a public realm
+        else
+        {
+            console.log('Could not join realm')
+        }
     }
 
     update(updateArgs)

@@ -8,8 +8,9 @@ export default class ScreenBase
     constructor(screenManager, args = {})
     {
         this.screenManager = screenManager;
-        this.camera = screenManager.conjure.camera;
-        this.world = screenManager.conjure.world;
+        this.conjure = screenManager.conjure;
+        this.camera = this.conjure.camera;
+        this.world = this.conjure.getWorld();
         this.id = this.screenManager.screens === undefined ? -1 : this.screenManager.screens.length;
         this.screenName = args.name || "";
         this.anchor = Boolean(args.anchor) // this locks the x to be absolute from -1 to 1

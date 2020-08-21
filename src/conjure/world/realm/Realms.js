@@ -49,7 +49,7 @@ export const REALM_PROTOCOLS = {
     },
 }
 
-export default class RealmManager
+export default class Realms
 {  
     constructor(world)
     {

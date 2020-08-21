@@ -1,4 +1,4 @@
-import { REALM_PROTOCOLS } from "../world/realm/RealmManager"
+import { REALM_PROTOCOLS } from "../world/realm/Realms"
 import ServiceManager from './services/ServiceManager'
 
 export default class Profile

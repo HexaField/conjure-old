@@ -1,5 +1,5 @@
 import { THREE, ExtendedObject3D } from 'enable3d'
-import { REALM_PROTOCOLS } from '../world/realm/RealmManager'
+import { REALM_PROTOCOLS } from '../world/realm/Realms'
 
 export default class User
 {

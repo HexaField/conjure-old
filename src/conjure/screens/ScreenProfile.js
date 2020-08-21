@@ -9,7 +9,7 @@ export default class ScreenProfile extends ScreenBase
     {
         super(screenManager, args);
         
-        this.profile = this.screenManager.conjure.getProfile();
+        this.profile = this.conjure.getProfile();
 
         this.buttonHeight = 0.1
         this.buttonWidth = 0.5

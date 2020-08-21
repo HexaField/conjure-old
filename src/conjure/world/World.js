@@ -1,5 +1,5 @@
 import { THREE, ExtendedGroup } from 'enable3d'
-import RealmManager from './realm/RealmManager'
+import RealmManager from './realm/Realms'
 import User from '../user/User'
 import Platform from './Platform'
 
@@ -25,7 +25,7 @@ export default class World
     }
 
 
-    async loadRealm()
+    async loadRealm(realmData)
     {
 
     }

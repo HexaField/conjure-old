@@ -85,19 +85,19 @@ export default class ScreenElementButton extends ScreenElementBase
     onUnClick(clickable)
     {
         if(this.disabled) return;
-            this.button.material.opacity = 0.8;
+        // this.button.material.opacity = 0.8;
     }
 
     onMouseOver(clickable)
     {
         if(this.disabled) return;
-            this.button.material.opacity = 0.8;
+        this.button.material.opacity = 0.8;
     }
 
     onMouseOut(clickable)
     {
         if(this.disabled) return;
-            this.button.material.opacity = 0.5;
+        this.button.material.opacity = 0.5;
     }
 }
 

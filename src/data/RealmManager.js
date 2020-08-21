@@ -5,7 +5,7 @@ export default class RealmManager
     constructor(dataHandler)
     {
         this.dataHandler = dataHandler
-        this.knownRealms = [] // just a list of IDs - need to turn this into a list of RealmInfo or something - id, name, icon
+        this.knownRealms = [] // just a list of IDs - need to turn this into a list of RealmData or something - id, name, icon
 
         this.receiveRealms = this.receiveRealms.bind(this)
 
@@ -22,7 +22,7 @@ export default class RealmManager
         this.addRealms(realms, true)
     }
 
-    addRealms(realms, ignoreBroadcast)
+    async addRealms(realms, ignoreBroadcast)
     {
         if(!realms) return;
         for(let realm of realms)
@@ -44,40 +44,39 @@ export default class RealmManager
             }
         }
 
-        this.saveRealms()
+        await this.saveRealms()
         // this.conjure.getScreens().screenRealms.updateRecentRealms(this.knownRealms)
         if(!ignoreBroadcast)
             this.dataHandler.getGlobalNetwork().sendData(GLOBAL_PROTOCOLS.BROADCAST_REALMS, this.knownRealms)
     }
 
-    addRealm(realm)
+    async addRealm(realmData)
     {
-        if(!realm || !realm.id) return;
+        console.log('addRealm', realmData)
+        if(!realmData || !realmData.id) return;
         let exists = false
         for(let myRealm of this.knownRealms)
         {
-            if(Number(myRealm.id) === Number(realm.id))
+            if(Number(myRealm.id) === Number(realmData.id))
             {
-                if(Number(realm.timestamp) > Number(myRealm.timestamp))
-                   myRealm = realm
+                if(Number(realmData.timestamp) > Number(myRealm.timestamp))
+                   myRealm = realmData
                 exists = true
                 break
             }
         }
         if(!exists)
         {
-            this.knownRealms.push(realm)
-            // this.knownRealms.sort()
-            this.saveRealms()
-            // this.conjure.getScreens().screenRealms.updateRecentRealms(this.knownRealms)
+            this.knownRealms.push(realmData)
+            await this.saveRealms()
             this.dataHandler.getGlobalNetwork().sendData(GLOBAL_PROTOCOLS.BROADCAST_REALMS, this.knownRealms)
         }
     }
 
-    saveRealms()
+    async saveRealms()
     {
         try {
-            this.dataHandler.getFiles().writeFile('recent_realms.json', JSON.stringify(this.knownRealms))
+            await this.dataHandler.getFiles().writeFile('recent_realms.json', JSON.stringify(this.knownRealms))
         } catch (error) {
             console.log('ConjureDatabase: could not save recent realms', this.knownRealms, 'with error', error);
             // this.conjure.getGlobalHUD().log('Failed to read recent realms')
@@ -98,5 +97,31 @@ export default class RealmManager
             // this.conjure.getGlobalHUD().log('Failed to load recent realms list')
             return
         }
+    }
+
+    // API
+
+    async createRealm(realmData)
+    {
+        this.knownRealms.push(realmData)
+        await this.saveRealms()
+        this.dataHandler.getGlobalNetwork().sendData(GLOBAL_PROTOCOLS.BROADCAST_REALMS, this.knownRealms)
+    }
+
+    async updateRealm(realmData)
+    {
+        await this.addRealm(realmData)
+    }
+
+    getRealm(id)
+    {
+        for(let realm of this.knownRealms)
+            if(Number(realm.id) === Number(id))
+                return realm
+    }
+
+    getRealms()
+    {
+        return this.knownRealms
     }
 }

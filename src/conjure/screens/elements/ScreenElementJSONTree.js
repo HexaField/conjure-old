@@ -70,6 +70,7 @@ export default class ScreenElementJSONTree extends ScreenElementBase
     {
         if(!json) return;
         let schemaKeys = Object.keys(schema)
+        let width = (parent.innerWidth - (2 * this.indent)) / 2
 
         for(let schemaKey of schemaKeys)
         {
@@ -81,7 +82,7 @@ export default class ScreenElementJSONTree extends ScreenElementBase
                 } break;
 
                 case 'label': {
-                    let label = new ScreenElementText(this.screen, this.scrollPanel, { width: parent.innerWidth - (2 * this.indent), height: 0.075, textSettings: { scale: 0.75 } });
+                    let label = new ScreenElementText(this.screen, this.scrollPanel, { width: width, height: 0.075, textSettings: { scale: 0.75 } });
                     label.setText(schema[schemaKey].label)
                     parent.addItem(label);
                     this.scrollPanel.registerElement(label)
@@ -91,7 +92,7 @@ export default class ScreenElementJSONTree extends ScreenElementBase
                     let obj = json[schema[schemaKey]['object']];
                     if(obj)
                     {
-                        let label = new ScreenElementJSONCollapsible(this.screen, this.scrollPanel, { width: parent.innerWidth - (2 * this.indent), height: 0.075, tree: this, selectable: true, textSettings: { scale: 0.75 } });
+                        let label = new ScreenElementJSONCollapsible(this.screen, this.scrollPanel, { width: width, height: 0.075, tree: this, selectable: true, textSettings: { scale: 0.75 } });
                         label.setOnClickCallback(this.updateDisplay)
                         label.setOnSelectedCallback(this.itemSelected, obj)
                         label.setOnHoverCallback(this.itemHover, obj)
@@ -108,17 +109,17 @@ export default class ScreenElementJSONTree extends ScreenElementBase
                 } break;
 
                 case 'static': {
-                    element = new ScreenElementText(this.screen, this.scrollPanel, { width: parent.innerWidth - (2 * this.indent), height: 0.075, textSettings: { anchorX: 'left', width: 1, scale: 0.75 } });
+                    element = new ScreenElementText(this.screen, this.scrollPanel, { width: width, height: 0.075, textSettings: { anchorX: 'left', width: 1, scale: 0.75 } });
                     element.setText(json[schemaKey]);
                 } break;
 
                 case 'timestamp': {
-                    element = new ScreenElementText(this.screen, this.scrollPanel, { width: parent.innerWidth - (2 * this.indent), height: 0.075, textSettings: { anchorX: 'left', width: 1, scale: 0.75 } });
+                    element = new ScreenElementText(this.screen, this.scrollPanel, { width: width, height: 0.075, textSettings: { anchorX: 'left', width: 1, scale: 0.75 } });
                     element.setText(new Date(json[schemaKey]).toLocaleString());
                 } break;
 
                 case 'list': {
-                    element = new ScreenElementCycleButton(this.screen, this.scrollPanel, { width: parent.innerWidth - (2 * this.indent), height: 0.075, textSettings: { width: 1, scale: 0.75 } });
+                    element = new ScreenElementCycleButton(this.screen, this.scrollPanel, { width: width, height: 0.075, textSettings: { width: 1, scale: 0.75 } });
                     element.setValues(schema[schemaKey].items);
                     element.setValue(json[schemaKey])
                     element.setOnChangeCallback((newValue) => {
@@ -127,13 +128,13 @@ export default class ScreenElementJSONTree extends ScreenElementBase
                 } break;
 
                 case 'button': {
-                    element = new ScreenElementButton(this.screen, this.scrollPanel, { width: parent.innerWidth - (2 * this.indent), height: 0.075, textSettings: { width: 1, scale: 0.75 } });
+                    element = new ScreenElementButton(this.screen, this.scrollPanel, { width: width, height: 0.075, textSettings: { width: 1, scale: 0.75 } });
                     element.setText(schema[schemaKey].buttonText)
                     element.setOnClickCallback(schema[schemaKey].callback);
                 } break;
 
                 case 'bool': {
-                    element = new ScreenElementToggleButton(this.screen, this.scrollPanel, { width: parent.innerWidth - (2 * this.indent), height: 0.075, textSettings: { width: 1, scale: 0.75 } });
+                    element = new ScreenElementToggleButton(this.screen, this.scrollPanel, { width: width, height: 0.075, textSettings: { width: 1, scale: 0.75 } });
                     element.setValue(json[schemaKey])
                     element.setOnChangeCallback((newValue) => {
                         json[schemaKey] = newValue;
@@ -141,23 +142,23 @@ export default class ScreenElementJSONTree extends ScreenElementBase
                 } break;
 
                 case 'text': {
-                    element = new ScreenElementTextBox(this.screen, this.scrollPanel, { width: parent.innerWidth - (2 * this.indent), height: 0.075 });
+                    element = new ScreenElementTextBox(this.screen, this.scrollPanel, { width: width, height: 0.075 });
                     element.setText(json[schemaKey]);
                     element.setSubject(json[schemaKey]);
                     element.setOnChangeCallback((newValue) => {
                         json[schemaKey] = newValue;
-                        this.refresh()
+                        // this.refresh()
                     });
                     element.setActive(true);
                 } break;
 
                 case 'vector3': {
-                    element = new ScreenElementVector3(this.screen, this.scrollPanel, { width: parent.innerWidth - (2 * this.indent), height: 0.075 });
+                    element = new ScreenElementVector3(this.screen, this.scrollPanel, { width: width / 2, height: 0.075 });
                     element.setSubject(json[schemaKey]);
                 } break;
 
                 case 'scaler': {
-                    element = new ScreenElementScaler(this.screen, this.scrollPanel, { width: parent.innerWidth - (2 * this.indent), height: 0.075 });
+                    element = new ScreenElementScaler(this.screen, this.scrollPanel, { width: width, height: 0.075 });
                     element.setValue(json[schemaKey]);
                     element.setDefaultValue(schema[schemaKey].default)
                     element.setOnChangeCallback((newValue) => {
@@ -171,7 +172,7 @@ export default class ScreenElementJSONTree extends ScreenElementBase
                         json[schemaKey]
                     );
                     let asset = this.screen.screenManager.conjure.assetManager.getByIPFSHash(ASSET_TYPE.MATERIAL, hash);
-                    element = new ScreenElementAssetSelector(this.screen, this.scrollPanel, { width: parent.innerWidth - (2 * this.indent), height: 0.075, previewScale: 0.075 });
+                    element = new ScreenElementAssetSelector(this.screen, this.scrollPanel, { width: width, height: 0.075, previewScale: 0.075 });
                     element.setAsset(asset);
                     element.setOnClickCallback((newAsset) => {
                         json[schemaKey] = newAsset.data;
@@ -184,7 +185,7 @@ export default class ScreenElementJSONTree extends ScreenElementBase
                         json[schemaKey]
                     );
                     let asset = this.screen.screenManager.conjure.assetManager.getByIPFSHash(ASSET_TYPE.GEOMETRY, hash);
-                    element = new ScreenElementAssetSelector(this.screen, this.scrollPanel, { width: parent.innerWidth - (2 * this.indent), height: 0.075, previewScale: 0.075 });
+                    element = new ScreenElementAssetSelector(this.screen, this.scrollPanel, { width: width, height: 0.075, previewScale: 0.075 });
                     element.setAsset(asset);
                     element.setOnClickCallback((newAsset) => {
                         json[schemaKey] = newAsset.data;
@@ -202,9 +203,9 @@ export default class ScreenElementJSONTree extends ScreenElementBase
                 else
                 {
                     element.group.position.setX((parent.innerWidth / 2 - (2 * this.indent))/2)
-                    let label = new ScreenElementLabelled(this.screen, this.scrollPanel, { width: parent.innerWidth - (2 * this.indent), height: 0.075, element, ratio:4, updateCallback: this.alwaysUpdate, textSettings: { anchorX:'right', width: 1, scale: 0.75 } });
+                    let label = new ScreenElementLabelled(this.screen, this.scrollPanel, { width: width, height: 0.075, element, ratio:4, updateCallback: this.alwaysUpdate, textSettings: { anchorX:'right', width: 1, scale: 0.75 } });
                     label.setText(schema[schemaKey].label);
-                    label.setOnClickCallback(this.refresh)
+                    // label.setOnClickCallback(this.refresh)
                     parent.addItem(label);
                     this.scrollPanel.registerElement(label)
                 }
@@ -219,7 +220,7 @@ export default class ScreenElementJSONTree extends ScreenElementBase
         if(!array || !array.length) return;
         for(let entry of array)
         {
-            let label = new ScreenElementJSONCollapsible(this.screen, this.scrollPanel, { width: parent.innerWidth - (2 * this.indent), height: 0.075, tree: this, collapsible: true });
+            let label = new ScreenElementJSONCollapsible(this.screen, this.scrollPanel, { width: (parent.innerWidth - (2 * this.indent)) / 2, height: 0.075, tree: this, collapsible: true });
             label.setOnClickCallback(this.updateDisplay)
             label.setOnSelectedCallback(this.itemSelected, entry)
             label.setOnHoverCallback(this.itemHover, entry)

@@ -183,6 +183,38 @@ export default class DataHandler
             return await this.getProfileManager().saveProfile(data)
     }
 
+    async createRealm(data)
+    {
+        if(this.runningNode)
+            return await this.awaitNodeResponse('createRealm', data)
+        else 
+            return await this.getRealmManager().createRealm(data)
+    }
+    
+    async updateRealm(data)
+    {
+        if(this.runningNode)
+            return await this.awaitNodeResponse('updateRealm', data)
+        else
+            return await this.getRealmManager().updateRealm(data)
+    }
+    
+    async getRealm(data)
+    {
+        if(this.runningNode)
+            return await this.awaitNodeResponse('getRealm', data)
+        else
+            return await this.getRealmManager().getRealm(data)
+    }
+
+    async getRealms()
+    {
+        if(this.runningNode)
+            return await this.awaitNodeResponse('getRealms')
+        else
+            return await this.getRealmManager().getRealms()
+    }
+
     async joinNetwork(data)
     {
         if(this.runningNode)
@@ -254,6 +286,11 @@ export default class DataHandler
 
             case 'loadProfile': this.sendWebsocketData({ data: await this.loadProfile(), requestTimestamp: data.requestTimestamp}); break;
             case 'saveProfile': this.sendWebsocketData({ data: await this.saveProfile(data.data), requestTimestamp: data.requestTimestamp}); break;
+
+            case 'createRealm': this.sendWebsocketData({ data: await this.createRealm(data.data), requestTimestamp: data.requestTimestamp}); break;
+            case 'updateRealm': this.sendWebsocketData({ data: await this.updateRealm(data.data), requestTimestamp: data.requestTimestamp}); break;
+            case 'getRealm': this.sendWebsocketData({ data: await this.getRealm(data.data), requestTimestamp: data.requestTimestamp}); break;
+            case 'getRealms': this.sendWebsocketData({ data: await this.getRealms(), requestTimestamp: data.requestTimestamp}); break;
 
             case 'joinNetwork': this.sendWebsocketData({ data: await this.joinNetwork({
                 network: data.data.network,

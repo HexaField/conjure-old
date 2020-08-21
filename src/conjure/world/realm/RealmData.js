@@ -3,7 +3,6 @@ import { THREE, ExtendedGroup } from 'enable3d'
 export const REALM_TERRAIN_GENERATORS = {
     NONE: 'None',
     INFINITE_TERRAIN: 'Infinite Terrain',
-    PAYID_DEMO: 'PayID Demo',
 }
 
 export const REALM_VISIBILITY = {
@@ -11,7 +10,7 @@ export const REALM_VISIBILITY = {
     PRIVATE: 'Private'
 }
 
-export default class RealmInfo
+export default class RealmData
 {  
     constructor(info)
     {
@@ -23,35 +22,33 @@ export default class RealmInfo
         const now = Date.now()
         this.info = {
             id: params.id || now, // requiring a realm to be made adds extra security - network layer should only ever deal with data, not realms directly
-            name: params.name || this.getInfo() || 'Realm ' + now,
+            name: params.name || this.getName() || 'New Realm',
             timestamp: now,
             iconURL: params.iconURL || this.getIconURL(),
             visibility: REALM_VISIBILITY.PUBLIC,
             architectures: params.architectures || [],
             worldSettings: params.worldSettings || {
-                terrainGeneratorType: REALM_TERRAIN_GENERATORS.PAYID_DEMO 
+                terrainGeneratorType: REALM_TERRAIN_GENERATORS.INFINITE_TERRAIN 
             },
         }
     }
 
     getInfo()
     {
-        if(this.info)
-            return this.info
-        return undefined
+        return this.info
     }
 
     getName()
     {
         if(this.info)
             return this.info.name
-        return undefined
+        return ''
     }
 
     getIconURL()
     {
         if(this.info)
             return this.info.iconURL
-        return undefined
+        return ''
     }
 }

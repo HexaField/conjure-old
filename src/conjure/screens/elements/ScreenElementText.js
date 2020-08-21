@@ -46,28 +46,6 @@ export default class ScreenElementText extends ScreenElementBase
         this.onClickCallbackArgs = args;
         this.onClickCallback = callback;
     }
-    
-    update(updateArgs)
-    {
-        super.update(updateArgs);
-        if(this.disabled) return;
-        if(!this.active) return;
-        let intersections = updateArgs.mouseRaycaster.intersectObject(this.textObj.group, false);
-        if(intersections.length > 0)
-        {
-            this.hover(this, true);
-            if(updateArgs.input.isPressed('MOUSELEFT', true))
-                this.click(this, true);
-        }
-        else
-        {
-            if(updateArgs.input.isPressed('MOUSELEFT', true))
-                this.click(this, false);
-            this.hover(this, false);
-        }
-        if(updateArgs.input.isReleased('MOUSELEFT', true))
-            this.click(this, false);
-    }
 
     setDisabled(disable)
     {

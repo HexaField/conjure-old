@@ -43,6 +43,7 @@ export class Conjure extends Scene3D
     getScreens() { return this.screenManager }
     getControls() { return this.controlManager }
     getFonts() { return this.fonts }
+    getDefaultFont() { return this.fonts.getDefault() }
     getProfile() { return this.profile }
     getDataHandler() { return this.dataHandler }
     getGlobalHUD() { return this.screenManager.hudGlobal }
@@ -55,6 +56,7 @@ export class Conjure extends Scene3D
 
         this.fonts = new Fonts(this)
         await this.fonts.addFont('Helvetiker', 'assets/fonts/helvetiker.json')
+        this.fonts.setDefault('Helvetiker')
 
         this.loadingScreen = new LoadingScreen(this)
         this.loadingScreen.create()
@@ -94,11 +96,13 @@ export class Conjure extends Scene3D
 
         this.rendererCSS = new CSS3DRenderer({alpha: true, antialias: true})
         this.rendererCSS.setSize( window.innerWidth, window.innerHeight )
-        this.rendererCSS.domElement.style.position = 'absolute'
+        // this.rendererCSS.domElement.style.position = 'absolute'
         this.rendererCSS.domElement.style.outline = 'none' // required
         this.rendererCSS.domElement.style.top = 0
         this.rendererCSS.domElement.style.zIndex = 10000
-        document.body.appendChild(this.rendererCSS.domElement)
+        document.body.appendChild(this.rendererCSS.domElement);
+        document.body.removeChild(this.renderer.domElement);
+        this.rendererCSS.domElement.appendChild(this.renderer.domElement);
 
         this.postProcessing = new PostProcessing(this);
     }
@@ -149,7 +153,7 @@ export class Conjure extends Scene3D
     async create()
     {
         console.log('Took', (Date.now() - this.loadTimer)/1000, ' seconds to load.')
-        this.loadingScreen.setText('Loading default assets...')
+        this.loadingScreen.setText('Loading default assets...') 
         this.assetManager = new AssetManager(this)
 
         await this.assetManager.createDefaultAssets(); // we want to do this now as some screens may use default assets or grab references in initialisation
@@ -249,16 +253,20 @@ export class Conjure extends Scene3D
         this.mouseRaycaster.setFromCamera(this.input.mouse, this.camera)
         this.worldRaycaster.setFromCamera(this.vec2, this.camera)
     
-        // update controls
-
-        this.getScreens().update({ delta: deltaSeconds, input: this.input, mouseRaycaster: this.mouseRaycaster, worldRaycaster: this.worldRaycaster })
-        this.getWorld().update({ delta: deltaSeconds, input: this.input, mouseRaycaster: this.mouseRaycaster, worldRaycaster: this.worldRaycaster })
-        this.getControls().update({ delta: deltaSeconds, input: this.input, mouseRaycaster: this.mouseRaycaster, worldRaycaster: this.worldRaycaster })
+        let args = { 
+            delta: deltaSeconds,
+            input: this.input,
+            mouseRaycaster: this.mouseRaycaster,
+            worldRaycaster: this.worldRaycaster,
+            conjure: this,
+        }
+        
+        this.getScreens().update(args)
+        this.getWorld().update(args)
+        this.getControls().update(args)
 
         this.cameraScreenAttach.position.copy(this.cameraFollow.getWorldPosition(this.vec3))
         this.cameraScreenAttach.quaternion.copy(this.cameraFollow.getWorldQuaternion(this.quat))
-
-        // update screens   
 
         this.camera.updateMatrix() // TODO: check if this is necessary
     }

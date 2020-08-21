@@ -3,7 +3,7 @@ import { CSS3DObject } from 'three/examples/jsm/renderers/CSS3DRenderer.js'
 
 export default class HTMLObject
 {
-    constructor(cssParent, objectParent, element, args = {})
+    constructor(conjure, objectParent, element, args = {})
     {
         this.width = args.width || 1
         this.height = args.height || 1
@@ -15,7 +15,7 @@ export default class HTMLObject
         this.objectCSS.frustumCulled = false
         this.objectCSS.castShadow = false;
         this.objectCSS.receiveShadow = false;
-        cssParent.add(this.objectCSS);
+        conjure.sceneCSS.add(this.objectCSS);
         
         var material = new THREE.MeshBasicMaterial();
         material.color.set(0x2685ff)
@@ -50,5 +50,6 @@ export default class HTMLObject
         this.objectCSS.position.copy(this.planeMesh.getWorldPosition(this.vec));
         this.objectCSS.quaternion.copy(this.planeMesh.getWorldQuaternion(this.qua));
         this.objectCSS.scale.copy(this.planeMesh.getWorldScale(this.vec).multiplyScalar(this.inverseRes));
+        // console.log(this)
     }
 }

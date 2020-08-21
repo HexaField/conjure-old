@@ -1,7 +1,8 @@
 import { easyPlane } from '../../util/MeshTemplates'
 import HTMLObject from '../../util/HTMLObject'
-import ScreenElementBase from './ScreenElementBase';
+import ScreenElementBase from './ScreenElementBase' 
 import { THREE } from 'enable3d'
+import ThreeTypeableText from 'three-typeable-text'
 
 export default class ScreenElementTextBox extends ScreenElementBase
 {  
@@ -18,32 +19,14 @@ export default class ScreenElementTextBox extends ScreenElementBase
         this.group.add(this.background);
         // this.registerElement(this.button);
 
-        //sceneCSS, parent, string, colour, width, height, scale, editable
-        // this.textObj = new easyText3D(screen.screenManager.conjure, this.group, 'Edit');
-        // this.textObj.group.position.setZ(0.1);
-
-        this.value = 'text';
-        this.focused = false;
-        this.edit = this.edit.bind(this);
-
-        this.resolution = 600;
-        var element = document.createElement( 'div' );
-        element.style.width = ''+(this.width*this.resolution)+'px';
-        element.style.height = ''+(this.height*this.resolution)+'px';
-        element.style.opacity = 1;
-        element.style.background = new THREE.Color(0xffffff); //0x2685ff
-        element.textContent = 'text';
-        // element.style.fontFamily = 'Verdana'
-        element.style.fontSize = '32px'
-        element.style.lineHeight = '40px'
-        element.style.textAlign = 'center';
-        element.style.verticalAlign = 'text-bottom';
-        console.log(element)
-
-        this.cssObj = new HTMLObject(screen.screenManager.conjure.sceneCSS, this.group, element, { width: this.width, height: this.height, resolution: this.resolution });
-        this.cssObj.objectCSS.element.addEventListener("blur", ()=>{ this.edit(false); }, true);
-        this.addHTML(this.cssObj)
-        this.edit(false);
+        this.textObj = new ThreeTypeableText({
+            camera: screen.camera,
+            font: screen.conjure.getDefaultFont(),
+            string: args.string || args.text || '',
+            fontScale: 0.035
+        })
+        this.textObj.getObject().position.setY(-0.025)
+        this.group.add(this.textObj.getObject())
     }
 
     setValue(value)
@@ -52,15 +35,15 @@ export default class ScreenElementTextBox extends ScreenElementBase
         this.setText(this.value);
     }
 
-    setSubject(vector3)
+    setSubject(subject)
     {
-        this.subject = vector3;
+        this.subject = subject; 
         this.setValue(this.subject)
     }
 
     updateValue()
     {
-        this.setValue(this.cssObj.objectCSS.element.textContent);
+        console.log('ScreenElementTextBox: updateValue(): wow look you actually need this function, better remove this log')
         if(this.onChangeCallback)
             this.onChangeCallback(this.getValue())
     }
@@ -72,24 +55,22 @@ export default class ScreenElementTextBox extends ScreenElementBase
 
     setOnChangeCallback(callback)
     {
-        this.onChangeCallback = callback;
+        this.onChangeCallback = callback
     }
 
     getValue()
     {
-        return this.value;
+        return this.textObj.getText()
     }
 
     setText(text)
     {
-        // this.textObj.setText(text);
-        this.cssObj.objectCSS.element.textContent = text;
+        this.textObj.setText(text);
     }
 
     setActive(active)
     {
         super.setActive(active);
-        this.cssObj.show(active);
         if(!active)
             this.edit(false);
     }
@@ -101,65 +82,26 @@ export default class ScreenElementTextBox extends ScreenElementBase
 
     edit(flag)
     {
+        if(this.focused === flag) return
         this.focused = flag;
         this.screen.screenManager.conjure.input.setEnabled(!flag);
-        if(flag)
-        {
-            this.screen.activeTextBox = this;
-            this.cssObj.objectCSS.element.focus();
-            this.cssObj.objectCSS.element.setAttribute('contenteditable', 'true');
-            this.cssObj.objectCSS.element.className = 'editbox';
-            this.background.material.opacity = 0.8;
-        }
-        else
-        {
-            this.screen.activeTextBox = undefined;
-            this.cssObj.objectCSS.element.blur();
-            this.cssObj.objectCSS.element.setAttribute('contenteditable', 'false');
-            this.cssObj.objectCSS.element.className = 'noselect';
-            this.background.material.opacity = 0.2;
-            if(this.onExitCallback)
-                this.onExitCallback()
-        }
-    }
-
-    addIcon(icon)
-    {
-        // easyPlane(this.group, icon, 0xffffff, 0.4, 0.2);
+        this.textObj.actionFocus(flag)
     }
 
     update(updateArgs)
     {
         super.update(updateArgs);
         if(this.disabled) return;
-
-        if(this.focused)
-            this.updateValue();
+        if(!this.active) return;       
+        this.textObj.updateCursor()
         
-        this.cssObj.update();
-        if(!this.active) return;
-        
-        if(updateArgs.input.isPressed('ESCAPE', true, true) || updateArgs.input.isPressed('ENTER', true, true))
+        if(updateArgs.input.isPressed('ENTER', true, true))
         {
             if(this.focused && this.onClickCallback)
                 this.onClickCallback(this.onClickCallbackArgs, this.getValue());
             this.edit(false);
         }
-        let intersections = updateArgs.mouseRaycaster.intersectObject(this.background, false);
-        if(intersections.length > 0)
-        {
-            this.hover(this, true);
-            if(updateArgs.input.isPressed('MOUSELEFT', true, true))
-                this.click(this, true);
-        }
-        else
-        {
-            if(updateArgs.input.isPressed('MOUSELEFT', true, true))
-                this.click(this, false);
-            this.hover(this, false);
-        }
-        if(updateArgs.input.isReleased('MOUSELEFT', true))
-            this.click(this, false);
+        
         if(updateArgs.input.isDown('CONTROL', true))
         {
             if(updateArgs.input.isPressed('V', true))
@@ -186,7 +128,13 @@ export default class ScreenElementTextBox extends ScreenElementBase
     onClick(clickable)
     {
         if(this.disabled) return;
-        this.edit(true);
+        this.edit(this.mouseOver)
+    }
+
+    onClickOutside(clickable)
+    {
+        if(this.disabled) return;
+        this.edit(false)
     }
 
     onUnClick(clickable)

@@ -26,7 +26,7 @@ export default class ScreenTextureEditor extends ScreenBase
         this.drawingContext.fillRect(0, 0, this.width*this.resolution, this.height*this.resolution);
         // this.drawingCanvas.style.opacity = 1;
         // this.drawingCanvas.style.background = new THREE.Color(0xffffff); //0x2685ff
-        this.cssObj = new HTMLObject(this.screenManager.conjure.sceneCSS, this.group, this.drawingCanvas, { width: 128 / this.resolution, height: 128 / this.resolution, scale: 0.1, resolution: this.resolution });
+        this.cssObj = new HTMLObject(this.screenManager.conjure, this.group, this.drawingCanvas, { width: 128 / this.resolution, height: 128 / this.resolution, scale: 0.1, resolution: this.resolution });
         // this.cssObj.objectCSS.element.addEventListener("blur", ()=>{ this.edit(false); }, true);
         this.addHTML(this.cssObj)
 
