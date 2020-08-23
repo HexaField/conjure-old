@@ -26,7 +26,9 @@ export class Conjure extends Scene3D
     async preload()
     {
         await this.load.preload('playerModel', 'assets/models/ybot_anims.glb')
-        // await this.load.preload('font_helvetiker', 'assets/fonts/helvetiker.json')
+        
+        await this.load.preload('default_realm', 'assets/icons/default_realm.png')
+
         await this.load.preload('missing_texture', 'assets/textures/missing_texture.png')
         await this.load.preload('menger_texture', 'assets/textures/menger_texture.png')
         await this.load.preload('ponder_texture', 'assets/textures/ponder_texture.png')
@@ -47,6 +49,8 @@ export class Conjure extends Scene3D
     getProfile() { return this.profile }
     getDataHandler() { return this.dataHandler }
     getGlobalHUD() { return this.screenManager.hudGlobal }
+    
+    async ipfsGet(url) { return await this.dataHandler.ipfsGet(url) }
 
     async init()
     {
@@ -172,6 +176,7 @@ export class Conjure extends Scene3D
         this.setConjureMode(CONJURE_MODE.LOADING)
         await this.profile.loadFromDatabase()
         await this.profile.getServiceManager().initialiseServices()
+        await this.world.preloadGlobalRealms()
         await this.world.joinRealmByID(this.profile.getLastJoinedRealm())
         this.setConjureMode(CONJURE_MODE.EXPLORE)
 

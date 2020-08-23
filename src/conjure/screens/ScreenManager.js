@@ -21,6 +21,7 @@ import ScreenUserPay from './ScreenUserPay'
 import ScreenServices from './ScreenServices'
 import ScreenPayID from './ScreenPayID'
 import ScreenTextEntry from './ScreenTextEntry'
+import ScreenFeatures from './ScreenFeatures'
 
 export default class ScreenManager
 {  
@@ -37,28 +38,29 @@ export default class ScreenManager
         this.hideLastOpenScreen = this.hideLastOpenScreen.bind(this) // for text entry screen callback
 
         // TODO: rename this to explore mode HUD and add conjure mode HUD
-        this.hudGlobal = new HUDGlobal(this, {name:'Global', width:2, height:1});
-        this.hudExplore = new HUDExploreMode(this, {name:'Explore', width:2, height:1});
-        this.hudConjure = new HUDConjureMode(this, {name:'Conjure', width:2, height:1});
+        this.hudGlobal = new HUDGlobal(this, { name:'Global', width:2, height:1 });
+        this.hudExplore = new HUDExploreMode(this, { name:'Explore', width:2, height:1 });
+        this.hudConjure = new HUDConjureMode(this, { name:'Conjure', width:2, height:1 });
         this.hudGlobal.showScreen(false)
         this.hudExplore.showScreen(false)
         this.hudConjure.showScreen(false)
 
         this.screens = [];
         
-        this.screenHomeMenu = this.createScreen(new ScreenHomeMenu(this, {name:'Home Menu', width:1, height:1, pauses:true}));
-        this.screenRealmSettings = this.createScreen(new ScreenRealmSettings(this, {name:'Realm Settings', width:1.5, height:1, pauses:true}));
-        this.screenObjectCreate = this.createScreen(new ScreenObjectCreate(this, {name:'Create Object', width:0.8, height:0.4}));
-        this.screenObjectEdit = this.createScreen(new ScreenObjectEdit(this, {name:'Object Edit', width:0.8, height:1.6, x:0.75, anchor:true}));
-        this.screenObjectsHierarchy = this.createScreen(new ScreenObjectsHierarchy(this, {name:'Objects Hierarchy', width:0.8, height:1.6, x:-0.6, anchor:true}));
-        this.screenSettings = this.createScreen(new ScreenSettings(this, {name:'Settings', width:1.6, height:0.8, pauses:true}));
-        this.screenProfile = this.createScreen(new ScreenProfile(this, {name:'Profile', width:1.6, height:0.8, pauses:true}));
-        this.screenServices = this.createScreen(new ScreenServices(this, {name:'Services', width:1.6, height:0.8, pauses:true}));
-        this.screenRealms = this.createScreen(new ScreenRealms(this, {name:'Realms', width:1.5, height:1.5, pauses:true}));
-        this.screenAssets = this.createScreen(new ScreenAssets(this, {name:'Assets', width:2.4, height:1.0, pauses:true}));
-        this.screenAssetSelect = this.createScreen(new ScreenAssetSelect(this, {name:'Assets Select', width:0.8, height:1.6}));
-        this.screenTextureEditor = this.createScreen(new ScreenTextureEditor(this, {name:'Edit Texture', width:1.6, height:1.6}));
-        this.screenUserInteract = this.createScreen(new ScreenUserInteract(this, {name:'User Interact', width:1.5, height:1, pauses:true}));
+        this.screenHomeMenu = this.createScreen(new ScreenHomeMenu(this, { name:'Home Menu', width:1, height:1, pauses:true }));
+        this.screenRealmSettings = this.createScreen(new ScreenRealmSettings(this, { name:'Realm Settings', width:1.5, height:1, pauses:true }));
+        this.screenObjectCreate = this.createScreen(new ScreenObjectCreate(this, { name:'Create Object', width:0.8, height:0.4 }));
+        this.screenObjectEdit = this.createScreen(new ScreenObjectEdit(this, { name:'Object Edit', width:0.8, height:1.6, x:0.75, anchor:true }));
+        this.screenObjectsHierarchy = this.createScreen(new ScreenObjectsHierarchy(this, { name:'Objects Hierarchy', width:0.8, height:1.6, x:-0.6, anchor:true }));
+        this.screenSettings = this.createScreen(new ScreenSettings(this, { name:'Settings', width:1.6, height:0.8, pauses:true }));
+        this.screenProfile = this.createScreen(new ScreenProfile(this, { name:'Profile', width:1.6, height:0.8, pauses:true }));
+        this.screenServices = this.createScreen(new ScreenServices(this, { name:'Services', width:1.6, height:0.8, pauses:true }));
+        this.screenRealms = this.createScreen(new ScreenRealms(this, { name:'Realms', width:1.5, height:1.5, pauses:true }));
+        this.screenAssets = this.createScreen(new ScreenAssets(this, { name:'Assets', width:2.4, height:1.0, pauses:true }));
+        this.screenAssetSelect = this.createScreen(new ScreenAssetSelect(this, { name:'Assets Select', width:0.8, height:1.6 }));
+        this.screenTextureEditor = this.createScreen(new ScreenTextureEditor(this, { name:'Edit Texture', width:1.6, height:1.6 }));
+        this.screenUserInteract = this.createScreen(new ScreenUserInteract(this, { name:'User Interact', width:1.5, height:1, pauses:true }));
+        this.screenFeatures = this.createScreen(new ScreenFeatures(this, { name:'Features', width:1.6, height:0.8, pauses:true }));
 
         if(this.conjure.getProfile().getServiceManager().getService('PayID'))
         {
@@ -214,6 +216,11 @@ export default class ScreenManager
                 this.showScreen(this.screenHomeMenu);
             else
                 this.hideLastOpenScreen();
+        }
+        if(updateArgs.input.isPressed('P', true))
+        {
+            if(this.openScreens.length === 0 && this.conjure.getWorld().realm)
+                this.showScreen(this.screenRealmSettings);
         }
         this.mouseOver = false;
         for(let s of this.openScreens)

@@ -32,7 +32,7 @@ export default class RealmManager
             let exists = false
             for(let myRealm of this.knownRealms)
             {
-                if(Number(myRealm.id) === Number(realm.id))
+                if(myRealm.id === realm.id)
                 {
                     if(realm.timestamp > myRealm.timestamp)
                         myRealm = realm
@@ -53,14 +53,13 @@ export default class RealmManager
 
     async addRealm(realmData)
     {
-        console.log('addRealm', realmData)
         if(!realmData || !realmData.id) return;
         let exists = false
         for(let myRealm of this.knownRealms)
         {
-            if(Number(myRealm.id) === Number(realmData.id))
+            if(myRealm.id === realmData.id)
             {
-                if(Number(realmData.timestamp) > Number(myRealm.timestamp))
+                if(realmData.timestamp > myRealm.timestamp)
                    myRealm = realmData
                 exists = true
                 break
@@ -104,7 +103,8 @@ export default class RealmManager
 
     async createRealm(realmData)
     {
-        // from a peer
+        this.knownRealms.push(realmData)
+        await this.saveRealms()
         this.dataHandler.getGlobalNetwork().sendData(GLOBAL_PROTOCOLS.BROADCAST_REALMS, this.knownRealms)
     }
 
@@ -116,7 +116,7 @@ export default class RealmManager
     getRealm(id)
     {
         for(let realm of this.knownRealms)
-            if(Number(realm.id) === Number(id))
+            if(realm.id === id)
                 return realm
     }
 

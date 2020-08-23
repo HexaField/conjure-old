@@ -1,8 +1,6 @@
-import { THREE, ExtendedGroup } from 'enable3d'
-
-export const REALM_TERRAIN_GENERATORS = {
+export const REALM_WORLD_GENERATORS = {
     NONE: 'None',
-    INFINITE_TERRAIN: 'Infinite Terrain',
+    INFINITE_WORLD: 'Infinite World',
 }
 
 export const REALM_VISIBILITY = {
@@ -21,21 +19,21 @@ export default class RealmData
     {
         const now = Date.now()
         this.data = {
-            id: params.id || now, // requiring a realm to be made adds extra security - network layer should only ever deal with data, not realms directly
+            id: String(params.id || now),
             name: params.name || this.getName() || 'New Realm',
             timestamp: now,
             iconURL: params.iconURL || this.getIconURL(),
-            visibility: REALM_VISIBILITY.PUBLIC,
-            architectures: params.architectures || [],
-            terrainSettings: params.terrainSettings || {
-                terrainGeneratorType: REALM_TERRAIN_GENERATORS.INFINITE_TERRAIN 
+            visibility: REALM_VISIBILITY.PRIVATE,
+            worldSettings: params.worldSettings || {
+                features: params.features || [],
+                worldGeneratorType: REALM_WORLD_GENERATORS.INFINITE_WORLD 
             },
         }
     }
 
-    getTerrainSettings()
+    getWorldSettings()
     {
-        return this.data.terrainSettings
+        return this.data.worldSettings
     }
 
     getData()

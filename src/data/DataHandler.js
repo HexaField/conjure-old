@@ -264,6 +264,23 @@ export default class DataHandler
             return await this.getNetworkManager().leaveNetwork(data.network)
     }
 
+    async ipfsGet(cid)
+    {
+        console.log('ipfsGet', cid)
+        if(this.runningNode)
+            return await this.awaitNodeResponse('ipfsGet', cid)
+        else
+        {
+            const chunks = []
+            for await (const chunk of this.getIPFS().cat(cid)) {
+                chunks.push(chunk)
+                console.log(chunk)
+            }
+
+            return Buffer.concat(chunks).toString()
+        }
+    }
+
     // ===  only on the client - receiving from the server === //
     
     // { data, network }
@@ -301,6 +318,8 @@ export default class DataHandler
             case 'sendDataNetwork': this.sendWebsocketData({ data: await this.sendDataNetwork(data.data), requestTimestamp: data.requestTimestamp}); break;
             case 'sendToNetwork': this.sendWebsocketData({ data: await this.sendToNetwork(data.data), requestTimestamp: data.requestTimestamp}); break;
             case 'leaveNetwork': this.sendWebsocketData({ data: await this.leaveNetwork(data.data), requestTimestamp: data.requestTimestamp}); break;
+            
+            case 'ipfsGet': this.sendWebsocketData({ data: await this.ipfsGet(data.data), requestTimestamp: data.requestTimestamp}); break;
 
             default: return;
         }

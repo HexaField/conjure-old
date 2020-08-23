@@ -19,11 +19,14 @@ export default class ScreenElementTextBox extends ScreenElementBase
         this.group.add(this.background);
         // this.registerElement(this.button);
 
+        this.updateValue = this.updateValue.bind(this)
+
         this.textObj = new ThreeTypeableText({
             camera: screen.camera,
             font: screen.conjure.getDefaultFont(),
             string: args.string || args.text || '',
-            fontScale: 0.035
+            fontScale: 0.04,
+            onChange: this.updateValue
         })
         this.textObj.getObject().position.setY(-0.025)
         this.group.add(this.textObj.getObject())
@@ -41,9 +44,9 @@ export default class ScreenElementTextBox extends ScreenElementBase
         this.setValue(this.subject)
     }
 
-    updateValue()
+    updateValue(newValue)
     {
-        console.log('ScreenElementTextBox: updateValue(): wow look you actually need this function, better remove this log')
+        this.value = String(newValue);
         if(this.onChangeCallback)
             this.onChangeCallback(this.getValue())
     }
@@ -60,7 +63,7 @@ export default class ScreenElementTextBox extends ScreenElementBase
 
     getValue()
     {
-        return this.textObj.getText()
+        return this.value
     }
 
     setText(text)

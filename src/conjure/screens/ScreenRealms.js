@@ -49,7 +49,8 @@ export default class ScreenRealms extends ScreenBase
 
     async getRealms()
     {
-        this.displayRealms(await this.screenManager.conjure.getDataHandler().getRealms())
+        this.displayRealms(await this.screenManager.conjure.getWorld().getRealms())
+        // eventually this will be both global realms and favourited / saved realms
     }
 
     createRealm()
@@ -66,7 +67,7 @@ export default class ScreenRealms extends ScreenBase
         {
             let button = new ScreenElementButton(this, this.scrollPanel, { width: this.buttonWidth, height: this.buttonHeight });
             let realmLabel = new ScreenElementLabelled(this, this.scrollPanel, { width: this.buttonWidth * 2, height: this.buttonHeight, element: button });
-            realmLabel.setIconFromURL(realm.iconURL ? realm.iconURL : 'https://cdn.discordapp.com/attachments/711163360175194154/736369287496728656/realm_default.png');
+            realmLabel.setIconFromURL(realm.iconURL ? realm.iconURL : 'default_realm');
             realmLabel.setIconSize(0.1)
             realmLabel.icon.group.position.set(-0.2, 0, 0)
             button.setOnClickCallback(this.joinRealm, realm.id); // return all the realm info data
@@ -78,7 +79,7 @@ export default class ScreenRealms extends ScreenBase
     
     async joinRealm(id)
     {
-        let realmData = await this.screenManager.conjure.getDataHandler().getRealm(id || this.discordIdTextbox.getValue())
+        let realmData = await this.screenManager.conjure.getWorld().getRealm(id || this.discordIdTextbox.getValue())
         if(realmData)
         {
             this.screenManager.conjure.getWorld().joinRealm(new RealmData(realmData)) // for joining a private realm
@@ -86,7 +87,7 @@ export default class ScreenRealms extends ScreenBase
         }
         else
         {
-            console.log('Could not join realm')
+            console.log('Could not find realm with id', id || this.discordIdTextbox.getValue())
         }
     }
 

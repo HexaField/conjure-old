@@ -9,7 +9,7 @@ export default class ScreenElementSprite extends ScreenElementBase
 
         this.load = this.load.bind(this)
 
-        this.icon = easyPlane({ width: this.width, height: this.height }, { color: 0xffffff });
+        this.icon = easyPlane({ width: this.width, height: this.height });
         this.group.add(this.icon);
 
         this.texture = undefined;
@@ -32,17 +32,15 @@ export default class ScreenElementSprite extends ScreenElementBase
         this.loadCallback = callback;
     }
 
-    load()
+    async load()
     {
         if(!this.textureURL) return;
-        this.screen.screenManager.conjure.load.texture('https://cors-anywhere.herokuapp.com/' + this.textureURL).then(function(tex) {
-            this.texture = tex;
-            this.onLoad();
-        }.bind(this))
-    }
 
-    onLoad()
-    {
+        this.texture = await this.screen.screenManager.conjure.load.texture(this.textureURL)
+        
+        if(!this.texture)
+            this.texture = await this.screen.screenManager.conjure.load.texture('https://cors-anywhere.herokuapp.com/' + this.textureURL)
+        
         if(this.loadCallback)
             this.loadCallback();
         this.icon.material.map = this.texture;

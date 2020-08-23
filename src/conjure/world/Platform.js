@@ -25,6 +25,6 @@ export default class Platform
     {
         this.conjure.physics.destroy(this.floor.body)
         this.parentGroup.remove(this.floor)
-        this.parentGroup.remove(this.worldNameText)
+        this.parentGroup.remove(this.worldNameText.group)
     }
 }

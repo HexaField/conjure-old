@@ -25,6 +25,7 @@ export default class ScreenElementJSONTree extends ScreenElementBase
 
         this.collapsibleDragCallback = args.collapsibleDragCallback;
 
+        this.refresh = this.onUpdate.bind(this)
         this.updateDisplay = this.updateDisplay.bind(this);
         this.itemSelected = args.itemSelected
         this.itemHover = args.itemHover
@@ -42,15 +43,15 @@ export default class ScreenElementJSONTree extends ScreenElementBase
         this.schema = schema;
     }
 
-    refresh()
+    onUpdate()
     {
-        if(this.refreshFunction)
-            this.refreshFunction();
+        if(this.onUpdateCallback)
+            this.onUpdateCallback()
     }
     
-    updateTree(data, refreshFunction)
+    updateTree(data, onUpdateCallback)
     {
-        this.refreshFunction = refreshFunction;
+        this.onUpdateCallback = onUpdateCallback;
         this.wipeTree(this.scrollPanel.items);
         this.scrollPanel.removeAllItems();
         // if(!data) return;
@@ -124,6 +125,7 @@ export default class ScreenElementJSONTree extends ScreenElementBase
                     element.setValue(json[schemaKey])
                     element.setOnChangeCallback((newValue) => {
                         json[schemaKey] = newValue;
+                        this.onUpdate()
                     });
                 } break;
 
@@ -131,6 +133,7 @@ export default class ScreenElementJSONTree extends ScreenElementBase
                     element = new ScreenElementButton(this.screen, this.scrollPanel, { width: width, height: 0.075, textSettings: { width: 1, scale: 0.75 } });
                     element.setText(schema[schemaKey].buttonText)
                     element.setOnClickCallback(schema[schemaKey].callback);
+                    element.setDisabled(schema[schemaKey].disable);
                 } break;
 
                 case 'bool': {
@@ -138,6 +141,7 @@ export default class ScreenElementJSONTree extends ScreenElementBase
                     element.setValue(json[schemaKey])
                     element.setOnChangeCallback((newValue) => {
                         json[schemaKey] = newValue;
+                        this.onUpdate()
                     });
                 } break;
 
@@ -147,7 +151,7 @@ export default class ScreenElementJSONTree extends ScreenElementBase
                     element.setSubject(json[schemaKey]);
                     element.setOnChangeCallback((newValue) => {
                         json[schemaKey] = newValue;
-                        // this.refresh()
+                        this.onUpdate()
                     });
                     element.setActive(true);
                 } break;
@@ -163,6 +167,7 @@ export default class ScreenElementJSONTree extends ScreenElementBase
                     element.setDefaultValue(schema[schemaKey].default)
                     element.setOnChangeCallback((newValue) => {
                         json[schemaKey] = newValue;
+                        this.onUpdate()
                     });
                 } break;
 
@@ -176,6 +181,7 @@ export default class ScreenElementJSONTree extends ScreenElementBase
                     element.setAsset(asset);
                     element.setOnClickCallback((newAsset) => {
                         json[schemaKey] = newAsset.data;
+                        this.onUpdate()
                     });
                 } break;
 
@@ -189,6 +195,7 @@ export default class ScreenElementJSONTree extends ScreenElementBase
                     element.setAsset(asset);
                     element.setOnClickCallback((newAsset) => {
                         json[schemaKey] = newAsset.data;
+                        this.onUpdate()
                     });
                 } break;
                 default:break;
@@ -205,7 +212,6 @@ export default class ScreenElementJSONTree extends ScreenElementBase
                     element.group.position.setX((parent.innerWidth / 2 - (2 * this.indent))/2)
                     let label = new ScreenElementLabelled(this.screen, this.scrollPanel, { width: width, height: 0.075, element, ratio:4, updateCallback: this.alwaysUpdate, textSettings: { anchorX:'right', width: 1, scale: 0.75 } });
                     label.setText(schema[schemaKey].label);
-                    // label.setOnClickCallback(this.refresh)
                     parent.addItem(label);
                     this.scrollPanel.registerElement(label)
                 }

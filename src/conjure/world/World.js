@@ -1,10 +1,11 @@
 import { THREE, ExtendedGroup } from 'enable3d'
-import Realm, { REALM_PROTOCOLS } from './realm/Realm'
+import Realm, { REALM_PROTOCOLS, GLOBAL_REALMS } from './realm/Realm'
 import User from '../user/User'
 import UserRemote from '../user/UserRemote'
 import Platform from './Platform'
 import { CONJURE_MODE } from '../Conjure';
 import { INTERACT_TYPES } from '../screens/hud/HUDInteract';
+import RealmData, { REALM_WORLD_GENERATORS } from './realm/RealmData'
 
 export default class World
 {  
@@ -30,10 +31,37 @@ export default class World
 
         this.vec3 = new THREE.Vector3();
         this.quat = new THREE.Quaternion();
+
+        this.globalRealms = []
+    }
+
+    async getRealms()
+    {
+        let realms = []
+        realms.push(...this.globalRealms)
+        realms.push(...(await this.conjure.getDataHandler().getRealms()))
+        return realms
+    }
+
+    async getRealm(id)
+    {
+        for(let realm of this.globalRealms)
+            if(id === realm.id)
+                return realm
+        return await this.conjure.getDataHandler().getRealm(id)
+    }
+
+    async preloadGlobalRealms()
+    {
+        for(let realm of Object.keys(GLOBAL_REALMS))
+        {
+            this.globalRealms.push(GLOBAL_REALMS[realm])
+        }
     }
 
     async joinRealm(realmData)
     {
+        if(this.realm && realmData.getID() === this.realm.realmID) return
         if(this.platform) 
         {
             this.platform.destroy()

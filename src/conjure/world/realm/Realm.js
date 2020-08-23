@@ -1,5 +1,23 @@
 import { THREE, ExtendedGroup } from 'enable3d'
 import Terrain from './Terrain'
+import Feature from '../features/Feature'
+import FeatureArtGallery from '../features/FeatureArtGallery'
+
+export const GLOBAL_REALMS = {
+    GALLERY: {
+        id: 'Gallery',
+        name: 'Gallery',
+        timestamp: 0,
+        worldSettings: {
+            features: ['Gallery']
+        }
+    },
+    EDEN: {
+        id: 'Eden',
+        name: 'Eden',
+        timestamp: 0,
+    },
+}
 
 export const REALM_PROTOCOLS = {
     HEARTBEAT: 'heartbeat', // {}
@@ -55,18 +73,45 @@ export default class Realm
         this.world = world
         this.conjure = this.world.conjure
 
+        this.group = new THREE.Group()
+        this.world.group.add(this.group)
+
         this.realmData = realmData
         this.realmID = realmData.getID()
         this.receiveDataFromPeer = this.receiveDataFromPeer.bind(this)
         this.onPeerJoin = this.onPeerJoin.bind(this)
         this.onPeerLeave = this.onPeerLeave.bind(this)
+
+        this.features = []
+    }
+
+    async preload()
+    {
+        // this is where we load background things for global realms if we need to
     }
 
     async connect()
     {
         await this.conjure.getDataHandler().joinNetwork({ network: this.realmID, onMessage: this.receiveDataFromPeer, onPeerJoin: this.onPeerJoin, onPeerLeave: this.onPeerLeave })
-        this.terrain = new Terrain(this.conjure, this.world.group, this.realmData.getTerrainSettings())
+        this.terrain = new Terrain(this.conjure, this.world.group, this.realmData.getWorldSettings())
         this.sendData(REALM_PROTOCOLS.USER.JOIN, this.conjure.getProfile().getUsername())
+
+        await this.loadFeatures()
+    }
+
+    async loadFeatures()
+    {
+        for(let feature of this.realmData.getData().worldSettings.features)
+            switch(feature)
+            {
+                case 'Gallery': 
+                    let f = new FeatureArtGallery(this)
+                    await f.load()
+                    this.features.push(f)
+                    break
+
+                default: break
+            }
     }
 
     async leave()
@@ -76,6 +121,7 @@ export default class Realm
         {
             this.terrain.destroy()
         }
+        this.world.group.remove(this.group)
         console.log('successfully left realm')
     }
     
