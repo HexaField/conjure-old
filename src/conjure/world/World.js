@@ -71,14 +71,19 @@ export default class World
         {
             await this.realm.leave()
         }
+
+        console.log('Joining realm', realmData)
+        this.conjure.setConjureMode(CONJURE_MODE.LOADING)
+
         this.realm = new Realm(this, realmData)
         this.conjure.getProfile().setLastJoinedRealm(realmData.getID())
         await this.realm.connect()
+
         this.realm.sendData(REALM_PROTOCOLS.USER.JOIN, {
             username: this.conjure.getProfile().getUsername()
         })
 
-        console.log('Joining realm', realmData)
+        this.conjure.setConjureMode(CONJURE_MODE.EXPLORE)
     }
 
     async joinRealmByID(id)
@@ -88,7 +93,7 @@ export default class World
             this.platform = new Platform(this.conjure, this.group)
             return
         }
-        let realmData = await this.screenManager.conjure.getDataHandler().getRealms(id)
+        let realmData = new RealmData(await this.getRealm(id))
         await this.joinRealm(realmData)
     }
 

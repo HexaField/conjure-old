@@ -2,6 +2,7 @@ import { THREE, ExtendedGroup } from 'enable3d'
 import Terrain from './Terrain'
 import Feature from '../features/Feature'
 import FeatureArtGallery from '../features/FeatureArtGallery'
+import { REALM_WORLD_GENERATORS } from './RealmData'
 
 export const GLOBAL_REALMS = {
     GALLERY: {
@@ -9,7 +10,8 @@ export const GLOBAL_REALMS = {
         name: 'Gallery',
         timestamp: 0,
         worldSettings: {
-            features: ['Gallery']
+            features: ['Gallery'],
+            worldGeneratorType: REALM_WORLD_GENERATORS.NONE
         }
     },
     EDEN: {
@@ -93,7 +95,10 @@ export default class Realm
     async connect()
     {
         await this.conjure.getDataHandler().joinNetwork({ network: this.realmID, onMessage: this.receiveDataFromPeer, onPeerJoin: this.onPeerJoin, onPeerLeave: this.onPeerLeave })
-        this.terrain = new Terrain(this.conjure, this.world.group, this.realmData.getWorldSettings())
+        
+        if(this.realmData.getData().worldSettings.worldGeneratorType === REALM_WORLD_GENERATORS.INFINITE_WORLD)
+            this.terrain = new Terrain(this.conjure, this.world.group, this.realmData.getWorldSettings())
+        
         this.sendData(REALM_PROTOCOLS.USER.JOIN, this.conjure.getProfile().getUsername())
 
         await this.loadFeatures()

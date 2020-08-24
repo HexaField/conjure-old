@@ -9,6 +9,7 @@ import PostProcessing from './PostProcessing'
 import LoadingScreen from './LoadingScreen'
 import AssetManager from './AssetManager';
 import Fonts from './screens/text/Fonts'
+import { getParams } from './util/urldecoder'
 
 export const CONJURE_MODE = {
     LOADING: 'Loading',
@@ -54,6 +55,8 @@ export class Conjure extends Scene3D
 
     async init()
     {
+        this.urlParams = getParams(window.location.href)
+
         global.THISFRAME = Date.now()
         this.loadTimer = global.THISFRAME
         this.conjureMode = CONJURE_MODE.LOADING
@@ -120,6 +123,8 @@ export class Conjure extends Scene3D
         this.cameraFollow = new THREE.Group()
         this.cameraFollow.position.setZ(-0.25)
         this.debugBall = new THREE.Mesh(new THREE.SphereBufferGeometry(0.1), new THREE.MeshBasicMaterial())
+        this.debugBall.receiveShadow = false
+        this.debugBall.castShadow = false
         this.cameraFollow.add(this.debugBall)
         this.camera.add(this.cameraFollow)
 
@@ -135,12 +140,8 @@ export class Conjure extends Scene3D
     {
         this.sceneCSS = new THREE.Scene()
 
-        let hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.61)
-        hemiLight.position.set(0, 50, 0)
-        this.scene.add(hemiLight)
-
         let d = 8.25
-        let dirLight = new THREE.DirectionalLight(0xffffff, 0.54)
+        let dirLight = new THREE.DirectionalLight(0xffffff, 0.1)
         dirLight.position.set(-8, 12, 8)
         dirLight.castShadow = true
         dirLight.shadow.mapSize = new THREE.Vector2(1024, 1024)
@@ -172,12 +173,21 @@ export class Conjure extends Scene3D
         this.screenManager.hudGlobal.showScreen(true)
 
         this.loadingScreen.setText('Loading World...')
-        // Now load stuff in
+
+        // Now load stuff in    
+        
         this.setConjureMode(CONJURE_MODE.LOADING)
         await this.profile.loadFromDatabase()
         await this.profile.getServiceManager().initialiseServices()
         await this.world.preloadGlobalRealms()
-        await this.world.joinRealmByID(this.profile.getLastJoinedRealm())
+        
+        // join last loaded realm or get one from the url
+
+        if(this.urlParams.r && await this.world.getRealm(this.urlParams.r))
+            await this.world.joinRealmByID(this.urlParams.r)
+        else
+            await this.world.joinRealmByID(this.profile.getLastJoinedRealm())
+        
         this.setConjureMode(CONJURE_MODE.EXPLORE)
 
         // this.loadInfo = document.getElementById( 'loadInfo' )

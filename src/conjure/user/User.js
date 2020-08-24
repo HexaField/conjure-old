@@ -277,7 +277,7 @@ export default class User
         }
         if(this.group.getWorldPosition(this.vec).y < -10)
         {
-            this.teleport(0, 10, 0);
+            this.teleport(0, 2, 0);
         }
         physicsRaycaster.destroy()
     }
