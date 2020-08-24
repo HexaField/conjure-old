@@ -10,11 +10,11 @@ export default class WebSocketServer
         this.onDisconnect = this.onDisconnect.bind(this)
         this.onData = this.onData.bind(this)
 
-        this.webSocketServer = new WebSocket.Server({ port: 9700 })
+        this.webSocket = new WebSocket.Server({ port: 9700 })
 
-        this.webSocketServer.on('connection', (ws) => { this.onConnect(ws); })
-        this.webSocketServer.on('error', (error) => { console.log(error); })
-        this.webSocketServer.on('close', () => { this.onDisconnect() })
+        this.webSocket.on('connection', (ws) => { this.onConnect(ws); })
+        this.webSocket.on('error', (error) => { console.log(error); })
+        this.webSocket.on('close', () => { this.onDisconnect() })
     }
 
     onConnect(ws)

@@ -1,8 +1,8 @@
 import { THREE, ExtendedGroup } from 'enable3d'
 import Terrain from './Terrain'
-import Feature from '../features/Feature'
 import FeatureArtGallery from '../features/FeatureArtGallery'
-import { REALM_WORLD_GENERATORS } from './RealmData'
+import FeatureLookingGlass from '../features/FeatureLookingGlass'
+import { REALM_WORLD_GENERATORS, REALM_VISIBILITY } from './RealmData'
 
 export const GLOBAL_REALMS = {
     GALLERY: {
@@ -11,6 +11,16 @@ export const GLOBAL_REALMS = {
         timestamp: 0,
         worldSettings: {
             features: ['Gallery'],
+            worldGeneratorType: REALM_WORLD_GENERATORS.NONE
+        }
+    },
+    LOOKINGGLASS: {
+        id: 'LookingGlass',
+        name: 'Looking Glass',
+        timestamp: 0,
+        visibility: REALM_VISIBILITY.PRIVATE,
+        worldSettings: {
+            features: ['Looking Glass'],
             worldGeneratorType: REALM_WORLD_GENERATORS.NONE
         }
     },
@@ -109,11 +119,19 @@ export default class Realm
         for(let feature of this.realmData.getData().worldSettings.features)
             switch(feature)
             {
-                case 'Gallery': 
+                case 'Gallery': {
                     let f = new FeatureArtGallery(this)
                     await f.load()
                     this.features.push(f)
                     break
+                }
+
+                case 'Looking Glass': {
+                    let f = new FeatureLookingGlass(this)
+                    await f.load()
+                    this.features.push(f)
+                    break
+                }
 
                 default: break
             }
@@ -136,10 +154,11 @@ export default class Realm
         return this.realmData.getData()
     }
 
-    // { delta, input, mouseRaycaster, worldRaycaster }
+    // { delta, input, mouseRaycaster, worldRaycaster, conjure }
     update(args)
     {
-
+        for(let i of this.features)
+            i.update(args)
     }
 
     // networking

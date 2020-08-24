@@ -1,13 +1,15 @@
 
 import { THREE, ExtendedObject3D } from 'enable3d'
 import TextRenderer3D from '../screens/text/TextRenderer3D';
+import { Vector3 } from 'three/build/three.module';
 
 export default class Platform
 {  
-    constructor(conjure, parentGroup)
+    constructor(conjure, parentGroup, args = {})
     {
         this.conjure = conjure
-        this.platformSize = 10;
+        this.platformSize = args.size || 10;
+        this.pos = args.pos || new Vector3();
         this.parentGroup = parentGroup
 
 
@@ -17,6 +19,7 @@ export default class Platform
         this.floor = new ExtendedObject3D()
         this.floor.add(new THREE.Mesh(new THREE.PlaneBufferGeometry(this.platformSize, this.platformSize), new THREE.MeshBasicMaterial({side:THREE.DoubleSide})));
         this.floor.rotateX(Math.PI / 2)
+        this.floor.position.copy(this.pos)
         this.parentGroup.add(this.floor);
         conjure.physics.add.existing(this.floor, {shape:'plane', collider:{margin:0.01}, collisionFlags:1, mass:0})
     }

@@ -37,4 +37,12 @@ export default class NetworkManager
         if(!this.networks[network]) return
         await this.networks[network].sendData(protocol, content)
     }
+
+    async exit()
+    {
+        for(let network of Object.keys(this.networks))
+        {
+            await this.networks[network].leave()
+        }
+    }
 }

@@ -61,6 +61,7 @@ export default class Network
     
     async leave()
     {
+        console.log('Leaving network ' + this.topic + '...')
         await this.room.leave()
     }
 

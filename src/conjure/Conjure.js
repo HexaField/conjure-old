@@ -138,20 +138,33 @@ export class Conjure extends Scene3D
 
     initScene()
     {
+        // this.scene.fog = new THREE.FogExp2( 0x000000, 0.01 );
         this.sceneCSS = new THREE.Scene()
 
+        let ambientLight = new THREE.AmbientLight( 0xcccccc, 0.4 );
+        this.scene.add( ambientLight );
+
         let d = 8.25
-        let dirLight = new THREE.DirectionalLight(0xffffff, 0.1)
-        dirLight.position.set(-8, 12, 8)
-        dirLight.castShadow = true
-        dirLight.shadow.mapSize = new THREE.Vector2(1024, 1024)
-        dirLight.shadow.camera.near = 0.1
-        dirLight.shadow.camera.far = 1500
-        dirLight.shadow.camera.left = d * -1
-        dirLight.shadow.camera.right = d
-        dirLight.shadow.camera.top = d
-        dirLight.shadow.camera.bottom = d * -1
-        this.scene.add(dirLight)
+        
+        var theta = Math.PI * ( 0.45 - 0.5 );
+        var phi = 2 * Math.PI * ( 0.2 - 0.5 );
+
+        this.sunPos = new THREE.Vector3();
+        this.sunPos.x = Math.cos( phi );   
+        this.sunPos.y = Math.sin( phi ) * Math.sin( theta );
+        this.sunPos.z = Math.sin( phi ) * Math.cos( theta );
+
+        this.dirLight = new THREE.DirectionalLight(0xffffff, 0.4)
+        this.dirLight.position.copy(this.sunPos)
+        this.dirLight.castShadow = true
+        this.dirLight.shadow.mapSize = new THREE.Vector2(1024, 1024)
+        this.dirLight.shadow.camera.near = 0.1
+        this.dirLight.shadow.camera.far = 1500
+        this.dirLight.shadow.camera.left = d * -1
+        this.dirLight.shadow.camera.right = d
+        this.dirLight.shadow.camera.top = d
+        this.dirLight.shadow.camera.bottom = d * -1
+        this.scene.add(this.dirLight)
     }
 
     // this is for creating conjure-specific things

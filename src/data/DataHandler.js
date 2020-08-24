@@ -16,6 +16,16 @@ export default class DataHandler
     {
     }
 
+    async cleanup()
+    {
+        console.log('\nClosing websockets...')
+        this.webSocket.webSocket.close()
+        // console.log('Leaving networks...')
+        // await this.networkManager.exit()
+        // console.log('Closing IPFS...')
+        // await this.ipfs.stop()
+    }
+
     async initialise(runAppCallback)
     {        
         // TODO: figure out how to pipe IPFS directly from node to browser, if impossible then add protocols for all ipfs actions (networking etc)

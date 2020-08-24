@@ -179,8 +179,8 @@ export default class User
         let xzSpeed = this.getVelocity(true);
         const physicsRaycaster = this.conjure.physics.add.raycaster('allHits') // 'closest' is the default
 
-        physicsRaycaster.setRayFromWorld(this.group.position.x, this.group.position.y+0.2, this.group.position.z)
-        physicsRaycaster.setRayToWorld(this.group.position.x, this.group.position.y-0.2, this.group.position.z)
+        physicsRaycaster.setRayFromWorld(this.group.position.x, this.group.position.y+0.5, this.group.position.z)
+        physicsRaycaster.setRayToWorld(this.group.position.x, this.group.position.y-0.5, this.group.position.z)
         physicsRaycaster.rayTest()
         
         this.onGround = false;

@@ -97,7 +97,7 @@ export default class World
         await this.joinRealm(realmData)
     }
 
-    // { delta, input, mouseRaycaster, worldRaycaster }
+    // { delta, input, mouseRaycaster, worldRaycaster, conjure }
 
     update(updateArgs)
     {
