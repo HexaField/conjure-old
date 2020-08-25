@@ -5,7 +5,7 @@ import UserRemote from '../user/UserRemote'
 import Platform from './Platform'
 import { CONJURE_MODE } from '../Conjure';
 import { INTERACT_TYPES } from '../screens/hud/HUDInteract';
-import RealmData, { REALM_WORLD_GENERATORS } from './realm/RealmData'
+import RealmData, { REALM_WORLD_GENERATORS, REALM_VISIBILITY, REALM_WHITELIST } from './realm/RealmData'
 
 export default class World
 {  
@@ -35,20 +35,36 @@ export default class World
         this.globalRealms = []
     }
 
-    async getRealms()
+    async loadDefault()
+    {
+        if(this.conjure.urlParams.r && await this.getRealm(this.conjure.urlParams.r, true))
+        {
+            if(!await this.joinRealmByID(this.conjure.urlParams.r))
+                await this.joinRealmByID(0)
+        }
+        else
+        {
+            await this.joinRealmByID(this.conjure.profile.getLastJoinedRealm())
+        }
+    }
+
+    async getRealms(getPrivate)
     {
         let realms = []
-        realms.push(...this.globalRealms)
-        realms.push(...(await this.conjure.getDataHandler().getRealms()))
+        realms.push(...this.globalRealms.filter(realm => getPrivate ? true : (realm.visibility && realm.visibility !== REALM_VISIBILITY.PRIVATE)))
+        realms.push(...(await this.conjure.getDataHandler().getRealms()).filter(realm => getPrivate ? true : (realm.visibility && realm.visibility !== REALM_VISIBILITY.PRIVATE)))
         return realms
     }
 
-    async getRealm(id)
+    async getRealm(id, getPrivate)
     {
         for(let realm of this.globalRealms)
-            if(id === realm.id)
+            if(id === realm.id && (getPrivate ? true : (realm.visibility && realm.visibility !== REALM_VISIBILITY.PRIVATE)))
                 return realm
-        return await this.conjure.getDataHandler().getRealm(id)
+        
+        let realm = await this.conjure.getDataHandler().getRealm(id)
+        if(!realm) return
+        return getPrivate ? realm : (realm.visibility && realm.visibility !== REALM_VISIBILITY.PRIVATE) ? realm : false
     }
 
     async preloadGlobalRealms()
@@ -61,7 +77,7 @@ export default class World
 
     async joinRealm(realmData)
     {
-        if(this.realm && realmData.getID() === this.realm.realmID) return
+        if(this.realm && realmData.getID() === this.realm.realmID) return false
         if(this.platform) 
         {
             this.platform.destroy()
@@ -70,6 +86,19 @@ export default class World
         if(this.realm)
         {
             await this.realm.leave()
+        }
+        
+        if(realmData.getData().whitelist)
+        {
+            if(realmData.getData().whitelist.type === REALM_WHITELIST.DISCORD)
+            {
+                if(!this.conjure.getProfile().getServiceManager().getService('Discord').data) return false
+                if(!realmData.getData().whitelist.ids.includes(this.conjure.getProfile().getServiceManager().getService('Discord').data.discordID)) return false
+            }
+            if(realmData.getData().whitelist.type === REALM_WHITELIST.PASSCODE)
+            {
+                await this.waitForPasscode(realmData.getData().whitelist.ids)
+            }
         }
 
         console.log('Joining realm', realmData)
@@ -84,6 +113,21 @@ export default class World
         })
 
         this.conjure.setConjureMode(CONJURE_MODE.EXPLORE)
+        return true
+    }
+
+    async waitForPasscode(passcodes)
+    {
+        return await new Promise((resolve, reject) => {
+            this.conjure.screenManager.showScreen(this.conjure.screenManager.screenTextEntry, { 
+                callback: async (attempt) => {
+                    console.log(attempt, passcodes.includes(attempt))
+                    if(passcodes.includes(attempt))
+                        resolve()
+                    else await this.waitForPasscode(passcodes)
+                }
+            })
+        })
     }
 
     async joinRealmByID(id)
@@ -91,10 +135,17 @@ export default class World
         if(!id) 
         {
             this.platform = new Platform(this.conjure, this.group)
-            return
+            this.conjure.setConjureMode(CONJURE_MODE.EXPLORE)
+            return true
         }
-        let realmData = new RealmData(await this.getRealm(id))
-        await this.joinRealm(realmData)
+
+        let realm = await this.getRealm(id, true)
+        if(!realm) return false
+        
+        let realmData = new RealmData(realm)
+        if(!realmData) return false
+        
+        return await this.joinRealm(realmData)
     }
 
     // { delta, input, mouseRaycaster, worldRaycaster, conjure }

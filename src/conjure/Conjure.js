@@ -13,6 +13,7 @@ import { getParams } from './util/urldecoder'
 
 export const CONJURE_MODE = {
     LOADING: 'Loading',
+    WAITING: 'Waiting', // this is for once the world is loaded but waiting on user input (eg passcode)
     EXPLORE: 'Explore',
     CONJURE: 'Conjure',
 }
@@ -195,13 +196,9 @@ export class Conjure extends Scene3D
         await this.world.preloadGlobalRealms()
         
         // join last loaded realm or get one from the url
+        this.setConjureMode(CONJURE_MODE.WAITING)
 
-        if(this.urlParams.r && await this.world.getRealm(this.urlParams.r))
-            await this.world.joinRealmByID(this.urlParams.r)
-        else
-            await this.world.joinRealmByID(this.profile.getLastJoinedRealm())
-        
-        this.setConjureMode(CONJURE_MODE.EXPLORE)
+        this.world.loadDefault()
 
         // this.loadInfo = document.getElementById( 'loadInfo' )
         // this.loadInfo.hidden = true
@@ -224,6 +221,11 @@ export class Conjure extends Scene3D
             default: case CONJURE_MODE.LOADING: 
                 this.controlManager.enableCurrentControls(false)
                 this.screenManager.hideHud()
+
+            break;
+            
+            case CONJURE_MODE.WAITING: 
+                this.controlManager.setControlScheme(CONTROL_SCHEME.NONE)
 
             break;
 
@@ -252,8 +254,12 @@ export class Conjure extends Scene3D
         else
         {
             this.update(parseFloat(time.toFixed(3)), parseInt(delta.toString()))
-            this.physics.update(delta)
-            this.physics.updateDebugger()
+
+            if(this.conjureMode !== CONJURE_MODE.WAITING)
+            {
+                this.physics.update(delta)
+                this.physics.updateDebugger()
+            }
             
             this.animationMixers.update(delta)
             // this.renderer.render(this.scene, this.camera)
@@ -289,7 +295,7 @@ export class Conjure extends Scene3D
         
         this.getScreens().update(args)
 
-        if(this.conjureMode !== CONJURE_MODE.LOADING)
+        if(this.conjureMode !== CONJURE_MODE.LOADING)// & this.conjureMode !== CONJURE_MODE.WAITING)
         {
             this.getWorld().update(args)
             this.getControls().update(args)

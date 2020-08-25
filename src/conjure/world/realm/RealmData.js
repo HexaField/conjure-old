@@ -8,6 +8,11 @@ export const REALM_VISIBILITY = {
     PRIVATE: 'Private'
 }
 
+export const REALM_WHITELIST = {
+    NONE: 'None',
+    DISCORD: 'Discord',
+    PASSCODE: 'Passcode'
+}
 export default class RealmData
 {  
     constructor(data)
@@ -23,7 +28,11 @@ export default class RealmData
             name: params.name || this.getName() || 'New Realm',
             timestamp: now,
             iconURL: params.iconURL || this.getIconURL(),
-            visibility: REALM_VISIBILITY.PRIVATE,
+            visibility: params.visibility || REALM_VISIBILITY.PRIVATE,
+            whitelist: params.whitelist || {
+                type: REALM_WHITELIST.NONE,
+                ids: []
+            },
             worldSettings: params.worldSettings || {
                 features: params.features || [],
                 worldGeneratorType: REALM_WORLD_GENERATORS.INFINITE_WORLD 

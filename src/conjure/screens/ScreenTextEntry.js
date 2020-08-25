@@ -30,9 +30,11 @@ export default class ScreenTextEntry extends ScreenBase
         this.callback = callback
     }
 
-    showScreen(active)
+    showScreen(active, args = {})
     {
         super.showScreen(active);
+        if(args.callback)
+            this.setCallback(args.callback)
     }
 
     update(updateArgs)

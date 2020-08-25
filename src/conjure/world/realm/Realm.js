@@ -2,13 +2,14 @@ import { THREE, ExtendedGroup } from 'enable3d'
 import Terrain from './Terrain'
 import FeatureArtGallery from '../features/FeatureArtGallery'
 import FeatureLookingGlass from '../features/FeatureLookingGlass'
-import { REALM_WORLD_GENERATORS, REALM_VISIBILITY } from './RealmData'
+import { REALM_WORLD_GENERATORS, REALM_VISIBILITY, REALM_WHITELIST } from './RealmData'
 
 export const GLOBAL_REALMS = {
     GALLERY: {
         id: 'Gallery',
         name: 'Gallery',
         timestamp: 0,
+        visibility: REALM_VISIBILITY.PUBLIC,
         worldSettings: {
             features: ['Gallery'],
             worldGeneratorType: REALM_WORLD_GENERATORS.NONE
@@ -19,6 +20,10 @@ export const GLOBAL_REALMS = {
         name: 'Looking Glass',
         timestamp: 0,
         visibility: REALM_VISIBILITY.PRIVATE,
+        whitelist: {
+            type: REALM_WHITELIST.PASSCODE,
+            ids: ['279684211848380418', 'password']
+        },
         worldSettings: {
             features: ['Looking Glass'],
             worldGeneratorType: REALM_WORLD_GENERATORS.NONE
@@ -28,6 +33,7 @@ export const GLOBAL_REALMS = {
         id: 'Eden',
         name: 'Eden',
         timestamp: 0,
+        visibility: REALM_VISIBILITY.PUBLIC,
     },
 }
 
