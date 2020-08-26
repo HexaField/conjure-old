@@ -33,6 +33,7 @@ export default class RealmData
                 type: REALM_WHITELIST.NONE,
                 ids: []
             },
+            userData: params.userData || {},
             worldSettings: params.worldSettings || {
                 features: params.features || [],
                 worldGeneratorType: REALM_WORLD_GENERATORS.INFINITE_WORLD 

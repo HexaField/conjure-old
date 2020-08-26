@@ -210,14 +210,14 @@ export default class ScreenManager
     update(updateArgs)
     {
         // add custom key listeners to allow this to scale
-        if(updateArgs.input.isPressed('HOME'))
+        if(updateArgs.input.isPressed('HOME') && !this.conjure.getWorld().getScreensDisabled())
         {
             if(this.openScreens.length === 0)
                 this.showScreen(this.screenHomeMenu);
             else
                 this.hideLastOpenScreen();
         }
-        if(updateArgs.input.isPressed('P', true))
+        if(updateArgs.input.isPressed('P', true) && !this.conjure.getWorld().getScreensDisabled())
         {
             if(this.openScreens.length === 0 && this.conjure.getWorld().realm)
                 this.showScreen(this.screenRealmSettings);

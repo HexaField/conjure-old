@@ -277,7 +277,7 @@ export default class User
         }
         if(this.group.getWorldPosition(this.vec).y < -10)
         {
-            this.teleport(0, 2, 0);
+            this.teleport(this.conjure.world.spawnLocation.x, this.conjure.world.spawnLocation.y, this.conjure.world.spawnLocation.z);
         }
         physicsRaycaster.destroy()
     }

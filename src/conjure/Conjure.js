@@ -28,7 +28,15 @@ export class Conjure extends Scene3D
     async preload()
     {
         await this.load.preload('playerModel', 'assets/models/ybot_anims.glb')
+        await this.load.preload('lookingglass1', 'assets/models/lookingglass.glb')
         
+        await this.load.preload('grass1', 'assets/textures/grass1.jpg')
+        await this.load.preload('granite1', 'assets/textures/granite1.jpg')
+        await this.load.preload('granite2', 'assets/textures/granite2.jpg')
+        await this.load.preload('granite3', 'assets/textures/granite3.jpg')
+        await this.load.preload('rock1', 'assets/textures/rock1.jpg')
+        await this.load.preload('emerald1', 'assets/textures/emerald1.jpg')
+
         await this.load.preload('default_realm', 'assets/icons/default_realm.png')
 
         await this.load.preload('missing_texture', 'assets/textures/missing_texture.png')
@@ -102,15 +110,15 @@ export class Conjure extends Scene3D
         this.renderer.domElement.style.top = 0 
         this.renderer.domElement.style.background = ''
 
-        this.rendererCSS = new CSS3DRenderer({alpha: true, antialias: true})
-        this.rendererCSS.setSize( window.innerWidth, window.innerHeight )
-        // this.rendererCSS.domElement.style.position = 'absolute'
-        this.rendererCSS.domElement.style.outline = 'none' // required
-        this.rendererCSS.domElement.style.top = 0
-        this.rendererCSS.domElement.style.zIndex = 10000
-        document.body.appendChild(this.rendererCSS.domElement);
-        document.body.removeChild(this.renderer.domElement);
-        this.rendererCSS.domElement.appendChild(this.renderer.domElement);
+        // this.rendererCSS = new CSS3DRenderer({alpha: true, antialias: true})
+        // this.rendererCSS.setSize( window.innerWidth, window.innerHeight )
+        // // this.rendererCSS.domElement.style.position = 'absolute'
+        // this.rendererCSS.domElement.style.outline = 'none' // required
+        // this.rendererCSS.domElement.style.top = 0
+        // this.rendererCSS.domElement.style.zIndex = 10000
+        // document.body.appendChild(this.rendererCSS.domElement);
+        // document.body.removeChild(this.renderer.domElement);
+        // this.rendererCSS.domElement.appendChild(this.renderer.domElement);
 
         this.postProcessing = new PostProcessing(this);
     }
@@ -119,7 +127,7 @@ export class Conjure extends Scene3D
     {
         this.camera.fov = 80
         this.camera.near = 0.1
-        this.camera.far = 2000
+        this.camera.far = 30000
 
         this.cameraFollow = new THREE.Group()
         this.cameraFollow.position.setZ(-0.25)
@@ -139,7 +147,7 @@ export class Conjure extends Scene3D
 
     initScene()
     {
-        // this.scene.fog = new THREE.FogExp2( 0x000000, 0.01 );
+        this.scene.fog = new THREE.FogExp2( 0x344242, 0.005 );
         this.sceneCSS = new THREE.Scene()
 
         let ambientLight = new THREE.AmbientLight( 0xcccccc, 0.4 );
@@ -200,8 +208,8 @@ export class Conjure extends Scene3D
 
         this.world.loadDefault()
 
-        // this.loadInfo = document.getElementById( 'loadInfo' )
-        // this.loadInfo.hidden = true
+        this.loadInfo = document.getElementById( 'loadInfo' )
+        this.loadInfo.hidden = true
         
         this.getGlobalHUD().log('Took', (Date.now() - this.loadTimer)/1000, ' seconds to load.')
     }
@@ -264,7 +272,7 @@ export class Conjure extends Scene3D
             this.animationMixers.update(delta)
             // this.renderer.render(this.scene, this.camera)
             this.postProcessing.render()
-            this.rendererCSS.render(this.sceneCSS, this.camera)
+            // this.rendererCSS.render(this.sceneCSS, this.camera)
         }
     }
 
@@ -326,7 +334,7 @@ export class Conjure extends Scene3D
         
         this.renderer.setSize(width, height)
         this.loadingScreen.renderer.setSize(width, height)
-        this.rendererCSS.setSize(width, height)
+        // this.rendererCSS.setSize(width, height)
         this.postProcessing.composer.setSize(width, height)
         if(this.screenManager)
             this.screenManager.resizeScreens(ratio)

@@ -33,6 +33,7 @@ export default class World
         this.quat = new THREE.Quaternion();
 
         this.globalRealms = []
+        this.spawnLocation = new THREE.Vector3(0, 2, 0)
     }
 
     async loadDefault()
@@ -108,6 +109,12 @@ export default class World
         this.conjure.getProfile().setLastJoinedRealm(realmData.getID())
         await this.realm.connect()
 
+        if(realmData.getData().userData.spawnPosition)
+        {
+            this.spawnLocation = realmData.getData().userData.spawnPosition
+            this.user.teleport(realmData.getData().userData.spawnPosition.x, realmData.getData().userData.spawnPosition.y, realmData.getData().userData.spawnPosition.z)
+        }   
+        
         this.realm.sendData(REALM_PROTOCOLS.USER.JOIN, {
             username: this.conjure.getProfile().getUsername()
         })
@@ -124,7 +131,8 @@ export default class World
                     console.log(attempt, passcodes.includes(attempt))
                     if(passcodes.includes(attempt))
                         resolve()
-                    else await this.waitForPasscode(passcodes)
+                    else 
+                        await this.waitForPasscode(passcodes)
                 }
             })
         })
@@ -146,6 +154,14 @@ export default class World
         if(!realmData) return false
         
         return await this.joinRealm(realmData)
+    }
+
+    getScreensDisabled()
+    {
+        if(!this.realm) return false
+        if(this.realm.realmData.getData().userData.disableScreens)
+            return true
+        return false
     }
 
     // { delta, input, mouseRaycaster, worldRaycaster, conjure }
