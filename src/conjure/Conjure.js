@@ -28,25 +28,25 @@ export class Conjure extends Scene3D
     async preload()
     {
         this.loadingScreen.setText('Downloading assets...')
-        let assetURL = "https://assets.conjure.world/"
+        this.assetURL = "https://assets.conjure.world/"
         if(window.location.href.includes('localhost'))
-            assetURL = ''
-        await this.load.preload('playerModel', assetURL + 'assets/models/ybot_anims.glb')
-        await this.load.preload('lookingglass1', assetURL + 'assets/models/lookingglass.glb')
+            this.assetURL = '../../'
+        await this.load.preload('playerModel', this.assetURL + 'assets/models/ybot_anims.glb')
+        await this.load.preload('lookingglass1', this.assetURL + 'assets/models/lookingglass.glb')
         
-        await this.load.preload('grass1', assetURL + 'assets/textures/grass1.jpg')
-        await this.load.preload('granite1', assetURL + 'assets/textures/granite1.jpg')
-        await this.load.preload('granite2', assetURL + 'assets/textures/granite2.jpg')
-        await this.load.preload('granite3', assetURL + 'assets/textures/granite3.jpg')
-        await this.load.preload('rock1', assetURL + 'assets/textures/rock1.jpg')
-        await this.load.preload('emerald1', assetURL + 'assets/textures/emerald1.jpg')
+        await this.load.preload('grass1', this.assetURL + 'assets/textures/grass1.jpg')
+        await this.load.preload('granite1', this.assetURL + 'assets/textures/granite1.jpg')
+        await this.load.preload('granite2', this.assetURL + 'assets/textures/granite2.jpg')
+        await this.load.preload('granite3', this.assetURL + 'assets/textures/granite3.jpg')
+        await this.load.preload('rock1', this.assetURL + 'assets/textures/rock1.jpg')
+        await this.load.preload('emerald1', this.assetURL + 'assets/textures/emerald1.jpg')
 
-        await this.load.preload('default_realm', assetURL + 'assets/icons/default_realm.png')
+        await this.load.preload('default_realm', this.assetURL + 'assets/icons/default_realm.png')
 
-        await this.load.preload('missing_texture', assetURL + 'assets/textures/missing_texture.png')
-        await this.load.preload('menger_texture', assetURL + 'assets/textures/menger_texture.png')
-        await this.load.preload('ponder_texture', assetURL + 'assets/textures/ponder_texture.png')
-        await this.load.preload('default_texture', assetURL + 'assets/textures/default_texture.png')
+        await this.load.preload('missing_texture', this.assetURL + 'assets/textures/missing_texture.png')
+        await this.load.preload('menger_texture', this.assetURL + 'assets/textures/menger_texture.png')
+        await this.load.preload('ponder_texture', this.assetURL + 'assets/textures/ponder_texture.png')
+        await this.load.preload('default_texture', this.assetURL + 'assets/textures/default_texture.png')
     }
 
     // async loadAsset(name)
