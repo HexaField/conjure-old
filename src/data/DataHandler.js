@@ -193,6 +193,22 @@ export default class DataHandler
             return await this.getProfileManager().saveProfile(data)
     }
 
+    async loadAsset(data)
+    {
+        if(this.runningNode)
+            return await this.awaitNodeResponse('loadAsset')
+        else 
+            return await this.getAssetManager().loadAsset(data)
+    }
+    
+    async saveAsset(data)
+    {
+        if(this.runningNode)
+            return await this.awaitNodeResponse('saveAsset', data)
+        else
+            return await this.getAssetManager().saveAsset(data)
+    }
+
     async createRealm(data)
     {
         if(this.runningNode)
@@ -313,6 +329,9 @@ export default class DataHandler
 
             case 'loadProfile': this.sendWebsocketData({ data: await this.loadProfile(), requestTimestamp: data.requestTimestamp}); break;
             case 'saveProfile': this.sendWebsocketData({ data: await this.saveProfile(data.data), requestTimestamp: data.requestTimestamp}); break;
+
+            case 'loadAsset': this.sendWebsocketData({ data: await this.loadAsset(data.data), requestTimestamp: data.requestTimestamp}); break;
+            case 'saveAsset': this.sendWebsocketData({ data: await this.saveAsset(data.data), requestTimestamp: data.requestTimestamp}); break;
 
             case 'createRealm': this.sendWebsocketData({ data: await this.createRealm(data.data), requestTimestamp: data.requestTimestamp}); break;
             case 'updateRealm': this.sendWebsocketData({ data: await this.updateRealm(data.data), requestTimestamp: data.requestTimestamp}); break;

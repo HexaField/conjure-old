@@ -27,23 +27,34 @@ export class Conjure extends Scene3D
 
     async preload()
     {
-        await this.load.preload('playerModel', 'assets/models/ybot_anims.glb')
-        await this.load.preload('lookingglass1', 'assets/models/lookingglass.glb')
+        this.loadingScreen.setText('Downloading assets...')
+        let assetURL = "https://assets.conjure.world/"
+        if(window.location.href.includes('localhost'))
+            assetURL = ''
+        await this.load.preload('playerModel', assetURL + 'assets/models/ybot_anims.glb')
+        await this.load.preload('lookingglass1', assetURL + 'assets/models/lookingglass.glb')
         
-        await this.load.preload('grass1', 'assets/textures/grass1.jpg')
-        await this.load.preload('granite1', 'assets/textures/granite1.jpg')
-        await this.load.preload('granite2', 'assets/textures/granite2.jpg')
-        await this.load.preload('granite3', 'assets/textures/granite3.jpg')
-        await this.load.preload('rock1', 'assets/textures/rock1.jpg')
-        await this.load.preload('emerald1', 'assets/textures/emerald1.jpg')
+        await this.load.preload('grass1', assetURL + 'assets/textures/grass1.jpg')
+        await this.load.preload('granite1', assetURL + 'assets/textures/granite1.jpg')
+        await this.load.preload('granite2', assetURL + 'assets/textures/granite2.jpg')
+        await this.load.preload('granite3', assetURL + 'assets/textures/granite3.jpg')
+        await this.load.preload('rock1', assetURL + 'assets/textures/rock1.jpg')
+        await this.load.preload('emerald1', assetURL + 'assets/textures/emerald1.jpg')
 
-        await this.load.preload('default_realm', 'assets/icons/default_realm.png')
+        await this.load.preload('default_realm', assetURL + 'assets/icons/default_realm.png')
 
-        await this.load.preload('missing_texture', 'assets/textures/missing_texture.png')
-        await this.load.preload('menger_texture', 'assets/textures/menger_texture.png')
-        await this.load.preload('ponder_texture', 'assets/textures/ponder_texture.png')
-        await this.load.preload('default_texture', 'assets/textures/default_texture.png')
+        await this.load.preload('missing_texture', assetURL + 'assets/textures/missing_texture.png')
+        await this.load.preload('menger_texture', assetURL + 'assets/textures/menger_texture.png')
+        await this.load.preload('ponder_texture', assetURL + 'assets/textures/ponder_texture.png')
+        await this.load.preload('default_texture', assetURL + 'assets/textures/default_texture.png')
     }
+
+    // async loadAsset(name)
+    // {
+    //     let asset = await this.dataHandler.loadAsset(name)
+    //     if(!asset)
+    //         asset = await this.dataHandler.saveAsset(name, )
+    // }
 
     setDataHandler(dataHandler) {
         this.dataHandler = dataHandler
@@ -55,6 +66,7 @@ export class Conjure extends Scene3D
     getScreens() { return this.screenManager }
     getControls() { return this.controlManager }
     getFonts() { return this.fonts }
+    getFont(font) { return this.getFonts().getFont(font) }
     getDefaultFont() { return this.fonts.getDefault() }
     getProfile() { return this.profile }
     getDataHandler() { return this.dataHandler }
@@ -72,10 +84,12 @@ export class Conjure extends Scene3D
 
         this.fonts = new Fonts(this)
         await this.fonts.addFont('Helvetiker', 'assets/fonts/helvetiker.json')
+        await this.fonts.addFont('System', 'assets/fonts/system.json')
         this.fonts.setDefault('Helvetiker')
 
         this.loadingScreen = new LoadingScreen(this)
         this.loadingScreen.create()
+        this.loadingScreen.setText('Initialising...')
 
         this.initRenderer()
         this.initCamera()
@@ -208,8 +222,8 @@ export class Conjure extends Scene3D
 
         this.world.loadDefault()
 
-        this.loadInfo = document.getElementById( 'loadInfo' )
-        this.loadInfo.hidden = true
+        // this.loadInfo = document.getElementById( 'loadInfo' )
+        // this.loadInfo.hidden = true
         
         this.getGlobalHUD().log('Took', (Date.now() - this.loadTimer)/1000, ' seconds to load.')
     }
@@ -227,23 +241,27 @@ export class Conjure extends Scene3D
         switch(mode)
         {
             default: case CONJURE_MODE.LOADING: 
+                this.loadingScreen.active = true
                 this.controlManager.enableCurrentControls(false)
                 this.screenManager.hideHud()
 
             break;
             
             case CONJURE_MODE.WAITING: 
+                this.loadingScreen.active = false
                 this.controlManager.setControlScheme(CONTROL_SCHEME.NONE)
 
             break;
 
             case CONJURE_MODE.EXPLORE: 
+                this.loadingScreen.active = false
                 this.controlManager.setControlScheme(CONTROL_SCHEME.AVATAR)
                 this.screenManager.showHud()
 
             break;
 
             case CONJURE_MODE.CONJURE:
+                this.loadingScreen.active = false
                 this.controlManager.setControlScheme(CONTROL_SCHEME.ORBIT)
                 this.screenManager.showHud()
             break;

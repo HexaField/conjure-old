@@ -6,7 +6,12 @@ export default function(font, args = {})
     var geometry = new THREE.ShapeBufferGeometry(shapes);
 
     geometry.computeBoundingBox();
-    geometry.translate(-0.5 * (geometry.boundingBox.max.x - geometry.boundingBox.min.x), -0.5 * (geometry.boundingBox.max.y - geometry.boundingBox.min.y), 0);
+
+    // todo: add in args.alignX & args.alignY
+    geometry.translate(
+        0.5 * (geometry.boundingBox.max.x - geometry.boundingBox.min.x),
+        0.5 * (geometry.boundingBox.max.y - geometry.boundingBox.min.y), 
+        0);
     return geometry
 
     // if(outline)

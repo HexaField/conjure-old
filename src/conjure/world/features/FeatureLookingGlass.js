@@ -15,8 +15,27 @@ export default class FeatureArtGallery extends Feature
 
     async load()
     {
-        console.log('Loading act i...')
+        // this.realm.conjure.loadingScreen.textObj.getObject().scale.set(0.4,0.4,0.4)
+        this.realm.conjure.loadingScreen.setText(`
+THE ETHEREAL REALM
+WETWARE INC.
+
+'THE ENTS MARCH TO WAR'
+
+Written by
+Ponderjaunt
+
+Produced by
+Free Markets & Liberty
+
+REALMS CREATED WITH CONJURE ENGINE
+
+COPYWRONG /©/ 1984 ALL RIGHTS CANCELLED. BY PONDERJAUNT & THE FOREST.
+THIS PROGRAM IS PROTECTED UNDER THE LAWS OF THE INCORPORATED UNITED STATES
+AND OTHER BANKS. ILLEGAL DISTROBUTION MAY RESULT IN INCREDIBLE CIVIL VALUE
+AND ECONOMIC EPOCHAL SHIFTS.`)
         await this.loadScene()
+        setTimeout(()=>{}, 10000)
     }
 
     async unload()
@@ -77,7 +96,7 @@ export default class FeatureArtGallery extends Feature
             child.geometry.computeVertexNormals()
             this.realm.conjure.physics.add.existing(child, { shape:'concaveMesh', mass:0  })
         }
-        console.log(this.sceneModel.scene)
+        // console.log(this.sceneModel.scene)
         this.realm.group.add(this.sceneModel.scene)
 
 

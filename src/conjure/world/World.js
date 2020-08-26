@@ -88,6 +88,13 @@ export default class World
         {
             await this.realm.leave()
         }
+        console.log('Joining realm', realmData)
+        this.conjure.setConjureMode(CONJURE_MODE.LOADING)
+
+        this.realm = new Realm(this, realmData)
+        this.conjure.getProfile().setLastJoinedRealm(realmData.getID())
+        await this.realm.connect()
+
         
         if(realmData.getData().whitelist)
         {
@@ -98,16 +105,13 @@ export default class World
             }
             if(realmData.getData().whitelist.type === REALM_WHITELIST.PASSCODE)
             {
+                this.conjure.loadingScreen.setPasscodeVisible(true)
+                console.log('Waiting for valid passcode...')
                 await this.waitForPasscode(realmData.getData().whitelist.ids)
+                console.log('Passcode successful!')
+                this.conjure.loadingScreen.setPasscodeVisible(false)
             }
         }
-
-        console.log('Joining realm', realmData)
-        this.conjure.setConjureMode(CONJURE_MODE.LOADING)
-
-        this.realm = new Realm(this, realmData)
-        this.conjure.getProfile().setLastJoinedRealm(realmData.getID())
-        await this.realm.connect()
 
         if(realmData.getData().userData.spawnPosition)
         {
@@ -125,16 +129,13 @@ export default class World
 
     async waitForPasscode(passcodes)
     {
-        return await new Promise((resolve, reject) => {
-            this.conjure.screenManager.showScreen(this.conjure.screenManager.screenTextEntry, { 
-                callback: async (attempt) => {
-                    console.log(attempt, passcodes.includes(attempt))
+        return await new Promise((resolve) => {
+            this.conjure.loadingScreen.setPasscodeCallback(
+                async (attempt) => {
                     if(passcodes.includes(attempt))
-                        resolve()
-                    else 
-                        await this.waitForPasscode(passcodes)
+                        resolve(true)
                 }
-            })
+            )
         })
     }
 
@@ -176,7 +177,7 @@ export default class World
         let interactDistance = this.interactMaxDistance;
         for(let user in this.users)
         {
-            if(user.timedOut)
+            if(this.users[user].timedOut)
             {
                 this.users.splice(user, 1)
                 continue

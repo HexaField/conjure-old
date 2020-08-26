@@ -20,10 +20,10 @@ export const GLOBAL_REALMS = {
         name: 'Looking Glass',
         timestamp: 0,
         visibility: REALM_VISIBILITY.PRIVATE,
-        // whitelist: {
-        //     type: REALM_WHITELIST.PASSCODE,
-        //     ids: ['279684211848380418', '159196266914381824', 'password']
-        // },
+        whitelist: {
+            type: REALM_WHITELIST.PASSCODE,
+            ids: ['MOOT']
+        },
         userData: {
             spawnPosition: new THREE.Vector3(50, 10, -50),
             disableScreens: true

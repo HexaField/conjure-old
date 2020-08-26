@@ -10193,10 +10193,10 @@ three-spritetext@^1.5.2:
   resolved "https://registry.yarnpkg.com/three-spritetext/-/three-spritetext-1.5.2.tgz#8b91ab492b6765a8bb1e73b928f7be784c6c16ce"
   integrity sha512-gBlDnkpCSj0hVOoiAVJUx55dczZFQ3DZe5/tuDrKWD3ywh7Iyfr5fYc3YpXxazO6KqJrVvH+K9OeRo7CFJRY+Q==
 
-three-typeable-text@^0.1.5:
-  version "0.1.5"
-  resolved "https://registry.yarnpkg.com/three-typeable-text/-/three-typeable-text-0.1.5.tgz#4e56e164ac0afdec5d6d526cec7d6fbd89a45448"
-  integrity sha512-GImimlAynMmDOFaSkQfOFW4Gzg1PqOn8AlBZeWV1sfSmW7tscUHXpAmJ0AFddb4imwbKTImWeKkXd1DMBFiVUQ==
+three-typeable-text@^0.1.6:
+  version "0.1.6"
+  resolved "https://registry.yarnpkg.com/three-typeable-text/-/three-typeable-text-0.1.6.tgz#0e6327faca8c7403648207c17c4e6bc27d2c2aa0"
+  integrity sha512-rFKckOeU5aO4N0KU0jJ3lGaZ5WL6mmQuVWwoQ023uAd3KiMGJRlUyUZueTH+AMY96HqGHx7WblmsABAnbAtOZQ==
 
 three@^0.119.1:
   version "0.119.1"
