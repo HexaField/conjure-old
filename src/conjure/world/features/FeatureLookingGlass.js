@@ -16,6 +16,15 @@ export default class FeatureArtGallery extends Feature
     async load()
     {
         // this.realm.conjure.loadingScreen.textObj.getObject().scale.set(0.4,0.4,0.4)
+        this.realm.conjure.loadingScreen.setText('Loading Realm Assets...')
+        await this.realm.conjure.load.preload('lookingglass1', this.realm.conjure.assetURL + 'assets/models/lookingglass.glb')
+        
+        await this.realm.conjure.load.preload('grass1', this.realm.conjure.assetURL + 'assets/textures/grass1.jpg')
+        await this.realm.conjure.load.preload('granite1', this.realm.conjure.assetURL + 'assets/textures/granite1.jpg')
+        await this.realm.conjure.load.preload('granite2', this.realm.conjure.assetURL + 'assets/textures/granite2.jpg')
+        await this.realm.conjure.load.preload('granite3', this.realm.conjure.assetURL + 'assets/textures/granite3.jpg')
+        await this.realm.conjure.load.preload('rock1', this.realm.conjure.assetURL + 'assets/textures/rock1.jpg')
+        await this.realm.conjure.load.preload('emerald1', this.realm.conjure.assetURL + 'assets/textures/emerald1.jpg')
         this.realm.conjure.loadingScreen.setText(`
 THE ETHEREAL REALM
 WETWARE INC.

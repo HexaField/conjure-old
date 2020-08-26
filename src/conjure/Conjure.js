@@ -30,16 +30,8 @@ export class Conjure extends Scene3D
         this.loadingScreen.setText('Downloading assets...')
         this.assetURL = "https://assets.conjure.world/"
         if(window.location.href.includes('localhost'))
-            this.assetURL = '../../'
+            this.assetURL = ''
         await this.load.preload('playerModel', this.assetURL + 'assets/models/ybot_anims.glb')
-        await this.load.preload('lookingglass1', this.assetURL + 'assets/models/lookingglass.glb')
-        
-        await this.load.preload('grass1', this.assetURL + 'assets/textures/grass1.jpg')
-        await this.load.preload('granite1', this.assetURL + 'assets/textures/granite1.jpg')
-        await this.load.preload('granite2', this.assetURL + 'assets/textures/granite2.jpg')
-        await this.load.preload('granite3', this.assetURL + 'assets/textures/granite3.jpg')
-        await this.load.preload('rock1', this.assetURL + 'assets/textures/rock1.jpg')
-        await this.load.preload('emerald1', this.assetURL + 'assets/textures/emerald1.jpg')
 
         await this.load.preload('default_realm', this.assetURL + 'assets/icons/default_realm.png')
 
