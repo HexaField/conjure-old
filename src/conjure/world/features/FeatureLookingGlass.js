@@ -65,7 +65,7 @@ AND ECONOMIC EPOCHAL SHIFTS.`)
         this.platform.worldNameText.group.visible = false
 
         // init sky
-
+ 
         this.sky = new Sky();   
         this.sky.scale.setScalar(450000);
         this.realm.group.add(this.sky);

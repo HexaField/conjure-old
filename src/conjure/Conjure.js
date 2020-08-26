@@ -229,6 +229,10 @@ export class Conjure extends Scene3D
 
     setConjureMode(mode)
     {
+        if(this.conjureMode === CONJURE_MODE.LOADING && mode !== CONJURE_MODE.LOADING)
+        {
+            this.loadingScreen.renderer.clear(true)
+        }
         this.conjureMode = mode
         switch(mode)
         {
