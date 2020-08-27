@@ -1,5 +1,5 @@
 import ProfileServiceDiscord from "./ProfileServiceDiscord"
-import ProfileServicePayID from "./ProfileServicePayID"
+// import ProfileServicePayID from "./ProfileServicePayID"
 
 export default class ServiceManager
 {  
@@ -9,7 +9,7 @@ export default class ServiceManager
         this.services = {}
 
         this.addService(new ProfileServiceDiscord(this))
-        this.addService(new ProfileServicePayID(this))
+        // this.addService(new ProfileServicePayID(this))
     }
 
     getServiceAsJson()
