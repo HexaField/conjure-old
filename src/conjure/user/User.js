@@ -275,7 +275,7 @@ export default class User
                 this.setAction('falling', 0.1);
             }
         }
-        if(this.group.getWorldPosition(this.vec).y < -10)
+        if(this.group.getWorldPosition(this.vec).y < -10 || updateArgs.input.isPressed('R', true))
         {
             this.teleport(this.conjure.world.spawnLocation.x, this.conjure.world.spawnLocation.y, this.conjure.world.spawnLocation.z);
         }

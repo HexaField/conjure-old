@@ -153,7 +153,7 @@ export class Conjure extends Scene3D
 
     initScene()
     {
-        this.scene.fog = new THREE.FogExp2( 0x344242, 0.005 );
+        this.scene.fog = new THREE.FogExp2( 0x344242, 0.001 );
         this.sceneCSS = new THREE.Scene()
 
         let ambientLight = new THREE.AmbientLight( 0xcccccc, 0.4 );

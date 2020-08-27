@@ -4,7 +4,8 @@ import Feature from "./Feature"
 import { Water } from './Water2.js';
 import { Sky } from 'three/examples/jsm/objects/Sky.js';
 import Platform from '../Platform'  
-import SkyboxMilkyway from './SkyboxMilkyway'
+// import SkyboxMilkyway from './SkyboxMilkyway'
+// import VolumetricClouds from './VolumetricClouds'
 
 export default class FeatureArtGallery extends Feature
 {
@@ -78,17 +79,32 @@ AND ECONOMIC EPOCHAL SHIFTS.`)
 
         uniforms[ "sunPosition" ].value.copy(this.realm.conjure.sunPos);
 
+        // this.clouds = new VolumetricClouds({
+        //     threshold: 0.25,
+        //     opacity: 0.25,
+        //     range: 0.1,
+        //     steps: 100,
+        //     size: {
+        //         x: 100,
+        //         y: 20,
+        //         z: 100,
+        //     },
+        // })
+        // this.clouds.position.setY(100)
+        // this.realm.group.add(this.clouds)
+
+
         // milkyway
         // this.skybox = new SkyboxMilkyway(this.realm.conjure.camera, { opacity: 0.5 })
 
         // init water
 
-        this.waterGeometry = new THREE.PlaneBufferGeometry(2048, 2048);
+        this.waterGeometry = new THREE.PlaneBufferGeometry(4096, 4096);
 
         this.water = new Water( this.waterGeometry, {
             color: 0x6eacff,
             scale: 256,
-            reflectivity: 0.8,
+            reflectivity: 0.9,
             flowDirection: new THREE.Vector2(0.25, 0.25),
             textureWidth: 1024, 
             textureHeight: 1024
@@ -99,6 +115,7 @@ AND ECONOMIC EPOCHAL SHIFTS.`)
         this.realm.group.add(this.water);
 
         this.sceneModel = await this.realm.conjure.load.gltf('lookingglass1')
+        console.log(this.sceneModel)
         
         for(let child of this.sceneModel.scene.children)
         {
@@ -115,9 +132,6 @@ AND ECONOMIC EPOCHAL SHIFTS.`)
         grassTex.repeat.set( 32, 32 )
         let grassMat = new THREE.MeshStandardMaterial({ map: grassTex})
         this.sceneModel.scene.children[0].material = grassMat
-        this.sceneModel.scene.children[13].material = grassMat
-        this.sceneModel.scene.children[14].material = grassMat
-        this.sceneModel.scene.children[15].material = grassMat
         
 
         let granite1Tex = await this.realm.conjure.load.texture('granite1')
@@ -126,7 +140,6 @@ AND ECONOMIC EPOCHAL SHIFTS.`)
         // granite1Tex.repeat.set( 1, 4 )
         let granite1Mat = new THREE.MeshStandardMaterial({ map: granite1Tex})
         this.sceneModel.scene.children[5].material = granite1Mat
-        this.sceneModel.scene.children[11].material = granite1Mat
 
 
         let granite2Tex = await this.realm.conjure.load.texture('granite2')
@@ -135,7 +148,6 @@ AND ECONOMIC EPOCHAL SHIFTS.`)
         // granite2Tex.repeat.set( 1, 1 )
         let granite2Mat = new THREE.MeshStandardMaterial({ map: granite2Tex})
         this.sceneModel.scene.children[6].material = granite2Mat
-        this.sceneModel.scene.children[12].material = granite2Mat
 
         let granite3Tex = await this.realm.conjure.load.texture('granite3')
         granite3Tex.wrapS = THREE.RepeatWrapping
@@ -153,23 +165,22 @@ AND ECONOMIC EPOCHAL SHIFTS.`)
         this.sceneModel.scene.children[2].material = rock1Mat
         this.sceneModel.scene.children[3].material = rock1Mat
         this.sceneModel.scene.children[4].material = rock1Mat
-        this.sceneModel.scene.children[10].material = rock1Mat
-        this.sceneModel.scene.children[16].material = rock1Mat
+        this.sceneModel.scene.children[8].material = rock1Mat
 
         let emerald1Tex = await this.realm.conjure.load.texture('emerald1')
         emerald1Tex.wrapS = THREE.RepeatWrapping
         emerald1Tex.wrapT = THREE.RepeatWrapping
         // emerald1Tex.repeat.set( 1, 1 )  
         let emerald1Mat = new THREE.MeshStandardMaterial({ map: emerald1Tex})
-        this.sceneModel.scene.children[8].material = emerald1Mat    
+        this.sceneModel.scene.children[10].material = emerald1Mat    
 
         this.flyingLights = []
         for(let i = 0; i < 100; i++)
         {
-            let light = new THREE.PointLight(0xbfff83, 2, 10)
+            let light = new THREE.PointLight(0xbfff83, 1, 20, 2)
             let sphere = new THREE.Mesh(new THREE.SphereBufferGeometry(0.05), new THREE.MeshBasicMaterial({ color: 0xbfff83 }))
             sphere.add(light)
-            sphere.position.set(100-(Math.random() * 200), Math.random() * 30, 100-(Math.random() * 200))
+            sphere.position.set(50-(Math.random() * 100), 20+(Math.random() * 50),50-(Math.random() * 100))
             this.realm.group.add(sphere)
             sphere.userData.velocity = new THREE.Vector3()
             this.flyingLights.push(sphere)

@@ -46,7 +46,7 @@
     "ipfs-pubsub-room": "^2.0.1",
     "lodash": "^4.17.19",
     "simplex-noise": "^2.4.0",
-    "three": "^0.119.1",
+    "three": "^0.120.0",
     "three-spritetext": "^1.5.2",
     "three-typeable-text": "^0.1.6",
     "wrtc": "^0.4.6",
