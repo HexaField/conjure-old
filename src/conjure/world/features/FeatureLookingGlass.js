@@ -171,7 +171,17 @@ AND ECONOMIC EPOCHAL SHIFTS.`)
         emerald1Tex.wrapS = THREE.RepeatWrapping
         emerald1Tex.wrapT = THREE.RepeatWrapping
         // emerald1Tex.repeat.set( 1, 1 )  
-        let emerald1Mat = new THREE.MeshStandardMaterial({ map: emerald1Tex})
+        let emerald1Mat = new THREE.MeshPhysicalMaterial({
+            map: emerald1Tex,
+            color: 0x00ff00,
+            metalness: 0,
+            roughness: 0,
+            opacity: 0.25,
+            transparent: true,
+            side: THREE.DoubleSide,
+            premultipliedAlpha: true
+
+        })
         this.sceneModel.scene.children[10].material = emerald1Mat    
 
         this.flyingLights = []
@@ -180,7 +190,7 @@ AND ECONOMIC EPOCHAL SHIFTS.`)
             let light = new THREE.PointLight(0xbfff83, 1, 20, 2)
             let sphere = new THREE.Mesh(new THREE.SphereBufferGeometry(0.05), new THREE.MeshBasicMaterial({ color: 0xbfff83 }))
             sphere.add(light)
-            sphere.position.set(50-(Math.random() * 100), 20+(Math.random() * 50),50-(Math.random() * 100))
+            sphere.position.set(50-(Math.random() * 50), 30+(Math.random() * 10),50-(Math.random() * 100))
             this.realm.group.add(sphere)
             sphere.userData.velocity = new THREE.Vector3()
             this.flyingLights.push(sphere)

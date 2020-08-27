@@ -4732,12 +4732,7 @@ globby@^6.1.0:
     pify "^2.0.0"
     pinkie-promise "^2.0.0"
 
-google-protobuf@3.12.2:
-  version "3.12.2"
-  resolved "https://registry.yarnpkg.com/google-protobuf/-/google-protobuf-3.12.2.tgz#50ce9f9b6281235724eb243d6a83e969a2176e53"
-  integrity sha512-4CZhpuRr1d6HjlyrxoXoocoGFnRYgKULgMtikMddA9ztRyYR59Aondv2FioyxWVamRo0rF2XpYawkTCBEQOSkA==
-
-google-protobuf@^3.12.2:
+google-protobuf@3.12.4, google-protobuf@^3.12.2:
   version "3.12.4"
   resolved "https://registry.yarnpkg.com/google-protobuf/-/google-protobuf-3.12.4.tgz#fd89b7e5052cdb35a80f9b455612851d542a5c9f"
   integrity sha512-ItTn8YepDQMHEMHloUPH+FDaTPiHTnbsMvP50aXfbI65IK3AA5+wXlHSygJH8xz+h1g4gu7V+CK5X1/SaGITsA==
@@ -4763,11 +4758,6 @@ graceful-fs@^4.1.11, graceful-fs@^4.1.15, graceful-fs@^4.1.2, graceful-fs@^4.1.6
   version "4.2.4"
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.4.tgz#2256bde14d3632958c465ebc96dc467ca07a29fb"
   integrity sha512-WjKPNJF79dtJAVniUlGGWHYGz2jWxT6VhN/4m1NdkbZ2nOsEF+cI1Edgql5zCRhs/VsQYRvrXctxktVXZUkixw==
-
-grpc-web@1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/grpc-web/-/grpc-web-1.1.0.tgz#18f73583a0a8c0b6c44a5cba62e66376d0ad019e"
-  integrity sha512-oPoS4/E/EO0TA2ZOSf3AxV2AbWDeabwfbAo+8oXNenOw87RmKz4hME8Sy4KDu2dUnqK8cuGfzdQlJPAEQEygNQ==
 
 grpc-web@1.2.0:
   version "1.2.0"
@@ -7755,7 +7745,7 @@ napi-macros@~2.0.0:
   resolved "https://registry.yarnpkg.com/napi-macros/-/napi-macros-2.0.0.tgz#2b6bae421e7b96eb687aa6c77a7858640670001b"
   integrity sha512-A0xLykHtARfueITVDernsAWdtIMbOJgKgcluwENp3AlsKN/PloyO10HtmoqnFAQAcxPkgZN7wdfPfEd0zNGxbg==
 
-needle@^2.2.1:
+needle@^2.2.1, needle@^2.5.0:
   version "2.5.0"
   resolved "https://registry.yarnpkg.com/needle/-/needle-2.5.0.tgz#e6fc4b3cc6c25caed7554bd613a5cf0bac8c31c0"
   integrity sha512-o/qITSDR0JCyCKEQ1/1bnUXMmznxabbwi/Y4WwJElf+evwJNFNwIDMCCt5IigFVxgeGBJESLohGtIS9gEzo1fA==
@@ -7885,6 +7875,22 @@ node-pre-gyp@^0.13.0:
     rimraf "^2.6.1"
     semver "^5.3.0"
     tar "^4"
+
+node-pre-gyp@^0.15.0:
+  version "0.15.0"
+  resolved "https://registry.yarnpkg.com/node-pre-gyp/-/node-pre-gyp-0.15.0.tgz#c2fc383276b74c7ffa842925241553e8b40f1087"
+  integrity sha512-7QcZa8/fpaU/BKenjcaeFF9hLz2+7S9AqyXFhlH/rilsQ/hPZKK32RtR5EQHJElgu+q5RfbJ34KriI79UWaorA==
+  dependencies:
+    detect-libc "^1.0.2"
+    mkdirp "^0.5.3"
+    needle "^2.5.0"
+    nopt "^4.0.1"
+    npm-packlist "^1.1.6"
+    npmlog "^4.0.2"
+    rc "^1.2.7"
+    rimraf "^2.6.1"
+    semver "^5.3.0"
+    tar "^4.4.2"
 
 node-releases@^1.1.60:
   version "1.1.60"
@@ -10120,7 +10126,7 @@ tapable@^1.0.0, tapable@^1.1.3:
   resolved "https://registry.yarnpkg.com/tapable/-/tapable-1.1.3.tgz#a1fccc06b58db61fd7a45da2da44f5f3a3e67ba2"
   integrity sha512-4WK/bYZmj8xLr+HUCODHGF1ZFzsYffasLUgEiMBY4fgtltdO6B4WJtlSbPaDTLpYTcGVwM2qLnFTICEcNxs3kA==
 
-tar@^4:
+tar@^4, tar@^4.4.2:
   version "4.4.13"
   resolved "https://registry.yarnpkg.com/tar/-/tar-4.4.13.tgz#43b364bc52888d555298637b10d60790254ab525"
   integrity sha512-w2VwSrBoHa5BsSyH+KxEqeQBAllHhccyMFVHtGtdMpF4W7IRWfZjFiQceJPChOeTsSDVUpER2T8FA93pr0L+QA==
@@ -11056,23 +11062,23 @@ xor-distance@^2.0.0:
   resolved "https://registry.yarnpkg.com/xor-distance/-/xor-distance-2.0.0.tgz#cad3920d3a1e3d73eeedc61a554e51972dae0798"
   integrity sha512-AsAqZfPAuWx7qB/0kyRDUEvoU3QKsHWzHU9smFlkaiprEpGfJ/NBbLze2Uq0rdkxCxkNM9uOLvz/KoNBCbZiLQ==
 
-xpring-common-js@5.1.1:
-  version "5.1.1"
-  resolved "https://registry.yarnpkg.com/xpring-common-js/-/xpring-common-js-5.1.1.tgz#82e995d486ff2a8cb1b61f0b71fa56369e66bdfe"
-  integrity sha512-jgDykYN/h6gWpN1M7pZiRTYn1AUcgwC7vq2Z+U+/ADLNWhJbA6T771L6kJh6so+OyKpYu1WX6QFz4batKBMiUA==
+xpring-common-js@6.1.0:
+  version "6.1.0"
+  resolved "https://registry.yarnpkg.com/xpring-common-js/-/xpring-common-js-6.1.0.tgz#4e185f2accd77d53e96c2a11d09fb8a940839544"
+  integrity sha512-korkdsYxx/29rIFZ1CBWePOD2S0UnrUELZXuk1O83VFL/x9kbDct5/wkjbG9+ZpPyD1jLh+ngzYSdNN/0K1PDw==
   dependencies:
     bip32 "2.0.5"
     bip39 "^3.0.2"
-    google-protobuf "3.12.2"
-    grpc-web "1.1.0"
+    google-protobuf "3.12.4"
+    grpc-web "1.2.0"
     ripple-address-codec "4.1.1"
     ripple-binary-codec "0.2.6"
     ripple-keypairs "^1.0.0"
 
-xpring-js@^5.0.2:
-  version "5.0.2"
-  resolved "https://registry.yarnpkg.com/xpring-js/-/xpring-js-5.0.2.tgz#4339ca9e22edb5e27d313a992de061aec1a45be4"
-  integrity sha512-qTXpt/LP9oDw+hXWsSzoj8JHZPZ0AIGzSJljUdRo05NjtLoLjxxBUILp6scKzPbIwHbhU+1Ruu5pZulb5NYC1w==
+xpring-js@^5.1.0:
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/xpring-js/-/xpring-js-5.1.0.tgz#ab419706164d3ff7483f049e10c4a009284897d0"
+  integrity sha512-NIn0P47WJQaVmrF/44SSZvWR3sC9G8fcrOqUY1+ODkhsXh/z/SmDHZ8nEHtwAYaUEn6M+rB2Ff7A75KdnvXZNw==
   dependencies:
     "@grpc/grpc-js" "^1.1.1"
     axios "^0.19.2"
@@ -11081,7 +11087,7 @@ xpring-js@^5.0.2:
     google-protobuf "^3.12.2"
     grpc-web "1.2.0"
     xhr2 "0.2.0"
-    xpring-common-js "5.1.1"
+    xpring-common-js "6.1.0"
 
 xsalsa20@^1.0.2:
   version "1.1.0"
