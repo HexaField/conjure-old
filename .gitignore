@@ -1,6 +1,4 @@
 node_modules
 dist
 build
-public/assets/icons
-public/assets/models
-public/assets/textures
+public/assets

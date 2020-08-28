@@ -93,8 +93,8 @@ export default class World
 
         this.realm = new Realm(this, realmData)
         this.conjure.getProfile().setLastJoinedRealm(realmData.getID())
-        await this.realm.connect()
-
+        
+        await this.realm.preload()
         
         if(realmData.getData().whitelist)
         {
@@ -112,6 +112,8 @@ export default class World
                 this.conjure.loadingScreen.setPasscodeVisible(false)
             }
         }
+
+        await this.realm.load() // load the realm
 
         if(realmData.getData().userData.spawnPosition)
         {

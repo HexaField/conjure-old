@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "concurrently \"yarn start-node\" \"yarn start-browser\"",
-    "dev": "concurrently \"yarn dev-node\" \"yarn dev-browser\"",
+    "start": "sudo concurrently \"sudo yarn start-node\" \"yarn start-browser\"",
+    "dev": "sudo concurrently \"sudo yarn dev-node\" \"yarn dev-browser\"",
     "start-browser": "webpack-dev-server --define process.env.NODE_ENV='\"production\"' --mode development --progress --watch",
     "dev-browser": "webpack-dev-server --mode development --progress --watch",
     "start-node": "NODE_ENV=production nodemon --watch src/data --exec babel-node -- src/data",

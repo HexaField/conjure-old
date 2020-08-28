@@ -82,6 +82,13 @@ export default class LoadingScreen
         this.update()
     }
 
+    async awaitInput()
+    {
+        return new Promise((resolve, reject) => {
+            document.addEventListener('click', () => { return resolve() })
+        })
+    }
+
     update()
     {
         this.renderer.render(this.scene, this.camera)

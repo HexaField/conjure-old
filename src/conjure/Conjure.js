@@ -10,6 +10,7 @@ import LoadingScreen from './LoadingScreen'
 import AssetManager from './AssetManager';
 import Fonts from './screens/text/Fonts'
 import { getParams } from './util/urldecoder'
+import AudioManager from './AudioManager'
 
 export const CONJURE_MODE = {
     LOADING: 'Loading',
@@ -63,6 +64,7 @@ export class Conjure extends Scene3D
     getProfile() { return this.profile }
     getDataHandler() { return this.dataHandler }
     getGlobalHUD() { return this.screenManager.hudGlobal }
+    getAudioManager() { return this.audioManager }
     
     async ipfsGet(url) { return await this.dataHandler.ipfsGet(url) }
 
@@ -186,6 +188,7 @@ export class Conjure extends Scene3D
     async create()
     {
         console.log('Took', (Date.now() - this.loadTimer)/1000, ' seconds to load.')
+
         this.loadingScreen.setText('Loading default assets...') 
         this.assetManager = new AssetManager(this)
 
@@ -200,11 +203,15 @@ export class Conjure extends Scene3D
         this.resizeCanvas() // trigger this to set up screen anchors
         this.screenManager.hudGlobal.showScreen(true)
 
+        this.loadingScreen.setText('Click to enter conjure...') 
+        await this.loadingScreen.awaitInput()
+        
+        this.audioManager = new AudioManager(this)
+        await this.audioManager.create()
+
         this.loadingScreen.setText('Loading World...')
 
-        // Now load stuff in    
-        
-        this.setConjureMode(CONJURE_MODE.LOADING)
+        // Now load stuff in
         await this.profile.loadFromDatabase()
         await this.profile.getServiceManager().initialiseServices()
         await this.world.preloadGlobalRealms()

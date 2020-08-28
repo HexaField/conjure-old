@@ -18,7 +18,7 @@ export default class FeatureArtGallery extends Feature
         this.pieces = []
     }
 
-    async load()
+    async preload()
     {
         this.realm.conjure.loadingScreen.setText('Loading art pieces...')
         console.log('Loading art gallery...')
@@ -37,7 +37,10 @@ export default class FeatureArtGallery extends Feature
             if(isSecondHalf)
                 mesh.rotateY(Math.PI)
         }
+    }
 
+    async load()
+    {
         this.loadArtwork()
     }
 
@@ -48,7 +51,6 @@ export default class FeatureArtGallery extends Feature
 
     update(updateArgs)
     {
-
     }
 
     async loadArtwork()
@@ -76,9 +78,6 @@ export default class FeatureArtGallery extends Feature
                 let dataURI = "data:" + type.mime + ";base64," + bufferToBase64(data)
                 
                 let image = new Image()
-                console.log(type.mime, data)
-                continue
-                
                 let texture = new Texture()
                 if(type.mime.includes('gif') || type.mime.includes('mp4'))
                 {

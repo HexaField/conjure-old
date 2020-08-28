@@ -14,10 +14,14 @@ export default class FeatureArtGallery extends Feature
         super(realm)
     }
 
-    async load()
+    async preload()
     {
-        // this.realm.conjure.loadingScreen.textObj.getObject().scale.set(0.4,0.4,0.4)
+        // await this.getTokens()
         this.realm.conjure.loadingScreen.setText('Loading Realm Assets...')
+
+        await this.realm.conjure.getAudioManager().load('jumanji', this.realm.conjure.assetURL + 'assets/sounds/jumanji.mp3')
+        await this.realm.conjure.getAudioManager().load('flute', this.realm.conjure.assetURL + 'assets/sounds/flute.mp3')
+        
         await this.realm.conjure.load.preload('lookingglass1', this.realm.conjure.assetURL + 'assets/models/lookingglass.glb')
         
         await this.realm.conjure.load.preload('grass1', this.realm.conjure.assetURL + 'assets/textures/grass1.jpg')
@@ -45,7 +49,8 @@ THIS PROGRAM IS PROTECTED UNDER THE LAWS OF THE INCORPORATED UNITED STATES
 AND OTHER BANKS. ILLEGAL DISTROBUTION MAY RESULT IN INCREDIBLE CIVIL VALUE
 AND ECONOMIC EPOCHAL SHIFTS.`)
         await this.loadScene()
-        setTimeout(()=>{}, 10000)
+
+        // setTimeout(()=>{}, 10000)
     }
 
     async unload()
@@ -195,6 +200,18 @@ AND ECONOMIC EPOCHAL SHIFTS.`)
             sphere.userData.velocity = new THREE.Vector3()
             this.flyingLights.push(sphere)
         }
+    }
+
+    async load()
+    {
+        this.realm.conjure.getAudioManager().play('jumanji', { loop: true })
+    }
+
+    async getTokens()
+    {
+        let address = 'r4sYcbdi4oE18FhVYWEhXa1AEe21XGR39z'
+        let txlist = await (await fetch('https://data.ripple.com/api/v2/address/' + address)).json()
+        console.log(txlist)
     }
 
     update(updateArgs)

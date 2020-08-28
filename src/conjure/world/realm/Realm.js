@@ -109,18 +109,11 @@ export default class Realm
 
     async preload()
     {
-        // this is where we load background things for global realms if we need to
-    }
-
-    async connect()
-    {
         await this.conjure.getDataHandler().joinNetwork({ network: this.realmID, onMessage: this.receiveDataFromPeer, onPeerJoin: this.onPeerJoin, onPeerLeave: this.onPeerLeave })
         
         if(this.realmData.getData().worldSettings.worldGeneratorType === REALM_WORLD_GENERATORS.INFINITE_WORLD)
             this.terrain = new Terrain(this.conjure, this.world.group, this.realmData.getWorldSettings())
         
-        this.sendData(REALM_PROTOCOLS.USER.JOIN, this.conjure.getProfile().getUsername())
-
         await this.loadFeatures()
     }
 
@@ -131,20 +124,26 @@ export default class Realm
             {
                 case 'Gallery': {
                     let f = new FeatureArtGallery(this)
-                    await f.load()
+                    await f.preload()
                     this.features.push(f)
                     break
                 }
 
                 case 'Looking Glass': {
                     let f = new FeatureLookingGlass(this)
-                    await f.load()
+                    await f.preload()
                     this.features.push(f)
                     break
                 }
 
                 default: break
             }
+    }
+
+    async load()
+    {
+        for(let feature of this.features)
+            await feature.load()
     }
 
     async leave()

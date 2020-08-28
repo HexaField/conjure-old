@@ -1,5 +1,5 @@
 import ProfileServiceDiscord from "./ProfileServiceDiscord"
-// import ProfileServicePayID from "./ProfileServicePayID"
+// import ProfileServicePayID from "./ProfileServicePayID" 
 
 export default class ServiceManager
 {  
