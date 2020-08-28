@@ -114,10 +114,10 @@ export default class Realm
         if(this.realmData.getData().worldSettings.worldGeneratorType === REALM_WORLD_GENERATORS.INFINITE_WORLD)
             this.terrain = new Terrain(this.conjure, this.world.group, this.realmData.getWorldSettings())
         
-        await this.loadFeatures()
+        await this.preloadFeatures()
     }
 
-    async loadFeatures()
+    async preloadFeatures()
     {
         for(let feature of this.realmData.getData().worldSettings.features)
             switch(feature)

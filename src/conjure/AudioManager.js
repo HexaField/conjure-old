@@ -27,19 +27,17 @@ export default class AudioManager
         
         if(!url) return
 
-        console.log(this.audioLoader)
         await new Promise((resolve, reject) => {
             this.audioLoader.load(url, (buffer) => {
                 this.buffers[label] = buffer
                 return resolve()
-            }, (progress) => {console.log(progress)})
+            })
         })
     }
     
     // { loop, volume }
     play(buffer, args = {})
     {
-        console.log('play ')
         if(!this.audioListener || !this.buffers[buffer]) return
         
         let sound = new THREE.Audio(this.audioListener);
