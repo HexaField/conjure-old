@@ -24,14 +24,14 @@ export class Conjure extends Scene3D
     constructor()
     {
         super({ key: 'Conjure'})
+        this.assetURL = "https://assets.conjure.world/"
+        if(window.location.href.includes('localhost'))
+            this.assetURL = ''
     }
 
     async preload()
     {
         this.loadingScreen.setText('Downloading assets...')
-        this.assetURL = "https://assets.conjure.world/"
-        if(window.location.href.includes('localhost'))
-            this.assetURL = ''
         await this.load.preload('playerModel', this.assetURL + 'assets/models/ybot_anims.glb')
 
         await this.load.preload('default_realm', this.assetURL + 'assets/icons/default_realm.png')
