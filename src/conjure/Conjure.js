@@ -77,8 +77,8 @@ export class Conjure extends Scene3D
         this.conjureMode = CONJURE_MODE.LOADING
 
         this.fonts = new Fonts(this)
-        await this.fonts.addFont('Helvetiker', 'assets/fonts/helvetiker.json')
-        await this.fonts.addFont('System', 'assets/fonts/system.json')
+        await this.fonts.addFont('Helvetiker', this.assetURL + 'assets/fonts/helvetiker.json')
+        await this.fonts.addFont('System', this.assetURL + 'assets/fonts/system.json')
         this.fonts.setDefault('Helvetiker')
 
         this.loadingScreen = new LoadingScreen(this)
