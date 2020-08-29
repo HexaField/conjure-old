@@ -24,9 +24,10 @@ export class Conjure extends Scene3D
     constructor()
     {
         super({ key: 'Conjure'})
+
         this.assetURL = "https://assets.conjure.world/"
         if(window.location.href.includes('localhost'))
-            this.assetURL = ''
+            this.assetURL = 'assets/dist/'
     }
 
     async preload()
@@ -35,6 +36,8 @@ export class Conjure extends Scene3D
         await this.load.preload('playerModel', this.assetURL + 'assets/models/ybot_anims.glb')
 
         await this.load.preload('default_realm', this.assetURL + 'assets/icons/default_realm.png')
+        await this.load.preload('speaker', this.assetURL + 'assets/icons/speaker.png')
+        await this.load.preload('speakermute', this.assetURL + 'assets/icons/speakermute.png')
 
         await this.load.preload('missing_texture', this.assetURL + 'assets/textures/missing_texture.png')
         await this.load.preload('menger_texture', this.assetURL + 'assets/textures/menger_texture.png')
@@ -65,6 +68,7 @@ export class Conjure extends Scene3D
     getDataHandler() { return this.dataHandler }
     getGlobalHUD() { return this.screenManager.hudGlobal }
     getAudioManager() { return this.audioManager }
+    getLoadingScreen() { return this.loadingScreen }
     
     async ipfsGet(url) { return await this.dataHandler.ipfsGet(url) }
 
@@ -202,12 +206,9 @@ export class Conjure extends Scene3D
 
         this.resizeCanvas() // trigger this to set up screen anchors
         this.screenManager.hudGlobal.showScreen(true)
-
-        this.loadingScreen.setText('Click to enter conjure...') 
-        await this.loadingScreen.awaitInput()
         
         this.audioManager = new AudioManager(this)
-        await this.audioManager.create()
+        this.screenManager.hudGlobal.audioControls.setAudioManager(this.audioManager)
 
         this.loadingScreen.setText('Loading World...')
 
@@ -220,6 +221,7 @@ export class Conjure extends Scene3D
         this.setConjureMode(CONJURE_MODE.WAITING)
 
         this.world.loadDefault()
+        global.CONSOLE.showNotification('Press (R) to reset if your avatar gets stuck\nPress escape to reveal the mouse and access settings.', 10)
 
         // this.loadInfo = document.getElementById( 'loadInfo' )
         // this.loadInfo.hidden = true

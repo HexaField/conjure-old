@@ -10,6 +10,7 @@ export default class ScreenElementSprite extends ScreenElementBase
         this.load = this.load.bind(this)
 
         this.icon = easyPlane({ width: this.width, height: this.height });
+        this.icon.material.transparent = true
         this.group.add(this.icon);
 
         this.texture = undefined;
@@ -32,9 +33,13 @@ export default class ScreenElementSprite extends ScreenElementBase
         this.loadCallback = callback;
     }
 
-    async load()
+    async load(textureURL)
     {
+        if(textureURL)
+            this.textureURL = textureURL
+        
         if(!this.textureURL) return;
+        
 
         this.texture = await this.screen.screenManager.conjure.load.texture(this.textureURL)
         

@@ -88,7 +88,7 @@ export default class World
         {
             await this.realm.leave()
         }
-        console.log('Joining realm', realmData)
+        // console.log('Joining realm', realmData)
         this.conjure.setConjureMode(CONJURE_MODE.LOADING)
 
         this.realm = new Realm(this, realmData)

@@ -49,7 +49,6 @@ export default class ScreenBase
 
         this.elements = [];
 
-        this.showGrid = true;
         this.debugLines = this.addDebugGrid();
         this.debugLines.visible = false;
         
@@ -134,12 +133,13 @@ export default class ScreenBase
     {
         const grid_count = 2;
         const group = new THREE.Group();
+        const size = 1
         for (let i = -grid_count; i <= grid_count; i++)
         {   
             group.add(easyLine({
                     points: [
-                        new THREE.Vector3(rotated ? -grid_count : i, rotated ? i : -grid_count, 0),
-                        new THREE.Vector3(rotated ? grid_count : i, rotated ? i : grid_count, 0)
+                        new THREE.Vector3(rotated ? -grid_count : i * size, rotated ? i * size: -grid_count, 0),
+                        new THREE.Vector3(rotated ? grid_count : i * size, rotated ? i * size: grid_count, 0)
                     ]
                 }, { color: 0xffffff}
             ))
@@ -191,8 +191,7 @@ export default class ScreenBase
         }
         else
         {
-
-            if(updateArgs.input.isPressed('k', true))
+            if(updateArgs.input.isPressed('k', true, true))
             {
                 this.debugLines.visible = !this.debugLines.visible;
             }

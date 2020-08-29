@@ -24,7 +24,7 @@ export default class FileStorageNode
             if(!await this.exists(directory))
                 return Boolean(await this.files.mkdir(directory, { recursive: true }))
         } catch (err) {
-            console.log('Error making directory at location', directory, err)
+            // console.log('Error making directory at location', directory, err)
         }
         return false
     }
@@ -36,7 +36,7 @@ export default class FileStorageNode
             let stat = await this.files.stat(directory)
             return Boolean(stat)
         } catch (err) {
-            console.log('Error finding status of file at location', directory, err)
+            // console.log('Error finding status of file at location', directory, err)
         }
         return false
     }

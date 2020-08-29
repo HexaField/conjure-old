@@ -38,6 +38,9 @@ export default class ControlManager
         this.objectGroups = [];
         
         this.vec3 = new THREE.Vector3();
+        this.hasPointerLock = false
+
+        this.pointerLockChange = this.pointerLockChange.bind(this)
 
         this.conjure.input.addKey('FOCUS', 'f');
         this.conjure.input.addKey('EDIT_CONTROLS', '1');
@@ -48,6 +51,7 @@ export default class ControlManager
         this.conjure.input.addKey('LEFT', 'a');
         this.conjure.input.addKey('RIGHT', 'd');
         this.conjure.input.addKey('JUMP', 'SPACEBAR');
+        document.addEventListener('pointerlockchange', this.pointerLockChange)
     }
 
     buildTransformControls()
@@ -66,6 +70,18 @@ export default class ControlManager
         if(!document.hasFocus()) return
         if(this.conjure.getScreens().hudExplore.active || (this.conjure.getScreens().hudConjure.active && this.currentControlScheme === CONTROL_SCHEME.FLY))
             this.domElement.requestPointerLock()
+    }
+
+    pointerLockChange(event)
+    {
+        let hasLock = document.pointerLockElement === this.domElement || document.mozPointerLockElement === this.domElement
+        if(hasLock !== this.hasPointerLock)
+            this.hasPointerLock = hasLock
+    }
+
+    getPointerLockState()
+    {
+        return this.hasPointerLock
     }
 
     pointerLockError()
@@ -216,7 +232,7 @@ export default class ControlManager
             this.enableControls(false)
             return
         }
-        if(updateArgs.input.isPressed('MOUSELEFT', true))
+        if(updateArgs.input.isPressed('MOUSELEFT', true) && !global.CONSOLE.getIsMouseOverhudElement())
             this.getPointerLock()
         // if(updateArgs.input.isPressed('HOME'))
         // {

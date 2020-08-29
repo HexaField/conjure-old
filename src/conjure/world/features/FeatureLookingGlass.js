@@ -17,20 +17,26 @@ export default class FeatureArtGallery extends Feature
     async preload()
     {
         // await this.getTokens()
-        this.realm.conjure.loadingScreen.setText('Loading Realm Assets...')
 
+        this.realm.conjure.getLoadingScreen().setText('Loading Realm Assets\n (1/9)')
         await this.realm.conjure.getAudioManager().load('jumanji', this.realm.conjure.assetURL + 'assets/sounds/jumanji.mp3')
+        this.realm.conjure.getLoadingScreen().setText('Loading Realm Assets\n (2/9)')
         await this.realm.conjure.getAudioManager().load('flute', this.realm.conjure.assetURL + 'assets/sounds/flute.mp3')
-        
+        this.realm.conjure.getLoadingScreen().setText('Loading Realm Assets\n (3/9)')
         await this.realm.conjure.load.preload('lookingglass1', this.realm.conjure.assetURL + 'assets/models/lookingglass.glb')
-        
+        this.realm.conjure.getLoadingScreen().setText('Loading Realm Assets\n (4/9)')
         await this.realm.conjure.load.preload('grass1', this.realm.conjure.assetURL + 'assets/textures/grass1.jpg')
+        this.realm.conjure.getLoadingScreen().setText('Loading Realm Assets\n (5/9)')
         await this.realm.conjure.load.preload('granite1', this.realm.conjure.assetURL + 'assets/textures/granite1.jpg')
+        this.realm.conjure.getLoadingScreen().setText('Loading Realm Assets\n (6/9)')
         await this.realm.conjure.load.preload('granite2', this.realm.conjure.assetURL + 'assets/textures/granite2.jpg')
+        this.realm.conjure.getLoadingScreen().setText('Loading Realm Assets\n (7/9)')
         await this.realm.conjure.load.preload('granite3', this.realm.conjure.assetURL + 'assets/textures/granite3.jpg')
+        this.realm.conjure.getLoadingScreen().setText('Loading Realm Assets\n (8/9)')
         await this.realm.conjure.load.preload('rock1', this.realm.conjure.assetURL + 'assets/textures/rock1.jpg')
+        this.realm.conjure.getLoadingScreen().setText('Loading Realm Assets\n (9/9)')
         await this.realm.conjure.load.preload('emerald1', this.realm.conjure.assetURL + 'assets/textures/emerald1.jpg')
-        this.realm.conjure.loadingScreen.setText(`
+        this.realm.conjure.getLoadingScreen().setText(`
 THE ETHEREAL REALM
 WETWARE INC.
 
@@ -120,7 +126,7 @@ AND ECONOMIC EPOCHAL SHIFTS.`)
         this.realm.group.add(this.water);
 
         this.sceneModel = await this.realm.conjure.load.gltf('lookingglass1')
-        console.log(this.sceneModel)
+        // console.log(this.sceneModel)
         
         for(let child of this.sceneModel.scene.children)
         {

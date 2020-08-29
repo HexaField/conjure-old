@@ -219,14 +219,14 @@ export default class User
                 {
                     if(!this.turnedTooMuch)
                     {
-                        if(xzSpeed > this.walkSpeed)
-                        {
-                            this.setAction('landRoll', 0.1, true, 0.0);
-                        }
-                        else
-                        {
+                        // if(xzSpeed > this.walkSpeed)
+                        // {
+                        //     this.setAction('landRoll', 0.1, true, 0.0);
+                        // }
+                        // else
+                        // {
                             this.setAction('land', 0.2, true, 0.2);
-                        }
+                        // }
 
                     }
                     else

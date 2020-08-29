@@ -22,11 +22,11 @@ export default class HUDElementNotification
 
     showNotification(message, duration = 3) // 3 seconds
     {
-        console.log(message, duration)
+        // console.log(message, duration)
         this.textElement.setText(message)
         this.textElement.setHidden(false)
         this.hasNotification = true
-        this.duration = duration
+        this.duration = duration * 60
     }
 
     update()

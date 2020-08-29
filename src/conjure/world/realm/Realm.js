@@ -26,7 +26,8 @@ export const GLOBAL_REALMS = {
         },
         userData: {
             spawnPosition: new THREE.Vector3(30, 25, 40),
-            disableScreens: true
+            disableScreens: true,
+            playsAudio: true,
         },
         worldSettings: {
             features: ['Looking Glass'],
@@ -114,6 +115,11 @@ export default class Realm
         if(this.realmData.getData().worldSettings.worldGeneratorType === REALM_WORLD_GENERATORS.INFINITE_WORLD)
             this.terrain = new Terrain(this.conjure, this.world.group, this.realmData.getWorldSettings())
         
+        if(this.realmData.getData().userData.playsAudio)
+        {
+           await this.conjure.getAudioManager().create(true)
+        }
+
         await this.preloadFeatures()
     }
 

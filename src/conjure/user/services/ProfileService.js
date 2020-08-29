@@ -9,7 +9,7 @@ export default class ProfileService
 
     async initialise()
     {
-        console.log('Initialised service ' + this.name)
+        // console.log('Initialised service ' + this.name)
     }
 
     getSchema()

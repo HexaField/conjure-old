@@ -10,13 +10,26 @@ export default class AudioManager
         this.sounds = []
     }
 
-    async create()
+    getHasContext()
     {
+        return this.audioListener !== undefined
+    }
+
+    async create(waitForInput)
+    {
+        if(this.getHasContext()) return
+
+        if(waitForInput)
+        {
+            this.conjure.getLoadingScreen().setText('WARNING!\n\nThis realm automatically plays audio.\nPlease click to continue.') 
+            await this.conjure.getLoadingScreen().awaitInput()
+        }
+
         this.audioListener = new THREE.AudioListener();
         
         await this.audioListener.context.resume()
         this.conjure.camera.add(this.audioListener);
-        this.setMasterVolume(0.1)
+        this.setMasterVolume(1.0)
 
         this.audioLoader = new THREE.AudioLoader();
     }
@@ -80,5 +93,13 @@ export default class AudioManager
     {
         if(!this.audioListener) return
         this.audioListener.setMasterVolume(number(amount))
+    }
+
+    async toggleMute()
+    {
+        if(!this.audioListener) 
+            await this.create(false)
+        this.audioListener.setMasterVolume(this.audioListener.getMasterVolume() === 0 ? 1 : 0)
+        return this.audioListener.getMasterVolume()
     }
 }
