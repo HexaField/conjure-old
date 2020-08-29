@@ -10,7 +10,7 @@ export default function(font, args = {})
     // todo: add in args.alignX & args.alignY
     geometry.translate(
         -0.5 * (geometry.boundingBox.max.x - geometry.boundingBox.min.x),
-        -0.5 * (geometry.boundingBox.max.y - geometry.boundingBox.min.y), 
+        0,//0.5 * (geometry.boundingBox.max.y - geometry.boundingBox.min.y), 
         0);
     return geometry
 

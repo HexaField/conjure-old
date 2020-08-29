@@ -87,8 +87,8 @@ export default class FeatureArtGallery extends Feature
                 }   
                 else
                 {
-                    this.pieces[i].createdBy.setText(metadata.createdBy)
-                    this.pieces[i].description.setText(this.explodeString(metadata.description, 60))
+                    this.pieces[i].createdBy.setText(metadata.createdBy.trim())
+                    this.pieces[i].description.setText(this.explodeString(metadata.description.trim(), 60))
                     this.pieces[i].mesh.material.map = texture
                     image.onload = () => {
                         texture.image = image;
@@ -108,11 +108,13 @@ export default class FeatureArtGallery extends Feature
     {
         let mesh = new THREE.Mesh(new THREE.PlaneBufferGeometry(2, 2), new THREE.MeshBasicMaterial({ map:this.loadingTex, side:THREE.DoubleSide }))
         
+        let flip = this.pieces.length % 2 ? 1 : -1
+
         let createdBy = new TextRenderer3D(this.realm.conjure, mesh, { text: 'Loading...', width: 1, scale: 2, color: 0x000000 });
-        createdBy.group.position.set(0, this.pieces.length % 2 ? 1.5 : -1.5, 0);
+        createdBy.group.position.set(0, -1.25, 0);
 
         let description = new TextRenderer3D(this.realm.conjure, mesh, { text: '', width: 1, scale: 2, color: 0x000000 });
-        description.group.position.set(0, this.pieces.length % 2 ? 1.25 : -1.25, 0);
+        description.group.position.set(0, -1.5, 0);
 
         mesh.receiveShadow = false
         mesh.castShadow = false
