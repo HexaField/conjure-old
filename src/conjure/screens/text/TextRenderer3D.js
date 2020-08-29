@@ -14,7 +14,7 @@ export default class TextRenderer3D
         this.anchorX = params.anchorX || 'center'
         this.anchorY = params.anchorY || 'center'
         this.renderSide = params.renderSide || THREE.DoubleSide
-        this.color = params.color || 0xffffff
+        this.color = params.color === undefined ? 0xffffff : params.color
         
         this.string = String(params.string || params.text || '')
 
