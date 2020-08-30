@@ -129,7 +129,7 @@ export default class User
             {
                 this.setAction('idle', 0.2)
             }
-            if(this.currentAnimation === 'unsheath' || this.currentAnimation === 'swingOutward' || this.currentAnimation === 'swingInward')
+            if(this.currentAnimation === 'unsheath' || this.currentAnimation === 'swingOutward' || this.currentAnimation === 'swingInward' || this.currentAnimation === 'idleSwordPlay')
             {
                 if(this.swingAgain)
                 {
@@ -206,7 +206,7 @@ export default class User
     {
         for(let mesh of this.meshes)
         {
-            // mesh.visible = Boolean(alpha);
+            mesh.visible = Boolean(alpha);
             mesh.material.opacity = alpha;
         }
     }
@@ -236,11 +236,14 @@ export default class User
                 // }
            })
         }
-        if(this.currentAnimation === 'unsheath' || this.currentAnimation === 'runSword' || this.currentAnimation === 'swingOutward' || this.currentAnimation === 'swingInward')
+        if(this.currentAnimation === 'unsheath' || this.currentAnimation === 'runSword' || this.currentAnimation === 'swingOutward' || this.currentAnimation === 'idleSwordPlay')
         {
-            if(this.currentAnimation === 'swingInward')
-                if(updateArgs.input.isPressed('MOUSELEFT', true))
-                    this.swingAgain = true
+
+        }
+        else if(this.currentAnimation === 'swingInward')
+        {
+            if(updateArgs.input.isPressed('MOUSELEFT', true))
+               this.swingAgain = true
         }
         else if(this.currentAnimation === 'land' || this.currentAnimation === 'landHard' || this.currentAnimation === 'landRoll')
         {
@@ -321,6 +324,10 @@ export default class User
                     {
                         this.setAction('swingInward', 0.1, true);
                     }
+                    if(updateArgs.input.isPressed('MOUSERIGHT', true))
+                    {
+                        this.setAction('idleSwordPlay', 0.1, true);
+                    }
                 }
             }
             else
@@ -329,6 +336,8 @@ export default class User
                 this.setAction('falling', 0.1);
             }
         }
+        if(updateArgs.input.isPressed('I', true))
+            console.log(this.group.getWorldPosition(this.vec))
         if(this.group.getWorldPosition(this.vec).y < -10 || updateArgs.input.isPressed('R', true))
         {
             this.teleport(this.conjure.world.spawnLocation.x, this.conjure.world.spawnLocation.y, this.conjure.world.spawnLocation.z);
@@ -366,7 +375,7 @@ export default class User
     {
         switch(this.currentAnimation)
         {
-            case 'land': case 'landHard': case 'landRoll':  case 'jump': case 'runningJump': case 'falling': case 'flip': case 'swingInward': case 'swingOutward': case 'unsheath':
+            case 'land': case 'landHard': case 'landRoll':  case 'jump': case 'runningJump': case 'falling': case 'flip': case 'swingInward': case 'swingOutward': case 'unsheath': case 'idleSwordPlay':
                 this.animMovementLock = true; return;
             default: 
                 this.animMovementLock = false; return;

@@ -36,6 +36,7 @@
   },
   "dependencies": {
     "@forlagshuset/simple-fs": "^0.4.0",
+    "@tweenjs/tween.js": "^18",
     "abi-decoder": "^2.3.0",
     "big-integer": "^1.6.48",
     "discord-oauth2": "^2.3.0",

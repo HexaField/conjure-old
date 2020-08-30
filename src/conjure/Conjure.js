@@ -162,13 +162,13 @@ export class Conjure extends Scene3D
         this.scene.fog = new THREE.FogExp2( 0x344242, 0.001 );
         this.sceneCSS = new THREE.Scene()
 
-        let ambientLight = new THREE.AmbientLight( 0xcccccc, 0.4 );
+        let ambientLight = new THREE.AmbientLight( 0xcccccc, 0.2 );
         this.scene.add( ambientLight );
 
         let d = 8.25
         
-        var theta = Math.PI * ( 0.45 - 0.5 );
-        var phi = 2 * Math.PI * ( 0.2 - 0.5 );
+        var theta = Math.PI * ( 0.3 - 0.5 );
+        var phi = 2 * Math.PI * ( 0.3 - 0.5 );
 
         this.sunPos = new THREE.Vector3();
         this.sunPos.x = Math.cos( phi );   
@@ -302,6 +302,7 @@ export class Conjure extends Scene3D
     update(time, delta)
     {
         let deltaSeconds = delta / 1000
+        if(deltaSeconds < 0.01) deltaSeconds = 0
         
         this.input.update()
 

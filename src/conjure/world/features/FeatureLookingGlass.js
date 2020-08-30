@@ -7,6 +7,7 @@ import Platform from '../Platform'
 import { easyOrigin } from '../../util/MeshTemplates';
 // import SkyboxMilkyway from './SkyboxMilkyway'
 // import VolumetricClouds from './VolumetricClouds'
+import TWEEN from '@tweenjs/tween.js';
 
 export default class FeatureArtGallery extends Feature
 {
@@ -16,6 +17,10 @@ export default class FeatureArtGallery extends Feature
         this.swordTriggerEventProtocol = 'lookingglass.eventtrigger'
         this.triggerSwordEvent = this.triggerSwordEvent.bind(this)
         this.realm.addNetworkProtocolCallback(this.swordTriggerEventProtocol, this.triggerSwordEvent)
+        this.tweens = []
+        this.vec3 = new THREE.Vector3()
+        this.realmData = realm.getData()
+        this.spawnPosition = this.realmData.userData.spawnPosition
     }
 
     async preload()
@@ -31,7 +36,7 @@ export default class FeatureArtGallery extends Feature
         this.realm.conjure.getLoadingScreen().setText('Loading Realm Assets\n (2/' + assetCount + ')')
         await this.realm.conjure.getAudioManager().load('jumanji', this.realm.conjure.assetURL + 'assets/sounds/jumanji.wav')
         this.realm.conjure.getLoadingScreen().setText('Loading Realm Assets\n (3/' + assetCount + ')')
-        await this.realm.conjure.load.preload('lookingglass1', this.realm.conjure.assetURL + 'assets/models/lookingglass.glb')
+        await this.realm.conjure.load.preload('lookingglass', this.realm.conjure.assetURL + 'assets/models/lookingglass.glb')
         this.realm.conjure.getLoadingScreen().setText('Loading Realm Assets\n (4/' + assetCount + ')')
         await this.realm.conjure.load.preload('grass1', this.realm.conjure.assetURL + 'assets/textures/grass1.jpg')
         this.realm.conjure.getLoadingScreen().setText('Loading Realm Assets\n (5/' + assetCount + ')')
@@ -131,14 +136,17 @@ AND ECONOMIC EPOCHAL SHIFTS.`)
         this.realm.group.add(this.water);
 
         this.mountains = await this.realm.conjure.load.gltf('mountains')
+        this.mountains.scene.position.setY(-60)
         this.realm.group.add(this.mountains.scene)
 
-        this.sceneModel = await this.realm.conjure.load.gltf('lookingglass1')
-        // console.log(this.sceneModel)
+        this.sceneModel = await this.realm.conjure.load.gltf('lookingglass')
+        console.log(this.sceneModel)
         
         for(let child of this.sceneModel.scene.children)
         {
+            if(!child.geometry) continue
             child.geometry.computeVertexNormals()
+            console.log(child)
             this.realm.conjure.physics.add.existing(child, { shape:'concaveMesh', mass:0  })
         }
         // console.log(this.sceneModel.scene)
@@ -148,7 +156,7 @@ AND ECONOMIC EPOCHAL SHIFTS.`)
         let grassTex = await this.realm.conjure.load.texture('grass1')
         grassTex.wrapS = THREE.MirroredRepeatWrapping
         grassTex.wrapT = THREE.MirroredRepeatWrapping
-        grassTex.repeat.set( 2, 2 )
+        grassTex.repeat.set( 64 , 64 )
         let grassMat = new THREE.MeshStandardMaterial({ map: grassTex})
         this.sceneModel.scene.children[0].material = grassMat
         
@@ -159,33 +167,35 @@ AND ECONOMIC EPOCHAL SHIFTS.`)
         granite1Tex.repeat.set( 4, 4 )
         let granite1Mat = new THREE.MeshStandardMaterial({ map: granite1Tex})
         this.sceneModel.scene.children[5].material = granite1Mat
-        this.sceneModel.scene.children[9].material = granite1Mat
-
+        this.sceneModel.scene.children[7].material = granite1Mat
 
         let granite2Tex = await this.realm.conjure.load.texture('granite2')
         granite2Tex.wrapS = THREE.MirroredRepeatWrapping
         granite2Tex.wrapT = THREE.MirroredRepeatWrapping
-        granite2Tex.repeat.set( 1, 1 )
+        granite2Tex.repeat.set( 4, 4 )
         let granite2Mat = new THREE.MeshStandardMaterial({ map: granite2Tex})
-        this.sceneModel.scene.children[6].material = granite2Mat
         this.sceneModel.scene.children[4].material = granite2Mat
-        this.sceneModel.scene.children[7].material = granite2Mat
+        this.sceneModel.scene.children[6].material = granite2Mat
+        this.sceneModel.scene.children[8].material = granite2Mat
 
         let granite3Tex = await this.realm.conjure.load.texture('granite3')
         granite3Tex.wrapS = THREE.MirroredRepeatWrapping
         granite3Tex.wrapT = THREE.MirroredRepeatWrapping
-        granite3Tex.repeat.set( 8, 8 )
+        granite3Tex.repeat.set( 4, 4 )
         let granite3Mat = new THREE.MeshStandardMaterial({ map: granite3Tex})
-        this.mountains.scene.children[0].material = granite3Mat
+        this.sceneModel.scene.children[9].material = granite3Mat
+        this.sceneModel.scene.children[10].material = granite3Mat
 
         let rock1Tex = await this.realm.conjure.load.texture('rock1')
         rock1Tex.wrapS = THREE.MirroredRepeatWrapping
         rock1Tex.wrapT = THREE.MirroredRepeatWrapping
-        rock1Tex.repeat.set( 1, 1 )  
+        rock1Tex.repeat.set( 64, 64 )  
         let rock1Mat = new THREE.MeshStandardMaterial({ map: rock1Tex})
+        this.mountains.scene.children[0].material = rock1Mat
+        this.sceneModel.scene.children[1].material = rock1Mat
         this.sceneModel.scene.children[2].material = rock1Mat
         this.sceneModel.scene.children[3].material = rock1Mat
-        this.sceneModel.scene.children[8].material = rock1Mat
+        this.sceneModel.scene.children[9].material = rock1Mat
 
         let emerald1Tex = await this.realm.conjure.load.texture('emerald1')
         emerald1Tex.wrapS = THREE.MirroredRepeatWrapping
@@ -196,13 +206,14 @@ AND ECONOMIC EPOCHAL SHIFTS.`)
             color: 0x00ff00,
             metalness: 0,
             roughness: 0,
-            opacity: 0.25,
+            opacity: 0.8,
             transparent: true,
             side: THREE.DoubleSide,
-            premultipliedAlpha: true
+            premultipliedAlpha: true,
+            envmap: grassTex
 
         })
-        this.sceneModel.scene.children[10].material = emerald1Mat    
+        this.sceneModel.scene.children[7].material = emerald1Mat    
 
         this.flyingLights = []
         for(let i = 0; i < 100; i++)
@@ -210,25 +221,11 @@ AND ECONOMIC EPOCHAL SHIFTS.`)
             let light = new THREE.PointLight(0xbfff83, 1, 20, 2)
             let sphere = new THREE.Mesh(new THREE.SphereBufferGeometry(0.05), new THREE.MeshBasicMaterial({ color: 0xbfff83 }))
             sphere.add(light)
-            sphere.position.set(50-(Math.random() * 50), 30+(Math.random() * 10),50-(Math.random() * 100))
+            sphere.position.set(50-(Math.random() * 100), (Math.random() * 50), 50-(Math.random() * 100))
             this.realm.group.add(sphere)
             sphere.userData.velocity = new THREE.Vector3()
             this.flyingLights.push(sphere)
         }
-    }
-
-    giveSword()
-    {
-        if(this.realm.world.user.hasSword) return
-
-        this.realm.world.user.swordMesh.material.visible = true
-        this.realm.world.user.hasSword = true
-        for(let user of this.realm.world.users)
-        {
-            user.swordMesh.material.visible = true
-            user.hasSword = true
-        }
-        this.realm.world.user.setAction('unsheath', 0.1, true)
     }
 
     async load()
@@ -246,26 +243,10 @@ AND ECONOMIC EPOCHAL SHIFTS.`)
 
     update(updateArgs)
     {
-        if(updateArgs.input.isPressed('U', true, true))
+        if(updateArgs.input.isDown('X', true, true) && updateArgs.input.isDown('Y', true, true) && updateArgs.input.isDown('Z', true, true))
         {
             this.realm.sendData(this.swordTriggerEventProtocol)
             this.triggerSwordEvent()
-
-            var uniforms = this.sky.material.uniforms;
-            uniforms[ "turbidity" ].value = 20;
-            uniforms[ "rayleigh" ].value = 4;
-            uniforms[ "mieCoefficient" ].value = 0.02;
-            uniforms[ "mieDirectionalG" ].value = 0.4;
-
-            var theta = Math.PI * ( 0.48 - 0.5 );
-            var phi = 2 * Math.PI * ( 0.2 - 0.5 );
-    
-            this.realm.conjure.sunPos.x = Math.cos( phi );   
-            this.realm.conjure.sunPos.y = Math.sin( phi ) * Math.sin( theta );
-            this.realm.conjure.sunPos.z = Math.sin( phi ) * Math.cos( theta );
-
-            this.realm.conjure.dirLight.position.copy(this.realm.conjure.sunPos)
-            uniforms[ "sunPosition" ].value.copy(this.realm.conjure.sunPos);
         }
         for(let light of this.flyingLights)
         {
@@ -273,12 +254,80 @@ AND ECONOMIC EPOCHAL SHIFTS.`)
             light.userData.velocity.y += (Math.random()-0.5)*0.005
             light.userData.velocity.z += (Math.random()-0.5)*0.005
             light.position.add(light.userData.velocity)
+            if(light.getWorldPosition(this.vec3).distanceTo(new THREE.Vector3()) > 50)
+            {
+                light.position.set(50-(Math.random() * 100), (Math.random() * 50), 50-(Math.random() * 100))
+            }
         }
+        for(let tween of this.tweens)
+            tween.update()
     }
 
     triggerSwordEvent()
     {
-        this.giveSword()
-        // this.sky.
+        if(this.realm.world.user.hasSword) return
+
+        this.realm.world.user.swordMesh.material.visible = true
+        this.realm.world.user.hasSword = true
+        for(let user of this.realm.world.users)
+        {
+            user.swordMesh.material.visible = true
+            user.hasSword = true
+        }
+        this.realm.world.user.setAction('unsheath', 0.1, true)
+
+        // let sunTweenChange = {
+        //     turbidity: this.sky.material.uniforms.turbidity.value,
+        //     rayleigh: this.sky.material.uniforms.rayleigh.value,
+        //     mieCoefficient: this.sky.material.uniforms.mieCoefficient.value,
+        //     mieDirectionalG: this.sky.material.uniforms.mieDirectionalG.value,
+        //     theta: Math.PI * ( 0.3 - 0.5 ),
+        //     phi: 2 * Math.PI * ( 0.3 - 0.5 )
+        // }
+
+        // let tween = new TWEEN.Tween(sunTweenChange).to({
+        //     turbidity: 20,
+        //     rayleigh: 4,
+        //     mieCoefficient: 0.02,
+        //     mieDirectionalG: 0.4,
+        //     theta: Math.PI * ( 0.48 - 0.5 ),
+        //     phi: 2 * Math.PI * ( 0.2 - 0.5 )
+        // }, 2000).easing(
+        //     TWEEN.Easing.Linear.None
+        // ).onUpdate(() => {
+        //     console.log('hmm')
+        //     this.sky.material.uniforms.turbidity.value = sunTweenChange.turbidity
+        //     this.sky.material.uniforms.rayleigh.value = sunTweenChange.rayleigh
+        //     this.sky.material.uniforms.mieCoefficient.value = sunTweenChange.mieCoefficient
+        //     this.sky.material.uniforms.mieDirectionalG.value = sunTweenChange.mieDirectionalG
+
+        //     // this.realm.conjure.sunPos.x = Math.cos( sunTweenChange.phi );   
+        //     // this.realm.conjure.sunPos.y = Math.sin( sunTweenChange.phi ) * Math.sin( sunTweenChange.theta );
+        //     // this.realm.conjure.sunPos.z = Math.sin( sunTweenChange.phi ) * Math.cos( sunTweenChange.theta );
+
+        //     // this.realm.conjure.dirLight.position.copy(this.realm.conjure.sunPos)
+        //     // this.sky.material.uniforms.sunPosition.value.copy(this.realm.conjure.sunPos)
+        // }).onComplete(() => {
+        //     // this.tweens.remove(tween)
+        // })
+        // tween.start()
+        // this.tweens.push(tween)
+
+        var uniforms = this.sky.material.uniforms;
+        uniforms[ "turbidity" ].value = 20;
+        uniforms[ "rayleigh" ].value = 4;
+        uniforms[ "mieCoefficient" ].value = 0.02;
+        uniforms[ "mieDirectionalG" ].value = 0.4;
+
+        var theta = Math.PI * ( 0.45 - 0.5 );
+        var phi = 2 * Math.PI * ( 0.2 - 0.5 );
+
+        this.realm.conjure.sunPos.x = Math.cos( phi );   
+        this.realm.conjure.sunPos.y = Math.sin( phi ) * Math.sin( theta );
+        this.realm.conjure.sunPos.z = Math.sin( phi ) * Math.cos( theta );
+        this.realm.conjure.dirLight.intensity = 1.2
+
+        this.realm.conjure.dirLight.position.copy(this.realm.conjure.sunPos)
+        uniforms[ "sunPosition" ].value.copy(this.realm.conjure.sunPos);
     }
 }

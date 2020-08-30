@@ -25,7 +25,7 @@ export const GLOBAL_REALMS = {
             ids: ['MOOT']
         },
         userData: {
-            spawnPosition: new THREE.Vector3(30, 25, 40),
+            spawnPosition: new THREE.Vector3(60, 5, -70),
             disableScreens: true,
             playsAudio: true,
         },
