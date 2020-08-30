@@ -26,7 +26,7 @@ export default class FeatureArtGallery extends Feature
     async preload()
     {
         // await this.getTokens()
-        let assetCount = 10
+        let assetCount = 11
 
         this.realm.conjure.getLoadingScreen().setText('Loading Realm Assets\n (1/' + assetCount + ')')
 
@@ -51,6 +51,8 @@ export default class FeatureArtGallery extends Feature
         await this.realm.conjure.load.preload('emerald1', this.realm.conjure.assetURL + 'assets/textures/emerald1.jpg')
         this.realm.conjure.getLoadingScreen().setText('Loading Realm Assets\n (10/' + assetCount + ')')
         await this.realm.conjure.load.preload('mountains', this.realm.conjure.assetURL + 'assets/models/mountainring.glb')
+        this.realm.conjure.getLoadingScreen().setText('Loading Realm Assets\n (11/' + assetCount + ')')
+        await this.realm.conjure.getAudioManager().load('sword', this.realm.conjure.assetURL + 'assets/sounds/sword.mp3')
         // this.realm.conjure.getLoadingScreen().setText('Loading Realm Assets\n (11/' + assetCount + ')')
 
         this.realm.conjure.getLoadingScreen().setText(`
@@ -275,6 +277,7 @@ AND ECONOMIC EPOCHAL SHIFTS.`)
             user.hasSword = true
         }
         this.realm.world.user.setAction('unsheath', 0.1, true)
+        this.realm.conjure.getAudioManager().play('sword')
 
         // let sunTweenChange = {
         //     turbidity: this.sky.material.uniforms.turbidity.value,
