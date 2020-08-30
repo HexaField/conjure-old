@@ -142,6 +142,26 @@ export default class User
             console.log('finished')
         }.bind(this));
 
+        this.sword = await this.conjure.load.gltf('sword')
+        this.sword.scene.position.set(0, 0, 0)
+        this.sword.scene.children[0].scale.set(0.75, 0.75, 0.75)
+        this.sword.scene.children[0].position.set(0.025, -0.55, -0.025)
+        this.sword.scene.children[0].rotateX(Math.PI / 2)
+        // this.sword.scene.add(easyOrigin())
+        this.attachToBone(this.sword.scene, this.rightHand)
+        this.sword.scene.position.set(0, 0, 0)
+
+        this.sword.scene.traverse(o => {
+            if (o.isMesh) this.swordMesh = o
+        })
+        
+        this.swordMesh.frustumCulled = false;
+        this.swordMesh.material.visible = false
+        this.sword.scene.rotateX(Math.PI / 24)
+        // this.sword.scene.rotateY(-Math.PI / 8)
+        this.sword.scene.rotateZ(-Math.PI / 12)
+
+
         this.setAction('idle', 0.1);
         this.turnedTooMuch = false;
         this.onCreate();

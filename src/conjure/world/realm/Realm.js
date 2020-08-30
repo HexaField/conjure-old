@@ -20,10 +20,10 @@ export const GLOBAL_REALMS = {
         name: 'Looking Glass',
         timestamp: 0,
         visibility: REALM_VISIBILITY.PRIVATE,
-        // whitelist: {
-        //     type: REALM_WHITELIST.PASSCODE,
-        //     ids: ['MOOT']
-        // },
+        whitelist: {
+            type: REALM_WHITELIST.PASSCODE,
+            ids: ['MOOT']
+        },
         userData: {
             spawnPosition: new THREE.Vector3(30, 25, 40),
             disableScreens: true,
@@ -194,7 +194,7 @@ export default class Realm
     receiveDataFromPeer(data, from)
     {
         if(this.networkProtocolCallbacks[data.protocol])
-            this.networkProtocolCallbacks[data.protocol](data.data, from) 
+            this.networkProtocolCallbacks[data.protocol](data.content, from) 
         else
             this.world.receiveDataFromPeer(data, from)
     }
@@ -203,7 +203,7 @@ export default class Realm
     onPeerJoin(peerID)
     {
         global.CONSOLE.log('User ', peerID, ' has join the realm')
-        this.sendTo(REALM_PROTOCOLS.USER.JOIN, this.conjure.getProfile().getUsername() || '', peerID)
+        this.sendData(REALM_PROTOCOLS.USER.JOIN, { username: this.conjure.getProfile().getUsername() || '' }, peerID)
     }
 
     onPeerLeave(peerID)

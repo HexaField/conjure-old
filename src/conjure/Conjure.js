@@ -34,7 +34,7 @@ export class Conjure extends Scene3D
     {
         this.loadingScreen.setText('Downloading assets...') 
         await this.load.preload('playerModel', this.assetURL + 'assets/models/ybot_anims.glb')
-
+        await this.load.preload('sword', this.assetURL + 'assets/models/chevalier/scene.gltf')
         await this.load.preload('default_realm', this.assetURL + 'assets/icons/default_realm.png')
         await this.load.preload('speaker', this.assetURL + 'assets/icons/speaker.png')
         await this.load.preload('speakermute', this.assetURL + 'assets/icons/speakermute.png')

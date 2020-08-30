@@ -24,25 +24,29 @@ export default class FeatureArtGallery extends Feature
         let assetCount = 10
 
         this.realm.conjure.getLoadingScreen().setText('Loading Realm Assets\n (1/' + assetCount + ')')
-        await this.realm.conjure.getAudioManager().load('jumanji', this.realm.conjure.assetURL + 'assets/sounds/jumanji.mp3')
+
+        await this.realm.conjure.getAudioManager().load('chiptune', this.realm.conjure.assetURL + 'assets/sounds/chiptune.mp3')
+        this.chiptune = this.realm.conjure.getAudioManager().play('chiptune', { loop: true, volume: 0.25 })
+
         this.realm.conjure.getLoadingScreen().setText('Loading Realm Assets\n (2/' + assetCount + ')')
-        await this.realm.conjure.load.preload('lookingglass1', this.realm.conjure.assetURL + 'assets/models/lookingglass.glb')
+        await this.realm.conjure.getAudioManager().load('jumanji', this.realm.conjure.assetURL + 'assets/sounds/jumanji.wav')
         this.realm.conjure.getLoadingScreen().setText('Loading Realm Assets\n (3/' + assetCount + ')')
-        await this.realm.conjure.load.preload('grass1', this.realm.conjure.assetURL + 'assets/textures/grass1.jpg')
+        await this.realm.conjure.load.preload('lookingglass1', this.realm.conjure.assetURL + 'assets/models/lookingglass.glb')
         this.realm.conjure.getLoadingScreen().setText('Loading Realm Assets\n (4/' + assetCount + ')')
-        await this.realm.conjure.load.preload('granite1', this.realm.conjure.assetURL + 'assets/textures/granite1.jpg')
+        await this.realm.conjure.load.preload('grass1', this.realm.conjure.assetURL + 'assets/textures/grass1.jpg')
         this.realm.conjure.getLoadingScreen().setText('Loading Realm Assets\n (5/' + assetCount + ')')
-        await this.realm.conjure.load.preload('granite2', this.realm.conjure.assetURL + 'assets/textures/granite2.jpg')
+        await this.realm.conjure.load.preload('granite1', this.realm.conjure.assetURL + 'assets/textures/granite1.jpg')
         this.realm.conjure.getLoadingScreen().setText('Loading Realm Assets\n (6/' + assetCount + ')')
-        await this.realm.conjure.load.preload('granite3', this.realm.conjure.assetURL + 'assets/textures/granite3.jpg')
+        await this.realm.conjure.load.preload('granite2', this.realm.conjure.assetURL + 'assets/textures/granite2.jpg')
         this.realm.conjure.getLoadingScreen().setText('Loading Realm Assets\n (7/' + assetCount + ')')
-        await this.realm.conjure.load.preload('rock1', this.realm.conjure.assetURL + 'assets/textures/rock1.jpg')
+        await this.realm.conjure.load.preload('granite3', this.realm.conjure.assetURL + 'assets/textures/granite3.jpg')
         this.realm.conjure.getLoadingScreen().setText('Loading Realm Assets\n (8/' + assetCount + ')')
-        await this.realm.conjure.load.preload('emerald1', this.realm.conjure.assetURL + 'assets/textures/emerald1.jpg')
+        await this.realm.conjure.load.preload('rock1', this.realm.conjure.assetURL + 'assets/textures/rock1.jpg')
         this.realm.conjure.getLoadingScreen().setText('Loading Realm Assets\n (9/' + assetCount + ')')
-        await this.realm.conjure.load.preload('sword', this.realm.conjure.assetURL + 'assets/models/chevalier/scene.gltf')
+        await this.realm.conjure.load.preload('emerald1', this.realm.conjure.assetURL + 'assets/textures/emerald1.jpg')
         this.realm.conjure.getLoadingScreen().setText('Loading Realm Assets\n (10/' + assetCount + ')')
         await this.realm.conjure.load.preload('mountains', this.realm.conjure.assetURL + 'assets/models/mountainring.glb')
+        // this.realm.conjure.getLoadingScreen().setText('Loading Realm Assets\n (11/' + assetCount + ')')
 
         this.realm.conjure.getLoadingScreen().setText(`
 THE ETHEREAL REALM
@@ -89,7 +93,6 @@ AND ECONOMIC EPOCHAL SHIFTS.`)
         uniforms[ "rayleigh" ].value = 0.01;
         uniforms[ "mieCoefficient" ].value = 0.005;
         uniforms[ "mieDirectionalG" ].value = 0.8;
-
         uniforms[ "sunPosition" ].value.copy(this.realm.conjure.sunPos);
 
         // this.clouds = new VolumetricClouds({
@@ -212,40 +215,25 @@ AND ECONOMIC EPOCHAL SHIFTS.`)
             sphere.userData.velocity = new THREE.Vector3()
             this.flyingLights.push(sphere)
         }
-
-        this.sword = await this.realm.conjure.load.gltf('sword')
-        this.sword.scene.position.set(0, 0, 0)
-        console.log(this.sword.scene)
-        this.sword.scene.children[0].scale.set(0.75, 0.75, 0.75)
-        this.sword.scene.children[0].position.set(0.025, -0.55, -0.025)
-        this.sword.scene.children[0].rotateX(Math.PI / 2)
-        // this.sword.scene.add(easyOrigin())
-        this.realm.world.user.attachToBone(this.sword.scene, this.realm.world.user.rightHand)
-        this.sword.scene.position.set(0, 0, 0)
-
-        this.sword.scene.traverse(o => {
-            if (o.isMesh) this.swordMesh = o
-        })
-        
-        this.swordMesh.frustumCulled = false;
-        this.swordMesh.material.visible = false
-        this.sword.scene.rotateX(Math.PI / 24)
-        // this.sword.scene.rotateY(-Math.PI / 8)
-        this.sword.scene.rotateZ(-Math.PI / 12)
-            
     }
 
     giveSword()
     {
         if(this.realm.world.user.hasSword) return
 
-        this.swordMesh.material.visible = true
+        this.realm.world.user.swordMesh.material.visible = true
         this.realm.world.user.hasSword = true
+        for(let user of this.realm.world.users)
+        {
+            user.swordMesh.material.visible = true
+            user.hasSword = true
+        }
         this.realm.world.user.setAction('unsheath', 0.1, true)
     }
 
     async load()
     {
+        this.chiptune.stop()
         this.realm.conjure.getAudioManager().play('jumanji', { loop: true })
     }
 
@@ -262,6 +250,22 @@ AND ECONOMIC EPOCHAL SHIFTS.`)
         {
             this.realm.sendData(this.swordTriggerEventProtocol)
             this.triggerSwordEvent()
+
+            var uniforms = this.sky.material.uniforms;
+            uniforms[ "turbidity" ].value = 20;
+            uniforms[ "rayleigh" ].value = 4;
+            uniforms[ "mieCoefficient" ].value = 0.02;
+            uniforms[ "mieDirectionalG" ].value = 0.4;
+
+            var theta = Math.PI * ( 0.48 - 0.5 );
+            var phi = 2 * Math.PI * ( 0.2 - 0.5 );
+    
+            this.realm.conjure.sunPos.x = Math.cos( phi );   
+            this.realm.conjure.sunPos.y = Math.sin( phi ) * Math.sin( theta );
+            this.realm.conjure.sunPos.z = Math.sin( phi ) * Math.cos( theta );
+
+            this.realm.conjure.dirLight.position.copy(this.realm.conjure.sunPos)
+            uniforms[ "sunPosition" ].value.copy(this.realm.conjure.sunPos);
         }
         for(let light of this.flyingLights)
         {

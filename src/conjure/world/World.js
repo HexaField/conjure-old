@@ -8,7 +8,7 @@ import { INTERACT_TYPES } from '../screens/hud/HUDInteract';
 import RealmData, { REALM_WORLD_GENERATORS, REALM_VISIBILITY, REALM_WHITELIST } from './realm/RealmData'
 
 export default class World
-{  
+{
     constructor(conjure)
     {
         this.conjure = conjure
@@ -284,14 +284,15 @@ export default class World
                 exists = user;
         if(exists)
         {
-            this.onUserLeave(peerID)
+            return
+            // this.onUserLeave(peerID)
         }
-        else
-        {
-            this.sendTo(REALM_PROTOCOLS.USER.JOIN, {
+        // else
+        // {
+            this.sendData(REALM_PROTOCOLS.USER.JOIN, {
                 username: this.conjure.getProfile().getUsername()
             }, peerID)
-        }
+        // }
         this.users.push(new UserRemote(this.conjure, data.username, peerID))
         global.CONSOLE.log('User ', data.username, ' has joined')
     }
