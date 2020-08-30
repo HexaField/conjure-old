@@ -28,30 +28,32 @@ export default class FeatureArtGallery extends Feature
         // await this.getTokens()
         let assetCount = 11
 
-        this.realm.conjure.getLoadingScreen().setText('Loading Realm Assets\n (1/' + assetCount + ')')
+        let nowPlaying = '\n\n\nNow playing | New Order - Bizarre Love Triangle'
+
+        this.realm.conjure.getLoadingScreen().setText('Loading Realm Assets\n (1/' + assetCount + ')' + nowPlaying)
 
         await this.realm.conjure.getAudioManager().load('chiptune', this.realm.conjure.assetURL + 'assets/sounds/chiptune.mp3')
         this.chiptune = this.realm.conjure.getAudioManager().play('chiptune', { loop: true, volume: 0.25 })
 
-        this.realm.conjure.getLoadingScreen().setText('Loading Realm Assets\n (2/' + assetCount + ')')
+        this.realm.conjure.getLoadingScreen().setText('Loading Realm Assets\n (2/' + assetCount + ')' + nowPlaying)
         await this.realm.conjure.getAudioManager().load('jumanji', this.realm.conjure.assetURL + 'assets/sounds/jumanji.wav')
-        this.realm.conjure.getLoadingScreen().setText('Loading Realm Assets\n (3/' + assetCount + ')')
+        this.realm.conjure.getLoadingScreen().setText('Loading Realm Assets\n (3/' + assetCount + ')' + nowPlaying)
         await this.realm.conjure.load.preload('lookingglass', this.realm.conjure.assetURL + 'assets/models/lookingglass.glb')
-        this.realm.conjure.getLoadingScreen().setText('Loading Realm Assets\n (4/' + assetCount + ')')
+        this.realm.conjure.getLoadingScreen().setText('Loading Realm Assets\n (4/' + assetCount + ')' + nowPlaying)
         await this.realm.conjure.load.preload('grass1', this.realm.conjure.assetURL + 'assets/textures/grass1.jpg')
-        this.realm.conjure.getLoadingScreen().setText('Loading Realm Assets\n (5/' + assetCount + ')')
+        this.realm.conjure.getLoadingScreen().setText('Loading Realm Assets\n (5/' + assetCount + ')' + nowPlaying)
         await this.realm.conjure.load.preload('granite1', this.realm.conjure.assetURL + 'assets/textures/granite1.jpg')
-        this.realm.conjure.getLoadingScreen().setText('Loading Realm Assets\n (6/' + assetCount + ')')
+        this.realm.conjure.getLoadingScreen().setText('Loading Realm Assets\n (6/' + assetCount + ')' + nowPlaying)
         await this.realm.conjure.load.preload('granite2', this.realm.conjure.assetURL + 'assets/textures/granite2.jpg')
-        this.realm.conjure.getLoadingScreen().setText('Loading Realm Assets\n (7/' + assetCount + ')')
+        this.realm.conjure.getLoadingScreen().setText('Loading Realm Assets\n (7/' + assetCount + ')' + nowPlaying)
         await this.realm.conjure.load.preload('granite3', this.realm.conjure.assetURL + 'assets/textures/granite3.jpg')
-        this.realm.conjure.getLoadingScreen().setText('Loading Realm Assets\n (8/' + assetCount + ')')
+        this.realm.conjure.getLoadingScreen().setText('Loading Realm Assets\n (8/' + assetCount + ')' + nowPlaying)
         await this.realm.conjure.load.preload('rock1', this.realm.conjure.assetURL + 'assets/textures/rock1.jpg')
-        this.realm.conjure.getLoadingScreen().setText('Loading Realm Assets\n (9/' + assetCount + ')')
+        this.realm.conjure.getLoadingScreen().setText('Loading Realm Assets\n (9/' + assetCount + ')' + nowPlaying)
         await this.realm.conjure.load.preload('emerald1', this.realm.conjure.assetURL + 'assets/textures/emerald1.jpg')
-        this.realm.conjure.getLoadingScreen().setText('Loading Realm Assets\n (10/' + assetCount + ')')
+        this.realm.conjure.getLoadingScreen().setText('Loading Realm Assets\n (10/' + assetCount + ')' + nowPlaying)
         await this.realm.conjure.load.preload('mountains', this.realm.conjure.assetURL + 'assets/models/mountainring.glb')
-        this.realm.conjure.getLoadingScreen().setText('Loading Realm Assets\n (11/' + assetCount + ')')
+        this.realm.conjure.getLoadingScreen().setText('Loading Realm Assets\n (11/' + assetCount + ')' + nowPlaying)
         await this.realm.conjure.getAudioManager().load('sword', this.realm.conjure.assetURL + 'assets/sounds/sword.mp3')
         // this.realm.conjure.getLoadingScreen().setText('Loading Realm Assets\n (11/' + assetCount + ')')
 

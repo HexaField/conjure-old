@@ -243,7 +243,10 @@ export default class User
         else if(this.currentAnimation === 'swingInward')
         {
             if(updateArgs.input.isPressed('MOUSELEFT', true))
-               this.swingAgain = true
+            {
+                this.swingAgain = true
+                this.conjure.getAudioManager().play('sword')
+            }
         }
         else if(this.currentAnimation === 'land' || this.currentAnimation === 'landHard' || this.currentAnimation === 'landRoll')
         {
@@ -322,6 +325,7 @@ export default class User
                 {
                     if(updateArgs.input.isPressed('MOUSELEFT', true))
                     {
+                        this.conjure.getAudioManager().play('sword')
                         this.setAction('swingInward', 0.1, true);
                     }
                     if(updateArgs.input.isPressed('MOUSERIGHT', true))
