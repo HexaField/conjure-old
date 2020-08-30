@@ -32,7 +32,7 @@ export class Conjure extends Scene3D
 
     async preload()
     {
-        this.loadingScreen.setText('Downloading assets...')
+        this.loadingScreen.setText('Downloading assets...') 
         await this.load.preload('playerModel', this.assetURL + 'assets/models/ybot_anims.glb')
 
         await this.load.preload('default_realm', this.assetURL + 'assets/icons/default_realm.png')

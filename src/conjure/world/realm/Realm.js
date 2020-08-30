@@ -20,10 +20,10 @@ export const GLOBAL_REALMS = {
         name: 'Looking Glass',
         timestamp: 0,
         visibility: REALM_VISIBILITY.PRIVATE,
-        whitelist: {
-            type: REALM_WHITELIST.PASSCODE,
-            ids: ['MOOT']
-        },
+        // whitelist: {
+        //     type: REALM_WHITELIST.PASSCODE,
+        //     ids: ['MOOT']
+        // },
         userData: {
             spawnPosition: new THREE.Vector3(30, 25, 40),
             disableScreens: true,
@@ -106,6 +106,8 @@ export default class Realm
         this.onPeerLeave = this.onPeerLeave.bind(this)
 
         this.features = []
+
+        this.networkProtocolCallbacks = {}
     }
 
     async preload()
@@ -146,6 +148,17 @@ export default class Realm
             }
     }
 
+    addNetworkProtocolCallback(protocol, callback)
+    {
+        this.networkProtocolCallbacks[protocol] = callback
+    }
+
+    removeNetworkProtocolCallback(protocol)
+    {
+        if(this.networkProtocolCallbacks[protocol])
+            delete this.networkProtocolCallbacks[protocol]
+    }
+
     async load()
     {
         for(let feature of this.features)
@@ -180,7 +193,10 @@ export default class Realm
 
     receiveDataFromPeer(data, from)
     {
-        this.world.receiveDataFromPeer(data, from)
+        if(this.networkProtocolCallbacks[data.protocol])
+            this.networkProtocolCallbacks[data.protocol](data.data, from) 
+        else
+            this.world.receiveDataFromPeer(data, from)
     }
 
     

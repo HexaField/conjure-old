@@ -1,5 +1,6 @@
 import { THREE, ExtendedObject3D } from 'enable3d'
 import { REALM_PROTOCOLS } from '../world/realm/Realm'
+import { easySphere, easyOrigin } from '../util/MeshTemplates';
 
 export default class User
 {
@@ -60,18 +61,23 @@ export default class User
 
         this.mesh = this.playerModel.scene;
         this.mesh.isSkinnedMesh = true;
-        
         this.mesh.rotation.y = THREE.MathUtils.DEG2RAD * 180;
-        let i = 0;
+        this.meshes = []
         this.mesh.traverse(o => {
             if (o.isMesh) {
                 o.castShadow = true;
                 o.receiveShadow = true;
                 o.material.transparent = true;
                 o.material.opacity = 1;
-                o.name = 'avatar mesh ' + i
-                i++
+                o.frustumCulled = false
+                this.meshes.push(o)
             }
+            if(o.name === "mixamorigRightHandMiddle1")
+                this.rightHand = o
+            if(o.name === "mixamorigLeftHandMiddle1")
+                this.leftHand = o
+            if(o.name === "mixamorigHips")
+                this.rootBone = o
         })
 
         this.group.add(this.mesh);
@@ -103,13 +109,12 @@ export default class User
             if (animation.name) 
                 this.group.animation.add(animation.name, animation)
         })
-
         this.onGround = false;
         this.animMovementLock = true;
 
         this.group.animation.mixer.addEventListener('loop', function( e ) {
             if(!this.group || this.group.body) return;
-            if(this.currentAnimation === 'land' || this.currentAnimation === 'landHard' || this.currentAnimation === 'landRoll')
+            if(this.currentAnimation === 'land' || this.currentAnimation === 'landHard' || this.currentAnimation === 'landRoll' || this.currentAnimation === 'unsheath' || this.currentAnimation === 'swingOutward' || this.currentAnimation === 'swingInward')
             {
                 this.group.body.setVelocity(0, 0, 0);
             }
@@ -124,6 +129,16 @@ export default class User
             {
                 this.setAction('idle', 0.2)
             }
+            if(this.currentAnimation === 'unsheath' || this.currentAnimation === 'swingOutward' || this.currentAnimation === 'swingInward')
+            {
+                if(this.swingAgain)
+                {
+                    this.setAction('swingOutward', 0.1, true, 0.1);  
+                    this.swingAgain = false
+                }
+                else
+                    this.setAction('idle', 0.2)
+            }
             console.log('finished')
         }.bind(this));
 
@@ -131,6 +146,13 @@ export default class User
         this.turnedTooMuch = false;
         this.onCreate();
         this.conjure.getControls().controlsEnabled = true
+    }
+
+    attachToBone(object, bone)
+    {
+        this.rootBone.updateMatrixWorld(true);
+        bone.updateMatrixWorld(true);
+        bone.attach(object)
     }
 
     onCreate()
@@ -162,12 +184,11 @@ export default class User
 
     setTransparency(alpha)
     {
-        this.mesh.visible = Boolean(alpha);
-        this.mesh.traverse(o => {
-            if (o.isMesh) {
-                o.material.opacity = alpha;
-            }
-        })
+        for(let mesh of this.meshes)
+        {
+            // mesh.visible = Boolean(alpha);
+            mesh.material.opacity = alpha;
+        }
     }
 
     update(updateArgs)
@@ -195,7 +216,13 @@ export default class User
                 // }
            })
         }
-        if(this.currentAnimation === 'land' || this.currentAnimation === 'landHard' || this.currentAnimation === 'landRoll')
+        if(this.currentAnimation === 'unsheath' || this.currentAnimation === 'runSword' || this.currentAnimation === 'swingOutward' || this.currentAnimation === 'swingInward')
+        {
+            if(this.currentAnimation === 'swingInward')
+                if(updateArgs.input.isPressed('MOUSELEFT', true))
+                    this.swingAgain = true
+        }
+        else if(this.currentAnimation === 'land' || this.currentAnimation === 'landHard' || this.currentAnimation === 'landRoll')
         {
 
         }
@@ -268,6 +295,13 @@ export default class User
                     if(this.currentAnimation !== 'idle')
                         this.setAction('idle', 0.25);
                 }
+                if(this.hasSword)
+                {
+                    if(updateArgs.input.isPressed('MOUSELEFT', true))
+                    {
+                        this.setAction('swingInward', 0.1, true);
+                    }
+                }
             }
             else
             {
@@ -312,7 +346,7 @@ export default class User
     {
         switch(this.currentAnimation)
         {
-            case 'land': case 'landHard': case 'landRoll':  case 'jump': case 'runningJump': case 'falling': case 'flip':
+            case 'land': case 'landHard': case 'landRoll':  case 'jump': case 'runningJump': case 'falling': case 'flip': case 'swingInward': case 'swingOutward': case 'unsheath':
                 this.animMovementLock = true; return;
             default: 
                 this.animMovementLock = false; return;

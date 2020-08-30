@@ -137,10 +137,10 @@ export default class ScreenBase
         for (let i = -grid_count; i <= grid_count; i++)
         {   
             group.add(easyLine({
-                    points: [
-                        new THREE.Vector3(rotated ? -grid_count : i * size, rotated ? i * size: -grid_count, 0),
-                        new THREE.Vector3(rotated ? grid_count : i * size, rotated ? i * size: grid_count, 0)
-                    ]
+                points: [
+                    new THREE.Vector3(rotated ? -grid_count : i * size, rotated ? i * size: -grid_count, 0),
+                    new THREE.Vector3(rotated ? grid_count : i * size, rotated ? i * size: grid_count, 0)
+                ]
                 }, { color: 0xffffff}
             ))
         }
