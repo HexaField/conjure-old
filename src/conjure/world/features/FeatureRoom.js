@@ -61,10 +61,6 @@ export default class Gallery
         this.wallWest.rotateY(Math.PI / 2)
         this.group.add(this.wallWest);
         conjure.physics.add.existing(this.wallWest, {shape:'plane', collider:{margin:0.01}, collisionFlags:1, mass:0})
-
-        this.light = new THREE.PointLight( 0xffee88, 1, 100, 2 );
-        this.light.position.setY(3)
-        this.group.add(this.light)
     }
 
     destroy()

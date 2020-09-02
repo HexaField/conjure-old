@@ -8,7 +8,7 @@ export default function(font, args = {})
     geometry.computeBoundingBox();
 
     let xOffset = args.alignX === 'left' ? 0 : (args.alignX === 'right' ? -1.0 : -0.5)
-    let yOffset = args.alignY === 'bottom' ? 0 : (args.alignY === 'top' ? -1.0 : -0.5)
+    let yOffset = args.alignY === 'bottom' ? 1.0 : (args.alignY === 'top' ? 0 : -0.5)
 
     geometry.translate(
         xOffset * (geometry.boundingBox.max.x - geometry.boundingBox.min.x),

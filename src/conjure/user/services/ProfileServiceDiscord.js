@@ -70,7 +70,9 @@ export default class ProfileServiceDiscord extends ProfileService
 
     async getRealmsIDs()
     {
-        let guilds = await this.getGuilds()
+        if(!this.guilds) 
+            this.guilds = await this.getGuilds()
+        let guilds = JSON.parse(JSON.stringify(this.guilds))
         for(let guild of guilds)
         {
             guild.iconURL = 'https://cdn.discordapp.com/icons/' + guild.id + '/'+ guild.icon + '.png'

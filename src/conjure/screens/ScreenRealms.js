@@ -80,7 +80,6 @@ export default class ScreenRealms extends ScreenBase
             
             let pinIcon = new ScreenElementSprite(this, container, { x: this.buttonWidth * 0.5, width: this.buttonHeight, height: this.buttonHeight })
             pinIcon.load(realm.pinned === 'global' ? 'global_icon' : realm.pinned ? 'pin_full' : 'pin_empty')
-            pinIcon.icon.material.color === realm.pinned ? 0x00aaff : 0x000000
             pinIcon.setIconScale(0.75)
             pinIcon.setOnClickCallback(this.pin, realm) // return all the realm info data
             container.registerElement(pinIcon)
