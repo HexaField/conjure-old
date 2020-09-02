@@ -11,7 +11,6 @@ export default class WebSocketClient
         this.dataCallbacks = {}
 
         try {
-            
             this.webSocket = new WebSocket('ws://localhost:9700')
 
             this.webSocket.onopen = this.onConnect

@@ -1,12 +1,15 @@
 import TextRenderer3D from '../text/TextRenderer3D'
 import ScreenElementBase from './ScreenElementBase'
 import { easyPlane } from '../../util/MeshTemplates'
+import { number } from '../../util/number'
 
 export default class ScreenElementText extends ScreenElementBase
 {  
     constructor(screen, parent, args = {})
     {
         super(screen, parent, args);
+        this.z = number(args.z || 0.025);
+        this.group.position.set(this.x, this.y, this.z);
 
         this.textObj = new TextRenderer3D(screen.screenManager.conjure, this.group, { text: args.text, ...args.textSettings });
         

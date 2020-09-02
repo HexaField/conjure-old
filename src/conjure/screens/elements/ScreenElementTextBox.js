@@ -29,6 +29,7 @@ export default class ScreenElementTextBox extends ScreenElementBase
             onChange: this.updateValue
         })
         this.textObj.getObject().position.setY(-0.025)
+        this.textObj.getObject().position.setZ(0.025)
         this.group.add(this.textObj.getObject())
     }
 

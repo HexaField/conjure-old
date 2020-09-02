@@ -8,14 +8,13 @@ export default class ScreenElementButton extends ScreenElementBase
     {
         super(screen, parent, args);
 
-        this.button = easyBox({ width: this.width, height: this.height, depth: 0.025 }, { color: this.defaultColour3 });
+        this.button = easyBox({ width: this.width, height: this.height, depth: 0.025 }, { color: this.defaultColour });
         this.button.material.transparent = true;
         this.button.material.opacity = this.defaultOpacity;
 
         this.group.add(this.button);
 
         this.textObj = new TextRenderer3D(screen.screenManager.conjure, this.group, { text: args.text || 'button', scale: 0.75, ...args });
-
         this.textObj.group.position.setZ(0.025);
         this.value = '';
     }

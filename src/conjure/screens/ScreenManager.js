@@ -22,6 +22,7 @@ import ScreenServices from './ScreenServices'
 import ScreenPayID from './ScreenPayID'
 import ScreenTextEntry from './ScreenTextEntry'
 import ScreenFeatures from './ScreenFeatures'
+import ScreenList from './ScreenList'
 
 export default class ScreenManager
 {  
@@ -68,7 +69,8 @@ export default class ScreenManager
             this.screenPayID = this.createScreen(new ScreenPayID(this, { name:'PayID', width:2.8, height:1.2, pauses:true }));
         }
         
-        this.screenTextEntry = this.createScreen(new ScreenTextEntry(this, { name:'Enter Value', width:0.8, height:0.4 }))
+        this.screenTextEntry = this.createScreen(new ScreenTextEntry(this, { name:'Enter Value', width: 0.8, height: 0.4 }))
+        this.screenList = this.createScreen(new ScreenList(this, { name:'Select from list', width: 0.8, height: 1.6 }))
 
         this.openScreens = [];
         this.mouseOver = false;
@@ -149,6 +151,7 @@ export default class ScreenManager
             this.hideHud();
         }
         screen.showScreen(true, args);
+        screen.group.position.z = 0.1 * this.openScreens.length
         this.openScreens.push(screen);
     }
 

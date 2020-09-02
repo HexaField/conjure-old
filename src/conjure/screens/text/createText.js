@@ -7,11 +7,15 @@ export default function(font, args = {})
 
     geometry.computeBoundingBox();
 
-    // todo: add in args.alignX & args.alignY
+    let xOffset = args.alignX === 'left' ? 0 : (args.alignX === 'right' ? -1.0 : -0.5)
+    let yOffset = args.alignY === 'bottom' ? 0 : (args.alignY === 'top' ? -1.0 : -0.5)
+
     geometry.translate(
-        -0.5 * (geometry.boundingBox.max.x - geometry.boundingBox.min.x),
-        0,//0.5 * (geometry.boundingBox.max.y - geometry.boundingBox.min.y), 
-        0);
+        xOffset * (geometry.boundingBox.max.x - geometry.boundingBox.min.x),
+        yOffset * (geometry.boundingBox.max.y - geometry.boundingBox.min.y), 
+        0
+    );
+
     return geometry
 
     // if(outline)

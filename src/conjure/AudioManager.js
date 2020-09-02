@@ -53,32 +53,13 @@ export default class AudioManager
     {
         if(!this.audioListener || !this.buffers[buffer]) return
         
-        let sound = new THREE.Audio(this.audioListener);
-
-        sound.setBuffer(this.buffers[buffer]);
-        sound.setLoop(Boolean(args.loop));
-        sound.setVolume(args.volume === undefined ? 1.0 : args.volume);
-        sound.play();
-        sound.onEnded = () => {
-            for(let i in this.sounds)
-                if(sound === this.sounds[i])
-                    this.sounds.slice(i, 1)
-        }
-        this.sounds.push(sound)
-        return sound
-    }
-
-    // { loop, volume, refDistance }
-    playPositional(buffer, args = {})
-    {
-        if(!this.audioListener || !this.buffers[buffer]) return
-        
-        let sound = new THREE.PositionalAudio(this.audioListener);
+        let sound = args.positional ? new THREE.PositionalAudio(this.audioListener) : new THREE.Audio(this.audioListener);
         
         sound.setBuffer(this.buffers[buffer]);
         sound.setLoop(Boolean(args.loop));
-        sound.setVolume(args.volume);   
-        sound.setRefDistance(args.refDistance);
+        sound.setVolume(args.volume === undefined ? 1 : args.volume);
+        if(args.positional)
+            sound.setRefDistance(args.refDistance === undefined ? 20 : args.refDistance);
         sound.play();
         sound.onEnded = () => {
             for(let i in this.sounds)

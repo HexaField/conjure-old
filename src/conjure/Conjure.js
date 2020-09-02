@@ -9,7 +9,7 @@ import PostProcessing from './PostProcessing'
 import LoadingScreen from './LoadingScreen'
 import AssetManager from './AssetManager';
 import Fonts from './screens/text/Fonts'
-import { getParams } from './util/urldecoder'
+import { getParams } from '../data/util/urldecoder'
 import AudioManager from './AudioManager'
 
 export const CONJURE_MODE = {
@@ -38,6 +38,9 @@ export class Conjure extends Scene3D
         await this.load.preload('default_realm', this.assetURL + 'assets/icons/default_realm.png')
         await this.load.preload('speaker', this.assetURL + 'assets/icons/speaker.png')
         await this.load.preload('speakermute', this.assetURL + 'assets/icons/speakermute.png')
+        await this.load.preload('global_icon', this.assetURL + 'assets/icons/global.png')
+        await this.load.preload('pin_full', this.assetURL + 'assets/icons/pin_full.png')
+        await this.load.preload('pin_empty', this.assetURL + 'assets/icons/pin_empty.png')
 
         await this.load.preload('missing_texture', this.assetURL + 'assets/textures/missing_texture.png')
         await this.load.preload('menger_texture', this.assetURL + 'assets/textures/menger_texture.png')
@@ -45,7 +48,12 @@ export class Conjure extends Scene3D
         await this.load.preload('default_texture', this.assetURL + 'assets/textures/default_texture.png')
     }
 
-    // async loadAsset(name)
+    // async preload(label, url)
+    // {
+
+    // }
+
+    // async load(type, name)
     // {
     //     let asset = await this.dataHandler.loadAsset(name)
     //     if(!asset)
@@ -221,7 +229,7 @@ export class Conjure extends Scene3D
         this.setConjureMode(CONJURE_MODE.WAITING)
 
         this.world.loadDefault()
-        global.CONSOLE.showNotification('Press (R) to reset if your avatar gets stuck\nPress escape to reveal the mouse and access settings.', 10)
+        global.CONSOLE.showNotification('Press (R) to reset if your avatar gets stuck\nPress escape to reveal the mouse and access settings.', 3)
 
         // this.loadInfo = document.getElementById( 'loadInfo' )
         // this.loadInfo.hidden = true

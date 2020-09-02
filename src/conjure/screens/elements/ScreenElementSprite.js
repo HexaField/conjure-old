@@ -39,16 +39,15 @@ export default class ScreenElementSprite extends ScreenElementBase
             this.textureURL = textureURL
         
         if(!this.textureURL) return;
-        
 
         this.texture = await this.screen.screenManager.conjure.load.texture(this.textureURL)
-        
-        if(!this.texture)
-            this.texture = await this.screen.screenManager.conjure.load.texture('https://cors-anywhere.herokuapp.com/' + this.textureURL)
-        
+
         if(this.loadCallback)
-            this.loadCallback();
-        this.icon.material.map = this.texture;
+            this.loadCallback()
+        if(this.texture)
+            this.icon.material.map = this.texture;
+        this.texture.needsUpdate = true;
+        this.icon.material.needsUpdate = true
     }
 
     setValue(tex)

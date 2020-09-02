@@ -9,6 +9,7 @@ import RealmManager from './RealmManager'
 import ProfileManager from './ProfileManager'
 import { GLOBAL_PROTOCOLS } from './NetworkManager'
 import GlobalNetwork from './GlobalNetwork'
+import { getParams } from './util/urldecoder'  
 
 export default class DataHandler
 {
@@ -48,8 +49,11 @@ export default class DataHandler
         let callback = async (error) => {
             if(error)
             {
-                console.log('Data Module: Could not find local node', error)
-                await this.loadDataHandler()
+                console.log('Data Module: Could not find local node')
+                const params = getParams(window.location.href)
+                global.isDevelopment = params.dev === 'true' || params.dev === true
+                console.log('Launching browser on ' + (global.isDevelopment ? 'development' : 'production' ) + ' network')   
+                await this.loadDataHandler() 
             }
             else
             {
@@ -209,12 +213,12 @@ export default class DataHandler
             return await this.getAssetManager().saveAsset(data)
     }
 
-    async createRealm(data)
+    async pinRealm(data)
     {
         if(this.runningNode)
-            return await this.awaitNodeResponse('createRealm', data)
+            return await this.awaitNodeResponse('pinRealm', data)
         else 
-            return await this.getRealmManager().createRealm(data)
+            return await this.getRealmManager().pinRealm(data.data, data.pin)
     }
     
     async updateRealm(data)
@@ -333,7 +337,7 @@ export default class DataHandler
             case 'loadAsset': this.sendWebsocketData({ data: await this.loadAsset(data.data), requestTimestamp: data.requestTimestamp}); break;
             case 'saveAsset': this.sendWebsocketData({ data: await this.saveAsset(data.data), requestTimestamp: data.requestTimestamp}); break;
 
-            case 'createRealm': this.sendWebsocketData({ data: await this.createRealm(data.data), requestTimestamp: data.requestTimestamp}); break;
+            case 'pinRealm': this.sendWebsocketData({ data: await this.pinRealm(data.data), requestTimestamp: data.requestTimestamp}); break;
             case 'updateRealm': this.sendWebsocketData({ data: await this.updateRealm(data.data), requestTimestamp: data.requestTimestamp}); break;
             case 'getRealm': this.sendWebsocketData({ data: await this.getRealm(data.data), requestTimestamp: data.requestTimestamp}); break;
             case 'getRealms': this.sendWebsocketData({ data: await this.getRealms(), requestTimestamp: data.requestTimestamp}); break;

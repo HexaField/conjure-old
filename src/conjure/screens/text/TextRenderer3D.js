@@ -11,8 +11,8 @@ export default class TextRenderer3D
         this.x = number(params.x)
         this.y = number(params.y)
         this.scale = number(params.scale) || 1
-        this.anchorX = params.anchorX || 'center'
-        this.anchorY = params.anchorY || 'center'
+        this.alignX = params.alignX || 'center'
+        this.alignY = params.alignY || 'center'
         this.renderSide = params.renderSide || THREE.DoubleSide
         this.color = params.color === undefined ? 0xffffff : params.color
         
@@ -20,7 +20,7 @@ export default class TextRenderer3D
 
         this.group = new THREE.Group()
         this.font = conjure.getFonts().getFont(params.font || 'Helvetiker')
-        this.geometry = createText(this.font, { string: this.string })
+        this.geometry = createText(this.font, { string: this.string, alignX: this.alignX, alignY: this.alignY })
         
         this.material = new THREE.MeshBasicMaterial({
             // transparent: true,
@@ -40,7 +40,7 @@ export default class TextRenderer3D
         if(font !== undefined)
             this.font = font
         this.string = String(text)
-        this.geometry = createText(this.font, { string: this.string })
+        this.geometry = createText(this.font, { string: this.string, alignX: this.alignX, alignY: this.alignY })
         this.mesh.geometry = this.geometry
     }
 

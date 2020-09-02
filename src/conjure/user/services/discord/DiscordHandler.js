@@ -126,11 +126,17 @@ export default class DiscordHandler
         });
     }
 
-    getUserGuilds(callback)
+    async getUserGuilds()
     {
-        this.oauth.getUserGuilds(JSON.parse(window.localStorage.getItem('discordAccessToken')).access_token).then((user_guilds) => {
-            callback(user_guilds);
-        });
+        return await new Promise((resolve, reject) => {
+            try{
+                this.oauth.getUserGuilds(JSON.parse(window.localStorage.getItem('discordAccessToken')).access_token).then((user_guilds) => {
+                    resolve(user_guilds);
+                })
+            } catch(error) {
+                reject(error)
+            }
+        })
     }
 
     setLoggedIn(loggedIn)

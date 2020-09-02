@@ -71,13 +71,30 @@ export default class ServiceManager
         this.conjure.getScreens().screenServices.addServices()
     }
 
-    // TODO
-    getRealmsFromConnectedServices(callback)
+    async getPotentialRealms()
     {
-        for(let service of this.services)
+        let potentialRealmsFound = []
+        for(let service of Object.values(this.services))
         {
-            // service.getRealms()
+            potentialRealmsFound.push(...await service.getRealmsIDs())
         }
+        return potentialRealmsFound
+    }
+
+    async getRealmsFromConnectedServices()
+    {
+        let realmsFound = []
+        for(let service of Object.values(this.services))
+        {
+            let ids = await service.getRealmsIDs()
+            for(let i in ids)
+            {
+                let realm = await this.conjure.getDataHandler().getRealm(ids[i].id)
+                if(realm)
+                    realmsFound.push(realm)
+            }
+        }
+        return realmsFound
     }
 
     setServicesFromDatabase(data)

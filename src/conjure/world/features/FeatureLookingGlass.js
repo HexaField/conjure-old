@@ -20,7 +20,7 @@ export default class FeatureArtGallery extends Feature
         this.tweens = []
         this.vec3 = new THREE.Vector3()
         this.realmData = realm.getData()
-        this.spawnPosition = this.realmData.userData.spawnPosition
+        this.spawnPosition = this.realmData.worldData.spawnPosition
     }
 
     async preload()

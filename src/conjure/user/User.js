@@ -81,25 +81,28 @@ export default class User
         })
 
         this.group.add(this.mesh);
-        this.collider = this.conjure.physics.add.existing(this.group, {
-            shape: 'box',
-            width: 0.6,
-            depth: 0.4,
-            height: this.modelHeight,
-            offset: { x : 0, y: -this.modelHeight / 2, z:0},
-            autoCenter: false,
-            mass: 1
-            // shape: 'sphere',
-            // radius: 0.25,
-            // width: 0.5,
-            // offset: { y: -0.25 }
-        })
-        this.group.body.setCollisionFlags(0);
-        this.group.body.setFriction(1.5)
-        this.group.body.setBounciness(0)
-        this.group.body.setAngularFactor(0, 0, 0)
-        this.group.body.setLinearFactor(1, 1, 1)
-
+        if(!this.isRemote)
+        {
+            this.collider = this.conjure.physics.add.existing(this.group, {
+                shape: 'box',
+                width: 0.6,
+                depth: 0.4,
+                height: this.modelHeight,
+                offset: { x : 0, y: -this.modelHeight / 2, z:0},
+                autoCenter: false,
+                mass: 1
+                // shape: 'sphere',
+                // radius: 0.25,
+                // width: 0.5,
+                // offset: { y: -0.25 }
+            })
+            this.group.body.setCollisionFlags(0);
+            this.group.body.setFriction(1.5)
+            this.group.body.setBounciness(0)
+            this.group.body.setAngularFactor(0, 0, 0)
+            this.group.body.setLinearFactor(1, 1, 1)
+        }
+            
         // Continuous Collision Detection - https://docs.panda3d.org/1.10/python/programming/physics/bullet/ccd
         // this.group.body.setCcdMotionThreshold(1e-7)
         // this.group.body.setCcdSweptSphereRadius(0.25)
@@ -113,10 +116,11 @@ export default class User
         this.animMovementLock = true;
 
         this.group.animation.mixer.addEventListener('loop', function( e ) {
-            if(!this.group || this.group.body) return;
+            if(!this.group) return;
             if(this.currentAnimation === 'land' || this.currentAnimation === 'landHard' || this.currentAnimation === 'landRoll' || this.currentAnimation === 'unsheath' || this.currentAnimation === 'swingOutward' || this.currentAnimation === 'swingInward')
             {
-                this.group.body.setVelocity(0, 0, 0);
+                if(this.group.body)
+                    this.group.body.setVelocity(0, 0, 0);
             }
         }.bind(this));
 

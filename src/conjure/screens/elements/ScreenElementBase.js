@@ -29,7 +29,7 @@ export default class ScreenElementBase
         this.defaultColour3 = 0x1855A3
         this.defaultOpacity = 0.75
         
-        this.targetBounds = easyPlane({ width: this.width, height: this.height }, { color: 0xffffff, transparent: true, opacity: 0.1 });
+        this.targetBounds = easyPlane({ width: this.width, height: this.height }, { color: 0xffffff });
         this.targetBounds.material.visible = false;
         this.group.add(this.targetBounds);
 
@@ -141,12 +141,14 @@ export default class ScreenElementBase
     setActive(active)
     {
         this.active = active;
-        this.group.visible = active;
+        if(this.hidden)
+            this.active = false
+        this.group.visible = this.active;
         for(let i = 0; i < this.elements.length; i++)
         {
-            this.elements[i].setActive(active);
+            this.elements[i].setActive(this.active);
         }
-        this.setHTMLActive(active)
+        this.setHTMLActive(this.active)
     }
 
     setDisabled(disable)

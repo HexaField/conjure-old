@@ -36,7 +36,7 @@ export default class GlobalNetwork
 
     parseReceiveData(data, from)
     {
-        console.log('GlobalNetwork: parseReceiveData: ', data.protocol)
+        // console.log('GlobalNetwork: parseReceiveData: ', data.protocol)
         if(this.protocolCallbacks[data.protocol] !== undefined)
             this.protocolCallbacks[data.protocol](data.content, from);
     }

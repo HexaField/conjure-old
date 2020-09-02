@@ -22,7 +22,7 @@ export default class ScreenHomeMenu extends ScreenBase
 
     createRing()
     {
-        let material = new THREE.MeshBasicMaterial({ color: this.defaultColour2, side: THREE.DoubleSide, transparent: true, opacity: this.defaultOpacity})
+        let material = new THREE.MeshBasicMaterial({ color: this.defaultColour3, side: THREE.DoubleSide, transparent: true, opacity: this.defaultOpacity})
 
         for(let i = 0; i < this.segmentItems.length; i++)
         {
@@ -40,7 +40,7 @@ export default class ScreenHomeMenu extends ScreenBase
             let point = new Vector2(Math.cos(angle), Math.sin(angle))
             point.multiplyScalar(0.35)
 
-            let text = new ScreenElementText(this, this, { x: point.x, y: point.y })
+            let text = new ScreenElementText(this, this, { x: point.x, y: point.y, z: 0.025 })
             text.setText(this.segmentItems[i])
             this.registerElement(text)
             this.labels.push(text)

@@ -50,11 +50,6 @@ export default class ProfileServiceDiscord extends ProfileService
         this.profile.refreshServices()
     }
 
-    getGuilds(callback)
-    {
-        return this.discordHandler.getUserGuilds(callback)
-    }
-
     toJson()
     {
         if(this.isLinked)
@@ -65,5 +60,22 @@ export default class ProfileServiceDiscord extends ProfileService
     readFromJson(data)
     {
         
+    }
+
+    async getGuilds()
+    {
+        if(!this.isLinked) return []
+        return await this.discordHandler.getUserGuilds()
+    }
+
+    async getRealmsIDs()
+    {
+        let guilds = await this.getGuilds()
+        for(let guild of guilds)
+        {
+            guild.iconURL = 'https://cdn.discordapp.com/icons/' + guild.id + '/'+ guild.icon + '.png'
+            guild.id = this.getName() +'-'+ guild.id
+        }
+        return guilds
     }
 }

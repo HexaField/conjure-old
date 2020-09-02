@@ -11,6 +11,7 @@ export default class Network
         this.roomStats = {}
         this.roomStats.peers = []
         this.roomStats.peersCount = 0
+        // let packetCount = 0
 
         console.log('Joining p2p networking for topic', this.topic, 'with peer ID', this.myPeerID)
 
@@ -51,7 +52,8 @@ export default class Network
             // this is a hack for this.sendTo while pubsubroom is broken
             if(data.intendedRecipient !== undefined && data.intendedRecipient !== this.myPeerID) 
                 return
-            
+            // packetCount ++
+            // console.log(packetCount)
             onMessage(data, message.from);
         })
 

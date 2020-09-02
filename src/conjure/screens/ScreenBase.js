@@ -25,8 +25,8 @@ export default class ScreenBase
         this.defaultColour = 0x2685ff
         this.defaultColour2 = 0x1E6ACC
         this.defaultColour3 = 0x1855A3
-        this.defaultOpacity = 0.75
-        this.background = easyPlane({ width: this.width, height: this.height}, { color: this.defaultColour, transparent: true, opacity: this.defaultOpacity })
+        this.defaultOpacity = 0.85
+        this.background = easyPlane({ width: this.width, height: this.height}, { color: this.defaultColour3, transparent: true, opacity: this.defaultOpacity })
         this.background.receiveShadow = false
         // this.background.material.blending = THREE.MultiplyBlending
 

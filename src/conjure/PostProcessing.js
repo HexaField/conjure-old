@@ -25,7 +25,7 @@ export default class PostProcessing
         this.conjure.renderer.autoClear = false;
 
         this.composer = new EffectComposer(this.conjure.renderer);
-        this.conjure.renderer.toneMappingExposure = 0.4//Math.pow(1.30, 4.0);
+        this.conjure.renderer.toneMappingExposure = 1.0//Math.pow(1.30, 4.0);
 
         this.renderScene = new SSAARenderPass(this.conjure.scene, this.conjure.camera);
         this.renderScene.sampleLevel = 1;

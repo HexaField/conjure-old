@@ -52,8 +52,42 @@ export default class World
     async getRealms(getPrivate)
     {
         let realms = []
-        realms.push(...this.globalRealms.filter(realm => getPrivate ? true : (realm.visibility && realm.visibility !== REALM_VISIBILITY.PRIVATE)))
-        realms.push(...(await this.conjure.getDataHandler().getRealms()).filter(realm => getPrivate ? true : (realm.visibility && realm.visibility !== REALM_VISIBILITY.PRIVATE)))
+        
+        realms.push(...this.globalRealms)
+        realms.push(...await this.conjure.getDataHandler().getRealms())
+        realms.push(...await this.conjure.getProfile().getServiceManager().getRealmsFromConnectedServices())
+
+        realms = realms.filter(realm => getPrivate ? true : (realm.visibility && realm.visibility !== REALM_VISIBILITY.PRIVATE))
+        return realms
+    }
+
+    async getRealmsAndPinned(getPrivate)
+    {
+        let realms = []
+        
+        for(let realm of this.globalRealms.filter(realm => getPrivate ? true : (realm.visibility && realm.visibility !== REALM_VISIBILITY.PRIVATE)))
+        {
+            realms.push({ realmData: realm, pinned: 'global' })
+        }
+        for(let realm of (await this.conjure.getProfile().getServiceManager().getRealmsFromConnectedServices()).filter(realm => getPrivate ? true : (realm.visibility && realm.visibility !== REALM_VISIBILITY.PRIVATE)))
+        {
+            realms.push({ realmData: realm, pinned: false })
+        }
+        for(let pinned of (await this.conjure.getDataHandler().getRealms()).filter(realm => getPrivate ? true : (realm.visibility && realm.visibility !== REALM_VISIBILITY.PRIVATE)))
+        {
+            let found = false
+            for(let realm of realms)
+            {
+                if(pinned.id === realm.realmData.id)
+                {
+                    realm.pinned = true
+                    found = true
+                    break
+                }
+            }
+            if(!found)
+                realms.push({ realmData: pinned, pinned: true })
+        }
         return realms
     }
 
@@ -87,6 +121,7 @@ export default class World
         if(this.realm)
         {
             await this.realm.leave()
+            this.destroyAllRemoteUsers()
         }
         // console.log('Joining realm', realmData)
         this.conjure.setConjureMode(CONJURE_MODE.LOADING)
@@ -115,10 +150,10 @@ export default class World
 
         await this.realm.load() // load the realm
 
-        if(realmData.getData().userData.spawnPosition)
+        if(realmData.getData().worldData.spawnPosition)
         {
-            this.spawnLocation = realmData.getData().userData.spawnPosition
-            this.user.teleport(realmData.getData().userData.spawnPosition.x, realmData.getData().userData.spawnPosition.y, realmData.getData().userData.spawnPosition.z)
+            this.spawnLocation = realmData.getData().worldData.spawnPosition
+            this.user.teleport(realmData.getData().worldData.spawnPosition.x, realmData.getData().worldData.spawnPosition.y, realmData.getData().worldData.spawnPosition.z)
         }   
         
         this.realm.sendData(REALM_PROTOCOLS.USER.JOIN, {
@@ -162,7 +197,7 @@ export default class World
     getScreensDisabled()
     {
         if(!this.realm) return false
-        if(this.realm.realmData.getData().userData.disableScreens)
+        if(this.realm.realmData.getData().worldData.disableScreens)
             return true
         return false
     }
@@ -179,11 +214,8 @@ export default class World
         let interactDistance = this.interactMaxDistance;
         for(let user in this.users)
         {
-            if(this.users[user].timedOut)
-            {
-                this.users.splice(user, 1)
-                continue
-            }
+            if(this.users[user].timedOut) continue
+
             this.users[user].update(updateArgs)
             if(this.users[user] && this.users[user].group) // make sure we havent destroyed user in update loop
                 if(!interact && this.conjure.conjureMode === CONJURE_MODE.EXPLORE)
@@ -281,18 +313,12 @@ export default class World
         let exists = false;
         for(let user of this.users)
             if(peerID === user.peerID)
-                exists = user;
+                exists = true;
         if(exists)
         {
             return
             // this.onUserLeave(peerID)
         }
-        // else
-        // {
-            this.sendData(REALM_PROTOCOLS.USER.JOIN, {
-                username: this.conjure.getProfile().getUsername()
-            }, peerID)
-        // }
         this.users.push(new UserRemote(this.conjure, data.username, peerID))
         global.CONSOLE.log('User ', data.username, ' has joined')
     }
@@ -302,7 +328,7 @@ export default class World
         for(let u = 0; u < this.users.length; u++)
         {
             this.users[u].timedOut = true;
-            this.conjure.physics.destroy(this.users[u].group.body)
+            // this.conjure.physics.destroy(this.users[u].group.body)
             this.scene.remove(this.users[u].group)
             this.users.splice(u, 1);
         }
@@ -315,7 +341,7 @@ export default class World
                 {
                     global.CONSOLE.log('User ', this.users[u].username, ' has left')
                     this.users[u].timedOut = true;
-                    this.conjure.physics.destroy(this.users[u].group.body)
+                    // this.conjure.physics.destroy(this.users[u].group.body)
                     this.scene.remove(this.users[u].group)
                     this.users.splice(u, 1);
                     return

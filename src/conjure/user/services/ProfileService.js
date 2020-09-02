@@ -38,4 +38,10 @@ export default class ProfileService
     }
 
     readFromJson(data) {}
+
+    // must return data with the format 
+    // { id, name } 
+    // optional is 
+    // { iconURL }
+    getRealmIDs() { return [] }
 }

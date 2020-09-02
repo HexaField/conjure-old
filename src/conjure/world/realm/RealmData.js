@@ -10,9 +10,10 @@ export const REALM_VISIBILITY = {
 
 export const REALM_WHITELIST = {
     NONE: 'None',
-    DISCORD: 'Discord',
+    SERVICE: 'Service',
     PASSCODE: 'Passcode'
 }
+
 export default class RealmData
 {  
     constructor(data)
@@ -33,7 +34,7 @@ export default class RealmData
                 type: REALM_WHITELIST.NONE,
                 ids: []
             },
-            userData: params.userData || {},
+            worldData: params.worldData || {},
             worldSettings: params.worldSettings || {
                 features: params.features || [],
                 worldGeneratorType: REALM_WORLD_GENERATORS.INFINITE_WORLD 

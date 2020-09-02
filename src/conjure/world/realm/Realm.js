@@ -24,7 +24,7 @@ export const GLOBAL_REALMS = {
             type: REALM_WHITELIST.PASSCODE,
             ids: ['MOOT']
         },
-        userData: {
+        worldData: {
             spawnPosition: new THREE.Vector3(60, 5, -70),
             disableScreens: true,
             playsAudio: true,
@@ -117,7 +117,7 @@ export default class Realm
         if(this.realmData.getData().worldSettings.worldGeneratorType === REALM_WORLD_GENERATORS.INFINITE_WORLD)
             this.terrain = new Terrain(this.conjure, this.world.group, this.realmData.getWorldSettings())
         
-        if(this.realmData.getData().userData.playsAudio)
+        if(this.realmData.getData().worldData.playsAudio)
         {
            await this.conjure.getAudioManager().create(true)
         }
@@ -172,6 +172,8 @@ export default class Realm
         {
             this.terrain.destroy()
         }
+        for(let feature of this.features)
+            feature.unload()
         this.world.group.remove(this.group)
         console.log('successfully left realm')
     }

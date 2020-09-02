@@ -88,7 +88,7 @@ export default class FeatureArtGallery extends Feature
                 else
                 {
                     this.pieces[i].createdBy.setText(metadata.createdBy.trim())
-                    this.pieces[i].description.setText(this.explodeString(metadata.description.trim(), 60))
+                    this.pieces[i].description.setText(this.explodeString(metadata.description.trim().replace('\n', ''), 60))
                     this.pieces[i].mesh.material.map = texture
                     image.onload = () => {
                         texture.image = image;

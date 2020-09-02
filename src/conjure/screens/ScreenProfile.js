@@ -11,9 +11,6 @@ export default class ScreenProfile extends ScreenBase
         
         this.profile = this.conjure.getProfile();
 
-        this.buttonHeight = 0.1
-        this.buttonWidth = 0.5
-
         this.updateProfile = this.updateProfile.bind(this)
         this.createProfile = this.createProfile.bind(this);
         this.openServices = this.openServices.bind(this);
@@ -91,11 +88,6 @@ export default class ScreenProfile extends ScreenBase
             this.createProfileButton.setText('Remove Profile')
             this.profileUsernameLabel.setHidden(false)
             this.servicesButton.setHidden(false)
-            if(!this.active)
-                this.profileUsernameLabel.setActive(false)
-            if(!this.active)
-                this.servicesButton.setActive(false)
-
         }
         else
         {
@@ -103,10 +95,6 @@ export default class ScreenProfile extends ScreenBase
             this.createProfileButton.setText('Create Profile')
             this.profileUsernameLabel.setHidden(true)
             this.servicesButton.setHidden(true)
-            if(!this.active)
-                this.profileUsernameLabel.setActive(false)
-            if(!this.active)
-                this.servicesButton.setActive(false)
         }
     }
 

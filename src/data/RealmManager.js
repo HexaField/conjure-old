@@ -1,11 +1,17 @@
 import { GLOBAL_PROTOCOLS } from './GlobalNetwork'
 
+// TODO
+/*
+    split broacast realms into broadcast known realms and broadcast available data
+    we really need a dht for this...
+*/
+
 export default class RealmManager
 {
     constructor(dataHandler)
     {
         this.dataHandler = dataHandler
-        this.knownRealms = [] // just a list of IDs - need to turn this into a list of RealmData or something - id, name, icon
+        this.pinnedRealms = [] // just a list of IDs - need to turn this into a list of RealmData or something - id, name, icon
 
         this.receiveRealms = this.receiveRealms.bind(this)
 
@@ -15,7 +21,7 @@ export default class RealmManager
     async initialise()
     {
         this.addRealms(await this.loadRealms())
-        console.log('Found', this.knownRealms.length, 'realms stored locally.')
+        console.log('Found', this.pinnedRealms.length, 'realms stored locally.')
     }
 
     receiveRealms(realms)
@@ -30,7 +36,7 @@ export default class RealmManager
         {
             if(!realm.id) continue
             let exists = false
-            for(let myRealm of this.knownRealms)
+            for(let myRealm of this.pinnedRealms)
             {
                 if(myRealm.id === realm.id)
                 {
@@ -41,21 +47,21 @@ export default class RealmManager
             }
             if(!exists)
             {
-                this.knownRealms.unshift(realm)
+                this.pinnedRealms.unshift(realm)
             }
         }
 
         await this.saveRealms()
         // this.conjure.getScreens().screenRealms.updateRecentRealms(this.knownRealms)
         if(!ignoreBroadcast)
-            this.dataHandler.getGlobalNetwork().sendData(GLOBAL_PROTOCOLS.BROADCAST_REALMS, this.knownRealms)
+            this.dataHandler.getGlobalNetwork().sendData(GLOBAL_PROTOCOLS.BROADCAST_REALMS, this.pinnedRealms)
     }
 
     async addRealm(realmData)
     {
         if(!realmData || !realmData.id) return;
         let exists = false
-        for(let myRealm of this.knownRealms)
+        for(let myRealm of this.pinnedRealms)
         {
             if(myRealm.id === realmData.id)
             {
@@ -67,18 +73,18 @@ export default class RealmManager
         }
         if(!exists)
         {
-            this.knownRealms.push(realmData)
-            await this.saveRealms()
-            this.dataHandler.getGlobalNetwork().sendData(GLOBAL_PROTOCOLS.BROADCAST_REALMS, this.knownRealms)
+            this.pinnedRealms.push(realmData)
         }
+        await this.saveRealms()
+        this.dataHandler.getGlobalNetwork().sendData(GLOBAL_PROTOCOLS.BROADCAST_REALMS, this.pinnedRealms)
     }
 
     async saveRealms()
     {
         try {
-            await this.dataHandler.getFiles().writeFile('recent_realms.json', JSON.stringify(this.knownRealms))
+            await this.dataHandler.getFiles().writeFile('recent_realms.json', JSON.stringify(this.pinnedRealms))
         } catch (error) {
-            console.log('ConjureDatabase: could not save recent realms', this.knownRealms, 'with error', error);
+            console.log('ConjureDatabase: could not save recent realms', this.pinnedRealms, 'with error', error);
             // this.conjure.getGlobalHUD().log('Failed to read recent realms')
         }
     }
@@ -101,11 +107,29 @@ export default class RealmManager
 
     // API
 
-    async createRealm(realmData)
+    async pinRealm(realmData, pin)
     {
-        this.knownRealms.push(realmData)
+        let needsUpdate = false
+        if(pin)
+        {
+            this.pinnedRealms.push(realmData)
+            needsUpdate = true
+        }
+        else
+        {
+            for(let i in this.pinnedRealms)
+                if(this.pinnedRealms[i].id === realmData.id)
+                {
+                    this.pinnedRealms.splice(i, 1)
+                    needsUpdate = true
+                    break
+                }
+        }
+        
+        if(!needsUpdate) return
+
         await this.saveRealms()
-        this.dataHandler.getGlobalNetwork().sendData(GLOBAL_PROTOCOLS.BROADCAST_REALMS, this.knownRealms)
+        this.dataHandler.getGlobalNetwork().sendData(GLOBAL_PROTOCOLS.BROADCAST_REALMS, this.pinnedRealms)
     }
 
     async updateRealm(realmData)
@@ -115,13 +139,13 @@ export default class RealmManager
 
     getRealm(id)
     {
-        for(let realm of this.knownRealms)
+        for(let realm of this.pinnedRealms)
             if(realm.id === id)
                 return realm
     }
 
     getRealms()
     {
-        return this.knownRealms
+        return this.pinnedRealms
     }
 }

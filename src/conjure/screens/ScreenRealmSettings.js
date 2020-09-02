@@ -1,7 +1,7 @@
 import ScreenBase from './ScreenBase'
 import ScreenElementButton from './elements//ScreenElementButton'
 import ScreenElementJSONTree from './elements/ScreenElementJSONTree'
-import { REALM_WORLD_GENERATORS, REALM_VISIBILITY } from '../world/realm/RealmData'
+import { REALM_WORLD_GENERATORS, REALM_VISIBILITY, REALM_WHITELIST } from '../world/realm/RealmData'
 import RealmData from '../world/realm/RealmData'
 
 export default class ScreenRealmSettings extends ScreenBase
@@ -12,22 +12,33 @@ export default class ScreenRealmSettings extends ScreenBase
 
         this.group.add(this.background)
 
+        this.fromService = false
+
         this.createRealm = this.createRealm.bind(this)
         this.updateData = this.updateData.bind(this)
+        this.selectFromList = this.selectFromList.bind(this)
+        this.selectedFromList = this.selectedFromList.bind(this)
         this.isCreating = false
 
         this.jsonTree = new ScreenElementJSONTree(this, this, { width: this.width, height: this.height, alwaysUpdate: true })
         this.registerElement(this.jsonTree)
 
-        this.cancelButton = new ScreenElementButton(this, this, { x : -this.width / 4, y: -this.height / 2 + 0.2, width: this.buttonWidth, height: this.buttonHeight });
+        this.cancelButton = new ScreenElementButton(this, this, { x : -this.width / 3, y: -this.height / 2 + 0.2, width: this.buttonWidth, height: this.buttonHeight });
         this.cancelButton.setText('Cancel');
-        this.cancelButton.setOnClickCallback(() => this.screenManager.hideLastOpenScreen());
+        this.cancelButton.setOnClickCallback(() => { this.data = {}; this.fromService = false; this.screenManager.hideLastOpenScreen() });
         this.registerElement(this.cancelButton);
 
-        this.createButton = new ScreenElementButton(this, this, { x : this.width / 4, y: -this.height / 2 + 0.2, width: this.buttonWidth, height: this.buttonHeight });
+        this.createButton = new ScreenElementButton(this, this, { x : 0, y: -this.height / 2 + 0.2, width: this.buttonWidth, height: this.buttonHeight });
         this.createButton.setText('Create');
         this.createButton.setOnClickCallback(this.createRealm);
         this.registerElement(this.createButton);
+
+        this.createFromServiceButton = new ScreenElementButton(this, this, { x : this.width / 3, y: -this.height / 2 + 0.2, width: this.buttonWidth, height: this.buttonHeight });
+        this.createFromServiceButton.setText('Create From Service');
+        this.createFromServiceButton.setOnClickCallback(this.selectFromList);
+        this.registerElement(this.createFromServiceButton);
+
+        this.data = undefined
     }
 
     getSchema()
@@ -41,17 +52,29 @@ export default class ScreenRealmSettings extends ScreenBase
                     label: 'ID',
                 },
                 name: {
-                    type: 'text',
+                    type: this.fromService ? 'static' : 'text',
                     label: 'Name',
                 },
+                // todo, if fromService, load the image as an icon
                 iconURL: {
-                    type: 'text',
+                    type: this.fromService ? 'static' : 'text',
                     label: 'Icon',
                 },
                 visibility: {
                     type: this.isCreating ? 'list' : 'static',
                     label: 'Visibility',
                     items: Object.values(REALM_VISIBILITY)
+                },
+                whitelist: {
+                    type: 'json',
+                    label: 'Whitelist Settings',
+                    items: {
+                        type: {
+                            type: this.isCreating && !this.fromService ? 'list' : 'static',
+                            label: 'Whitelist Type',
+                            items: this.fromService ? [REALM_WHITELIST.SERVICE] : Object.values(REALM_WHITELIST)
+                        }
+                    }
                 },
                 // features: {
                 //     type: 'button',
@@ -64,7 +87,7 @@ export default class ScreenRealmSettings extends ScreenBase
                     type: 'json',
                     label: 'World Settings',
                     items: {
-                        terrainGeneratorType: {
+                        worldGeneratorType: {
                             type: 'list',
                             label: 'Terrain Type',
                             items: Object.values(REALM_WORLD_GENERATORS)
@@ -79,6 +102,8 @@ export default class ScreenRealmSettings extends ScreenBase
     {
         super.showScreen(active)
         this.isCreating = Boolean(args.isCreating)
+        if(this.isCreating && !this.data)
+            this.fromService = false
         this.jsonTree.setActive(active)
         this.jsonTree.setSchema(this.getSchema())
         if(active)
@@ -86,12 +111,16 @@ export default class ScreenRealmSettings extends ScreenBase
             if(this.isCreating)
             {
                 this.createButton.setText('Create')
-                this.data = new RealmData(args.data ? args.data.getData() : {})
+                this.createFromServiceButton.setHidden(false)
+                if(!this.data)
+                    this.data = new RealmData(args.data ? args.data.getData() : {})
                 this.jsonTree.updateTree(this.data.getData(), this.updateData)
             }
             else
-            {
+            {   
                 this.createButton.setText('Update')
+                this.createFromServiceButton.setHidden(true) // TODO: turn this into 'manage features' when in update mode
+                // when in updating mode, we always want to force to get the latest data
                 this.data = this.screenManager.conjure.getWorld().realm.realmData
                 this.jsonTree.updateTree(this.data.getData(), this.updateData)
             }
@@ -102,9 +131,10 @@ export default class ScreenRealmSettings extends ScreenBase
     {
         if(this.isCreating)
         {
-            await this.screenManager.conjure.getDataHandler().createRealm(this.data.getData())
+            await this.screenManager.conjure.getDataHandler().pinRealm({ data: this.data.getData(), pin: true })
             console.log('Successfully made realm!')
             this.screenManager.showScreen(this.screenManager.screenRealms)
+            this.data = undefined // must reset data
         }
         else
         {
@@ -112,9 +142,29 @@ export default class ScreenRealmSettings extends ScreenBase
         }
     }
 
+    async selectFromList()
+    {
+        this.screenManager.showScreen(this.screenManager.screenList)
+        this.screenManager.screenList.setOnSelectCallback(this.selectedFromList)
+        this.screenManager.screenList.setList((await this.screenManager.conjure.getProfile().getServiceManager().getPotentialRealms()).filter(realm => realm.owner), 'name')
+    }
+
+    selectedFromList(item)
+    {
+        if(!this.data) return
+        if(!item.owner) return
+        this.fromService = true
+        this.data.getData().id = item.id
+        this.data.getData().name = item.name
+        this.data.getData().iconURL = item.iconURL
+        this.data.getData().whitelist.type = REALM_WHITELIST.SERVICE
+        this.jsonTree.setSchema(this.getSchema())
+        this.jsonTree.updateTree(this.data.getData(), this.updateData)
+    }
+
     updateData()
     {
-        // console.log(this.data)
+        
     }
 
     update(updateArgs)
