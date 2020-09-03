@@ -7,6 +7,7 @@ import bufferToBase64 from '../../util/bufferToBase64'
 import FeatureRoom from './FeatureRoom'
 import { Texture, VideoTexture } from 'three/build/three.module';
 import TextRenderer3D from '../../screens/text/TextRenderer3D';
+import { Sky } from 'three/examples/jsm/objects/Sky.js';
 
 export default class FeatureArtGallery extends Feature
 {
@@ -14,13 +15,34 @@ export default class FeatureArtGallery extends Feature
     {
         super(realm)
         this.piecesCount = 12
-        this.room = new FeatureRoom(realm.conjure, realm.group, { roomHeight: 6, roomWidth: this.piecesCount * 4 })
+        this.room = new FeatureRoom(realm.conjure, realm.group, { roomHeight: 0.1, roomWidth: this.piecesCount * 4 })
         this.superrareABI =  [{"constant":true,"inputs":[{"name":"interfaceId","type":"bytes4"}],"name":"supportsInterface","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_enabled","type":"bool"}],"name":"enableWhitelist","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"name","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"tokenId","type":"uint256"}],"name":"getApproved","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"to","type":"address"},{"name":"tokenId","type":"uint256"}],"name":"approve","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"from","type":"address"},{"name":"to","type":"address"},{"name":"tokenId","type":"uint256"}],"name":"transferFrom","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"_tokenId","type":"uint256"},{"name":"_uri","type":"string"}],"name":"updateTokenMetadata","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"owner","type":"address"},{"name":"index","type":"uint256"}],"name":"tokenOfOwnerByIndex","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_address","type":"address"}],"name":"isWhitelisted","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_tokenId","type":"uint256"}],"name":"tokenCreator","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"from","type":"address"},{"name":"to","type":"address"},{"name":"tokenId","type":"uint256"}],"name":"safeTransferFrom","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"index","type":"uint256"}],"name":"tokenByIndex","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_tokenId","type":"uint256"}],"name":"deleteToken","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"tokenId","type":"uint256"}],"name":"ownerOf","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"owner","type":"address"}],"name":"balanceOf","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"renounceOwnership","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"_removedAddress","type":"address"}],"name":"removeFromWhitelist","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"owner","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"isOwner","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"symbol","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"to","type":"address"},{"name":"approved","type":"bool"}],"name":"setApprovalForAll","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"_whitelistees","type":"address[]"}],"name":"initWhitelist","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"from","type":"address"},{"name":"to","type":"address"},{"name":"tokenId","type":"uint256"},{"name":"_data","type":"bytes"}],"name":"safeTransferFrom","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"tokenId","type":"uint256"}],"name":"tokenURI","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_uri","type":"string"}],"name":"addNewToken","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"_newAddress","type":"address"}],"name":"addToWhitelist","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"owner","type":"address"},{"name":"operator","type":"address"}],"name":"isApprovedForAll","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"inputs":[{"name":"_name","type":"string"},{"name":"_symbol","type":"string"},{"name":"_oldSuperRare","type":"address"}],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_tokenId","type":"uint256"},{"indexed":false,"name":"_uri","type":"string"}],"name":"TokenURIUpdated","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_newAddress","type":"address"}],"name":"AddToWhitelist","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_removedAddress","type":"address"}],"name":"RemoveFromWhitelist","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"previousOwner","type":"address"},{"indexed":true,"name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"from","type":"address"},{"indexed":true,"name":"to","type":"address"},{"indexed":true,"name":"tokenId","type":"uint256"}],"name":"Transfer","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"owner","type":"address"},{"indexed":true,"name":"approved","type":"address"},{"indexed":true,"name":"tokenId","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"owner","type":"address"},{"indexed":true,"name":"operator","type":"address"},{"indexed":false,"name":"approved","type":"bool"}],"name":"ApprovalForAll","type":"event"}]
         this.pieces = []
     }
 
     async preload()
     {
+        this.sky = new Sky();   
+        this.sky.scale.setScalar(450000);
+        this.realm.group.add(this.sky);
+
+        var uniforms = this.sky.material.uniforms;
+        uniforms[ "turbidity" ].value = 1;
+        uniforms[ "rayleigh" ].value = 1;
+        uniforms[ "mieCoefficient" ].value = 0.005;
+        uniforms[ "mieDirectionalG" ].value = 0.7;
+
+        var theta = Math.PI * ( 0.05 - 0.5 );
+        var phi = 2 * Math.PI * ( 0.2 - 0.5 );
+
+        this.realm.conjure.sunPos.x = Math.cos( phi );   
+        this.realm.conjure.sunPos.y = Math.sin( phi ) * Math.sin( theta );
+        this.realm.conjure.sunPos.z = Math.sin( phi ) * Math.cos( theta );
+        this.realm.conjure.dirLight.intensity = 1.2
+
+        this.realm.conjure.dirLight.position.copy(this.realm.conjure.sunPos)
+        uniforms[ "sunPosition" ].value.copy(this.realm.conjure.sunPos);
+
         this.realm.conjure.loadingScreen.setText('Loading art pieces...')
         console.log('Loading art gallery...')
 
@@ -79,7 +101,7 @@ export default class FeatureArtGallery extends Feature
                 let dimensions = metadata.media.dimensions.split('x')
                 
                 // make sure we arent going to crash the webpage...
-                if(Number(dimensions[0]) > 6144 || Number(dimensions[0]) > 6144) 
+                if(Number(metadata.media.size) > 20 * 1000 * 1000) // limit to 20MB
                     continue
 
                 let artworkData = await fetch(metadata.media.uri)
@@ -106,10 +128,12 @@ export default class FeatureArtGallery extends Feature
                     if(aspectRatio < 1)
                     {
                         this.pieces[i].createdBy.group.position.setY(-aspectRatio * 1.75)
-                        this.pieces[i].description.group.position.setY(aspectRatio * 1.75)
+                        this.pieces[i].name.group.position.setY(aspectRatio * 1.75)
+                        this.pieces[i].description.group.position.setY(aspectRatio * 2)
                         this.pieces[i].mesh.geometry.scale(1, aspectRatio, 1)
                     }
                     this.pieces[i].createdBy.setText(metadata.createdBy.trim())
+                    this.pieces[i].name.setText(metadata.name.trim() + ', ' + metadata.yearCreated.trim())
                     this.pieces[i].description.setText(this.explodeString(metadata.description.trim().replace('\n', ''), 100))
                     
                     this.pieces[i].mesh.material.map = texture
@@ -139,8 +163,11 @@ export default class FeatureArtGallery extends Feature
         let createdBy = new TextRenderer3D(this.realm.conjure, mesh, { text: 'Loading...', width: 1, scale: 2, color: 0x000000 });
         createdBy.group.position.set(0, -1.75, 0);
 
+        let name = new TextRenderer3D(this.realm.conjure, mesh, { text: '', width: 1, scale: 2, color: 0x000000 });
+        name.group.position.set(0, 1.75, 0);
+
         let description = new TextRenderer3D(this.realm.conjure, mesh, { text: '', width: 1, scale: 2, color: 0x000000, alignY: 'bottom' });
-        description.group.position.set(0, 1.75, 0);
+        description.group.position.set(0, 2, 0);
 
         let light = new THREE.PointLight( 0xffee88, 0.4, 20, 2 );
         light.position.set(0, 1, 1)
@@ -151,7 +178,7 @@ export default class FeatureArtGallery extends Feature
         mesh.position.copy(pos)
         this.realm.group.add(mesh)
 
-        this.pieces.push({ mesh, createdBy, description })
+        this.pieces.push({ mesh, createdBy, description, name })
         return mesh
     }
 

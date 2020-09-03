@@ -7,30 +7,11 @@ import { REALM_WORLD_GENERATORS, REALM_VISIBILITY, REALM_WHITELIST } from './Rea
 export const GLOBAL_REALMS = {
     GALLERY: {
         id: 'Gallery',
-        name: 'Gallery',
+        name: 'SuperRare Ethereum Gallery',
         timestamp: 0,
         visibility: REALM_VISIBILITY.PUBLIC,
         worldSettings: {
             features: ['Gallery'],
-            worldGeneratorType: REALM_WORLD_GENERATORS.NONE
-        }
-    },
-    LOOKINGGLASS: {
-        id: 'LookingGlass',
-        name: 'Looking Glass',
-        timestamp: 0,
-        visibility: REALM_VISIBILITY.PRIVATE,
-        whitelist: {
-            type: REALM_WHITELIST.PASSCODE,
-            ids: ['MOOT']
-        },
-        worldData: {
-            spawnPosition: new THREE.Vector3(60, 5, -70),
-            disableScreens: true,
-            playsAudio: true,
-        },
-        worldSettings: {
-            features: ['Looking Glass'],
             worldGeneratorType: REALM_WORLD_GENERATORS.NONE
         }
     },
