@@ -73,9 +73,8 @@ export default class Network
         if(!content) content = '';
         let data = JSON.stringify({protocol:protocol, content:content, intendedRecipient:peerID});
 
-        if(this.room)
-            await this.room.broadcast(Buffer.from(data));
-            // await this.room.sendTo(peerID, Buffer(data)); // sendTo is broken with new version of IPFS
+        await this.room.broadcast(Buffer.from(data));
+        // await this.room.sendTo(peerID, Buffer(data)); // sendTo is broken with new version of IPFS
     }
 
     async sendData(protocol, content)
