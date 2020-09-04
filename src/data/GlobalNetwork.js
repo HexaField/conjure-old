@@ -18,7 +18,7 @@ export default class GlobalNetwork
 
         this.dataHandler.networkManager.joinNetwork(this.networkID, this.parseReceiveData, this.onPeerJoin, this.onPeerLeave)
         this.setProtocolCallback(GLOBAL_PROTOCOLS.BROADCAST_INFO, (data, from) => {
-            console.log(from, ' has connected via ' + data.env + ' on version ' + data.version)
+            console.log(from, ' has connected via ' + data.env)
         })
     }
 
