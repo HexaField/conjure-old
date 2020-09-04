@@ -26,7 +26,12 @@ export default class ScreenElementScaler extends ScreenElementBase
         this.changeType = 'addition'; // 'multiply' 'addition'
 
 
-        this.textObj = new TextRenderer3D(screen.screenManager.conjure, this.group, { text: '0', scale: 0.75 });
+        this.textObj = new TextRenderer3D(screen.screenManager.conjure, this.group, { 
+            text: '0',
+            scale: 0.75,
+            fit: { x: this.width - 0.025, y: this.height - 0.025 },
+            ...args.textSettings
+        });
     }
 
     getValue()

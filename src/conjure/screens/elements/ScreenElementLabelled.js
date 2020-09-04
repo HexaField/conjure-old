@@ -15,7 +15,7 @@ export default class ScreenElementLabelled extends ScreenElementBase
         this.group.add(this.element.group);
         this.element.group.position.setX(this.width / 4 + this.gap)
 
-        this.label = new ScreenElementText(screen, this, { x: -this.gap - this.width/4, width: this.width/4, height: this.height, text: args.label || 'label', textSettings: {...args.textSettings, anchorX:'right'}});
+        this.label = new ScreenElementText(screen, this, { x: -this.gap - this.width/4, width: this.width/4, height: this.height, text: args.label || 'label', textSettings: {...args.textSettings, anchorX:'right' } });
 
         this.updateCallback = Boolean(args.updateCallback)
         this.registerElement(this.element)

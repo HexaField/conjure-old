@@ -8,9 +8,10 @@ export default class NetworkManager
         this.networks = {}
     }
 
-    joinNetwork(network, onMessage, onPeerJoin, onPeerLeave)
+    async joinNetwork(network, onMessage, onPeerJoin, onPeerLeave)
     {
-        if(this.networks[network]) return
+        if(this.networks[network]) 
+            await this.leaveNetwork(network)
         this.networks[network] = new Network(this.dataHandler.getIPFS(), this.dataHandler.getPeerID(), network, onMessage, onPeerJoin, onPeerLeave, { showStats: true })
     }
 

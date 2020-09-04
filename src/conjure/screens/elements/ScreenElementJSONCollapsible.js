@@ -21,7 +21,13 @@ export default class ScreenElementJSONCollapsible extends ScreenElementBase
 
         // this.registerElement(this.button);
 
-        this.textObj = new TextRenderer3D(screen.screenManager.conjure, this.group, { string: 'button', x: -this.width/2 + 0.05, anchorX: 'left', scale: 0.75});
+        this.textObj = new TextRenderer3D(screen.screenManager.conjure, this.group, { 
+            string: 'button',
+            x: -this.width/2 + 0.05,
+            anchorX: 'left',
+            fit: { x: this.width - 0.025, y: this.height - 0.025 },
+            scale: 0.75
+        });
         this.textObj.group.position.set(0.05, 0.01, 0);
         this.selected = false;
         this.value = '';

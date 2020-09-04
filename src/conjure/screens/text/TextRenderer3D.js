@@ -15,7 +15,9 @@ export default class TextRenderer3D
         this.alignY = params.alignY || 'center'
         this.renderSide = params.renderSide || THREE.DoubleSide
         this.color = params.color === undefined ? 0xffffff : params.color
-        
+        this.fit = params.fit // { x, y }
+        this.fitScale = this.scale
+
         this.string = String(params.string || params.text || '')
 
         this.group = new THREE.Group()
@@ -29,10 +31,10 @@ export default class TextRenderer3D
         })
 
         this.mesh = new THREE.Mesh(this.geometry, this.material)
-        this.mesh.scale.set(this.scale, this.scale, this.scale)
         this.group.add(this.mesh)
         parent.add(this.group)
         // this.group.add(easySphere(0.01)) // use this for debugging
+        this.scaleText()
     }
 
     setText(text, font)
@@ -42,6 +44,21 @@ export default class TextRenderer3D
         this.string = String(text)
         this.geometry = createText(this.font, { string: this.string, alignX: this.alignX, alignY: this.alignY })
         this.mesh.geometry = this.geometry
+        
+        this.scaleText()
+    }
+
+    scaleText(fit)
+    {
+        if(fit)
+            this.fit = fit
+        
+        if(this.fit)
+        {
+            if(this.geometry.boundingBox.max.x - this.geometry.boundingBox.min.x > this.fit.x)
+                this.fitScale = this.fit.x / (this.geometry.boundingBox.max.x - this.geometry.boundingBox.min.x)
+        }
+        this.mesh.scale.set(this.fitScale, this.fitScale, 1) // will need to change z when bevel is added
     }
 
     getBounds()

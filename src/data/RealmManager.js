@@ -16,6 +16,20 @@ export default class RealmManager
         this.receiveRealms = this.receiveRealms.bind(this)
 
         this.dataHandler.getGlobalNetwork().setProtocolCallback(GLOBAL_PROTOCOLS.BROADCAST_REALMS, this.receiveRealms)
+
+        // this is hardcoded to clean up old realms as we are in rapid development
+        this.earliestRealmTime = 1599176386000
+    }
+
+    validateRealms()
+    {
+        let realmCountBeforeValidation = this.pinnedRealms.length
+        for(let i in this.pinnedRealms)
+            if(this.pinnedRealms[i].timestamp <= this.earliestRealmTime )
+                this.pinnedRealms.splice(i, 1)
+        
+        if(realmCountBeforeValidation - this.pinnedRealms.length > 0)
+            console.log('Invalidated ' + (realmCountBeforeValidation - this.pinnedRealms.length) + ' old realms')
     }
     
     async initialise()
@@ -50,7 +64,6 @@ export default class RealmManager
                 this.pinnedRealms.unshift(realm)
             }
         }
-
         await this.saveRealms()
         // this.conjure.getScreens().screenRealms.updateRecentRealms(this.knownRealms)
         if(!ignoreBroadcast)
@@ -81,6 +94,7 @@ export default class RealmManager
 
     async saveRealms()
     {
+        this.validateRealms()
         try {
             await this.dataHandler.getFiles().writeFile('recent_realms.json', JSON.stringify(this.pinnedRealms))
         } catch (error) {

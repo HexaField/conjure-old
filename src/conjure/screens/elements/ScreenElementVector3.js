@@ -11,9 +11,9 @@ export default class ScreenElementVector3 extends ScreenElementBase
         this.value = new THREE.Vector3();
         this.onValuesChanged = this.onValuesChanged.bind(this);
 
-        this.xElement = new ScreenElementScaler(this.screen, this, { x: -this.width/2, width: 0.1, height: 0.075 })
-        this.yElement = new ScreenElementScaler(this.screen, this, { width: 0.1, height: 0.075 })
-        this.zElement = new ScreenElementScaler(this.screen, this, { x: this.width/2, width: 0.1, height: 0.075 })
+        this.xElement = new ScreenElementScaler(this.screen, this, { x: -this.width/2, width: 0.1, height: 0.075, ...args.textSettings })
+        this.yElement = new ScreenElementScaler(this.screen, this, { width: 0.1, height: 0.075, ...args.textSettings })
+        this.zElement = new ScreenElementScaler(this.screen, this, { x: this.width/2, width: 0.1, height: 0.075, ...args.textSettings })
         this.xElement.setUpdateCallback(this.onValuesChanged)
         this.yElement.setUpdateCallback(this.onValuesChanged)
         this.zElement.setUpdateCallback(this.onValuesChanged)

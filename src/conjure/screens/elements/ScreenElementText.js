@@ -11,10 +11,11 @@ export default class ScreenElementText extends ScreenElementBase
         this.z = number(args.z || 0.025);
         this.group.position.set(this.x, this.y, this.z);
 
-        this.textObj = new TextRenderer3D(screen.screenManager.conjure, this.group, { text: args.text, ...args.textSettings });
-        
-        // TODO: add automatic scaler for width & height
-        this.autoUpdateSize = args.autoUpdateSize;
+        this.textObj = new TextRenderer3D(screen.screenManager.conjure, this.group, {
+            text: args.text,
+            fit: { x: this.width - 0.025, y: this.height - 0.025 },
+            ...args.textSettings
+        });
 
         if(args.background)
         {

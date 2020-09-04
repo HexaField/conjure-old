@@ -37,7 +37,11 @@ export default class ScreenElementSlider extends ScreenElementBase
         // this.registerElement(this.sliderTarget);
 
         //sceneCSS, parent, string, colour, width, height, scale, editable
-        this.textObj = new TextRenderer3D(screen.screenManager.conjure, this.group, { string: 'slider' });
+        this.textObj = new TextRenderer3D(screen.screenManager.conjure, this.group, { 
+            string: 'slider', 
+            fit: { x: this.width - 0.025, y: this.height - 0.025 },
+            ...args.textSettings
+         });
     }
 
     setDefaultValue(value)

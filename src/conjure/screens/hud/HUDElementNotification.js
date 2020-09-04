@@ -12,7 +12,7 @@ export default class HUDElementNotification
         this.group = new THREE.Group()
         this.screen.group.add(this.group)
 
-        this.textElement = new ScreenElementText(screen, this, { text: 'empty notification', y: 0.75, width: 0.5, height: 0.2, autoUpdateSize:true })
+        this.textElement = new ScreenElementText(screen, this, { text: 'empty notification', y: 0.75, width: 2, height: 1 })
         this.textElement.setHidden(true)
 
         this.timer = 0

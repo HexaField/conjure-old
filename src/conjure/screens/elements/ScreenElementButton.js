@@ -14,7 +14,12 @@ export default class ScreenElementButton extends ScreenElementBase
 
         this.group.add(this.button);
 
-        this.textObj = new TextRenderer3D(screen.screenManager.conjure, this.group, { text: args.text || 'button', scale: 0.75, ...args });
+        this.textObj = new TextRenderer3D(screen.screenManager.conjure, this.group, {
+            text: args.text || 'button',
+            scale: 0.75,
+            fit: { x: this.width - 0.025, y: this.height - 0.025 },
+            ...args.textSettings
+        });
         this.textObj.group.position.setZ(0.025);
         this.value = '';
     }
