@@ -17,7 +17,7 @@ export default class TextRenderer3D
         this.color = params.color === undefined ? 0xffffff : params.color
         this.fit = params.fit // { x, y }
         this.fitScale = this.scale
-        console.log(params)
+        // console.log(params)
 
         this.string = String(params.string || params.text || '')
 

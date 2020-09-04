@@ -6,6 +6,7 @@ import Platform from './Platform'
 import { CONJURE_MODE } from '../Conjure';
 import { INTERACT_TYPES } from '../screens/hud/HUDInteract';
 import RealmData, { REALM_WORLD_GENERATORS, REALM_VISIBILITY, REALM_WHITELIST } from './realm/RealmData'
+import _ from 'lodash'
 
 export default class World
 {
@@ -259,17 +260,16 @@ export default class World
                 this.sendData(REALM_PROTOCOLS.HEARTBEAT, {})
             let payload = {
                 physics: {
-                    position:this.user.group.getWorldPosition(this.vec3),
-                    quaternion:this.user.group.getWorldQuaternion(this.quat),
-                    velocity:this.user.group.body.velocity,
-                    angularVelocity:this.user.group.body.angularVelocity
+                    p:this.user.group.getWorldPosition(this.vec3),
+                    r:this.user.group.getWorldQuaternion(this.quat),
+                    v:this.user.group.body.velocity,
                 }
             }
-            // if(this.lastUserUpdate !== payload)
-            // {
+            if(deltaUpdate || !_.isEqual(this.lastUserUpdate, payload))
+            {
                 this.lastUserUpdate = payload;
                 this.sendData(REALM_PROTOCOLS.USER.MOVE, payload);
-            // }
+            }
         }
     }
 
@@ -313,7 +313,10 @@ export default class World
         let exists = false;
         for(let user of this.users)
             if(peerID === user.peerID)
+            {
                 exists = true;
+                break
+            }
         if(exists)
         {
             this.onUserLeave(peerID)
@@ -322,11 +325,11 @@ export default class World
         global.CONSOLE.log('User ' + data.username + ' has joined')
     }
     
+    
     destroyAllRemoteUsers()
     {
         for(let u = 0; u < this.users.length; u++)
         {
-            this.users[u].timedOut = true;
             // this.conjure.physics.destroy(this.users[u].group.body)
             this.scene.remove(this.users[u].group)
             this.users.splice(u, 1);
@@ -337,44 +340,47 @@ export default class World
     {
         for(let u = 0; u < this.users.length; u++)
             if(peerID === this.users[u].peerID)
-                {
-                    global.CONSOLE.log('User ' + this.users[u].username + ' has left')
-                    this.users[u].timedOut = true;
-                    // this.conjure.physics.destroy(this.users[u].group.body)
-                    this.scene.remove(this.users[u].group)
-                    this.users.splice(u, 1);
-                    return
-                }
+            {
+                global.CONSOLE.log('User ' + this.users[u].username + ' has left')
+                // this.conjure.physics.destroy(this.users[u].group.body)
+                this.scene.remove(this.users[u].group)
+                this.users.splice(u, 1);
+                break
+            }
     }
-    
+
+    // acts as heartbeat too
     onUserUpdate(data, peerID)
     {
+        let exists = false
         for(let u = 0; u < this.users.length; u++)
             if(peerID === this.users[u].peerID)
-                {
-                    this.users[u].updateInfo(data);
-                    return
-                }
+            {
+                this.users[u].updateInfo(data);
+                exists = true
+                break
+            }
+        if(!exists)
+            this.onUserJoin(data, peerID); // need to retire this eventually
     }
 
     onUserAnimation(data, peerID)
     {
         for(let u of this.users)
             if(peerID === u.peerID)
-                {
-                    u.setAction(data.name, data.fadeTime, data.once, data.startTime)
-                    return
-                }
+            {
+                u.setAction(data.name, data.fadeTime, data.once, data.startTime)
+                break
+            }
     }
     // TODO: figure out the role of peerID since we use discord id to auth for now - we really need a user UUID
     onUserMove(data, peerID)
     {
-        // this.onUserJoin(data, peerID); // need to retire this eventually
         for(let u of this.users)
             if(peerID === u.peerID)
-                {
-                    u.setPhysics(data.physics);
-                    return
-                }
+            {
+                u.setPhysics(data.physics);
+                break
+            }
     }
 }

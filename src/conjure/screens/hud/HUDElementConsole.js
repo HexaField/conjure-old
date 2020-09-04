@@ -13,14 +13,12 @@ export default class HUDElementConsole
 
     log(text)
     {
-        let message = text
-        console.log('hm')
         let textElement = new ScreenElementText(this.screen, this.screen, { 
             x: 1,
             width: 1,
             height: this.messageHeight, 
             anchor: true,
-            text: message,
+            text: text,
             textSettings: {
                 alignX: 'right',
                 scale: 0.4,

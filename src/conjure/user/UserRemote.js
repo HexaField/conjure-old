@@ -15,10 +15,9 @@ export default class UserRemote extends User
 
         this.nameplate = new TextRenderer3D(conjure, this.group, { text: username });
         this.nameplate.group.position.setY(2);
-        this.nameplate.group.visible = false
+        this.nameplate.group.visible = String(this.username) !== 'undefined'    
         this.timeoutLimit = 3 * 60; // if don't receive a heartbeat for 3 seconds, die
         this.timeoutCount = 0;
-        this.timedOut = false
 
         this.velocity = new THREE.Vector3();
     }
@@ -32,7 +31,6 @@ export default class UserRemote extends User
     updateInfo(data)
     {
         this.timeoutCount = 0;
-        if(this.timedOut) return
         if(data.username)
         {
             this.username = data.username
@@ -42,7 +40,6 @@ export default class UserRemote extends User
 
     update(updateArgs)
     {
-        if(this.timedOut) return
         this.timeoutCount++;
         if(this.timeoutCount > this.timeoutLimit)
         {
@@ -50,7 +47,6 @@ export default class UserRemote extends User
             this.conjure.getWorld().onUserLeave(this.peerID);
             return
         }
-        if(!this.group) return;
         this.group.position.set(this.group.position.x + (this.velocity.x * updateArgs.delta), this.group.position.y + (this.velocity.y * updateArgs.delta), this.group.position.z + (this.velocity.z * updateArgs.delta))
         // this.group.body.needUpdate = true;
     }
@@ -58,10 +54,9 @@ export default class UserRemote extends User
     setPhysics(physics)
     {
         this.timeoutCount = 0;
-        if(!this.group || this.timedOut) return;
-        this.group.position.set(physics.position.x, physics.position.y, physics.position.z);
-        this.group.quaternion.set(physics.quaternion._x, physics.quaternion._y, physics.quaternion._z, physics.quaternion._w);
-        this.velocity.set(physics.velocity.x, physics.velocity.y, physics.velocity.z);
+        this.group.position.set(physics.p.x, physics.p.y, physics.p.z);
+        this.group.quaternion.set(physics.r._x, physics.r._y, physics.r._z, physics.r._w);
+        this.velocity.set(physics.v.x, physics.v.y, physics.v.z);
         // this.group.body.needUpdate = true;
     }
 
