@@ -234,7 +234,7 @@ export class Conjure extends Scene3D
         // this.loadInfo = document.getElementById( 'loadInfo' )
         // this.loadInfo.hidden = true
         
-        this.getGlobalHUD().log('Took', (Date.now() - this.loadTimer)/1000, ' seconds to load.')
+        this.getGlobalHUD().log('Took ' + (Date.now() - this.loadTimer)/1000 + ' seconds to load.')
     }
 
     toggleConjureMode()

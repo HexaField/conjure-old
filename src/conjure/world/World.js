@@ -316,11 +316,10 @@ export default class World
                 exists = true;
         if(exists)
         {
-            return
-            // this.onUserLeave(peerID)
+            this.onUserLeave(peerID)
         }
         this.users.push(new UserRemote(this.conjure, data.username, peerID))
-        global.CONSOLE.log('User ', data.username, ' has joined')
+        global.CONSOLE.log('User ' + data.username + ' has joined')
     }
     
     destroyAllRemoteUsers()
@@ -339,7 +338,7 @@ export default class World
         for(let u = 0; u < this.users.length; u++)
             if(peerID === this.users[u].peerID)
                 {
-                    global.CONSOLE.log('User ', this.users[u].username, ' has left')
+                    global.CONSOLE.log('User ' + this.users[u].username + ' has left')
                     this.users[u].timedOut = true;
                     // this.conjure.physics.destroy(this.users[u].group.body)
                     this.scene.remove(this.users[u].group)

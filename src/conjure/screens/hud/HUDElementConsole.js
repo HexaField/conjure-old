@@ -8,19 +8,24 @@ export default class HUDElementConsole
 
         this.messages = []
         this.messageLife = 1000 * 12 // last for 10 seconds
-        this.messageHeight = 0.06
+        this.messageHeight = 0.04
     }
 
-    log(...text)
+    log(text)
     {
-        let message = text.join(' ')
-        let textElement = new ScreenElementText(this.screen, this.screen, 1, 0, 0, 1, 0.1, { 
+        let message = text
+        console.log('hm')
+        let textElement = new ScreenElementText(this.screen, this.screen, { 
+            x: 1,
+            width: 1,
+            height: this.messageHeight, 
             anchor: true,
+            text: message,
             textSettings: {
                 alignX: 'right',
+                scale: 0.4,
             }
         })
-        textElement.setText(message)
         textElement.userData.timestamp = Date.now()
         this.screen.registerElement(textElement)
         this.messages.push(textElement)

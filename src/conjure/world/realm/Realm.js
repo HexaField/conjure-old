@@ -185,13 +185,13 @@ export default class Realm
     
     onPeerJoin(peerID)
     {
-        global.CONSOLE.log('User ', peerID, ' has join the realm')
+        console.log('User ', peerID, ' has join the realm')
         this.sendData(REALM_PROTOCOLS.USER.JOIN, { username: this.conjure.getProfile().getUsername() || '' }, peerID)
     }
 
     onPeerLeave(peerID)
     {
-        global.CONSOLE.log('User ', peerID, ' has left the realm')
+        console.log('User ', peerID, ' has left the realm')
         this.world.onUserLeave(peerID)
     }
 
