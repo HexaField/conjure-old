@@ -15,6 +15,7 @@ export default class UserRemote extends User
 
         this.nameplate = new TextRenderer3D(conjure, this.group, { text: username });
         this.nameplate.group.position.setY(2);
+        this.nameplate.group.rotation.set(0, Math.PI, 0)
         this.nameplate.group.visible = String(this.username) !== 'undefined'    
         this.timeoutLimit = 3 * 60; // if don't receive a heartbeat for 3 seconds, die
         this.timeoutCount = 0;

@@ -24,7 +24,7 @@ export default class World
         this.lastUserUpdate = {};
 
         this.savePeriod = 5; // save every 5 seconds
-        this.updatesPerSecond = 10; // update peers every 1/xth of a second 
+        this.updatesPerSecond = 20; // update peers every 1/xth of a second 
         this.updateCount = 0;
         this.updateCountMax = 60 / this.updatesPerSecond;
         
@@ -242,7 +242,7 @@ export default class World
         //         this.conjure.screenManager.hudExplore.interact.setObject();
         // }
         if(this.user.group && this.user.group.body)
-            this.getWorldUpdates()
+            this.getWorldUpdates(updateArgs)
     }
 
     getWorldUpdates()

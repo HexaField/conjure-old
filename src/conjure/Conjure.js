@@ -310,7 +310,7 @@ export class Conjure extends Scene3D
     update(time, delta)
     {
         let deltaSeconds = delta / 1000
-        if(deltaSeconds < 0.01) deltaSeconds = 0
+        if(deltaSeconds > 0.1) deltaSeconds = 0.1 // so physics doesnt go insane
         
         this.input.update()
 

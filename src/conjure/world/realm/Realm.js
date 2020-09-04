@@ -3,6 +3,7 @@ import Terrain from './Terrain'
 import FeatureArtGallery from '../features/FeatureArtGallery'
 import FeatureLookingGlass from '../features/FeatureLookingGlass'
 import { REALM_WORLD_GENERATORS, REALM_VISIBILITY, REALM_WHITELIST } from './RealmData'
+import Platform from '../Platform'
 
 export const GLOBAL_REALMS = {
     GALLERY: {
@@ -97,6 +98,8 @@ export default class Realm
         
         if(this.realmData.getData().worldSettings.worldGeneratorType === REALM_WORLD_GENERATORS.INFINITE_WORLD)
             this.terrain = new Terrain(this.conjure, this.world.group, this.realmData.getWorldSettings())
+        else
+            this.terrain = new Platform(this.conjure, this.world.group)
         
         if(this.realmData.getData().worldData.playsAudio)
         {
