@@ -35,6 +35,8 @@ export default class WebSocketClient
             console.log('[close] Connection died')
             // this.connectCallback('[close] Connection died')
         }
+        this.connectCallback(true)
+
     }
 
     onData(event)

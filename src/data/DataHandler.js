@@ -249,8 +249,7 @@ export default class DataHandler
     {
         if(this.runningNode)
         {
-            // if(this.networkCallbacks[data.network]) 
-            //     await this.leaveNetwork({ network: data.network }) // we have already joined this network
+            if(this.networkCallbacks[data.network]) return true // we have already joined this network
 
             this.networkCallbacks[data.network] = {
                 onMessage: data.onMessage,
