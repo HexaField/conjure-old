@@ -16,17 +16,21 @@ async function loadIPFS() {
     console.log('Connecting to IPFS...')
     console.log(os.homedir())
     const ipfs = await IPFS.create({
-        repo: os.homedir() + (global.isDevelopment ? '/.ipfs-dev' : '/.ipfs') + (global.isBrowser ? '-'+Date.now() : '') + '/',
+        repo: os.homedir() + (global.isDevelopment ? '/.ipfs-dev' : '/.ipfs') + '-' + Date.now() + '/',
         config: {
             Addresses: { 
                 Swarm: [
-                    '/dns4/wrtc-star1.par.dwebops.pub/tcp/443/wss/p2p-webrtc-star',
-                    '/dns4/wrtc-star2.sjc.dwebops.pub/tcp/443/wss/p2p-webrtc-star',
+                    // '/dns4/wrtc-star1.par.dwebops.pub/tcp/443/wss/p2p-webrtc-star',
+                    // '/dns4/wrtc-star2.sjc.dwebops.pub/tcp/443/wss/p2p-webrtc-star',
                     '/dns4/boiling-hamlet-91904.herokuapp.com/tcp/443/wss/p2p-webrtc-star',
-                ]
-            }
+                ],
+                API: '',
+                Gateway: '',
+                Delegates: []
+            },
+            Bootstrap: []
         },
-        libp2p: { // _.merge({
+        libp2p: {
             modules: {
                 transport: [WebrtcStar, WS],
                 // streamMuxer: [MPLEX],
@@ -48,48 +52,10 @@ async function loadIPFS() {
                     // }
                 },
             }
-        }//, getLibp2pConfig())
+        }
     });
 
-    // this.networkInfo = {}
-    // this.networkInfo.peersCount = 0;
-    
-    // this.showStats();
     return ipfs
-}
-
-function getLibp2pConfig() {
-    if(global.isBrowser) return {}
-
-    return {
-        config: {
-        }
-            // peerDiscovery: {
-            //     autoDial: true,
-            //     webRTCStar: {
-            //         enabled: true
-            //     },
-            //     bootstrap: {
-            //         enabled: true,
-            //         interval: 30e3,
-            //         list: bootstrapList
-            //     }
-            // },
-            // relay: {
-            //     enabled: true,
-            //     hop: {
-            //         enabled: true,
-            //         active: true
-            //     }
-            // },
-            // dht: {
-            //     enabled: true,
-            //     randomWalk: {
-            //         enabled: true,
-            //     }
-            // }
-        // }
-    }
 }
 
 module.exports = { loadIPFS }

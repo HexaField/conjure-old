@@ -28,9 +28,8 @@ export default class DataHandler
     }
 
     async initialise(runAppCallback)
-    {        
-        // TODO: figure out how to pipe IPFS directly from node to browser, if impossible then add protocols for all ipfs actions (networking etc)
-        
+    {
+        this.running = false
         if(global.isBrowser)
         {
             await this.findNode(runAppCallback)
@@ -47,6 +46,8 @@ export default class DataHandler
     {
         this.runningNode = false
         let callback = async (error) => {
+            if(this.running) return
+            this.running = true
             if(error)
             {
                 console.log('Data Module: Could not find local node')
@@ -92,14 +93,13 @@ export default class DataHandler
     async loadDataHandler()
     {
         this.ipfs = await IPFS.loadIPFS()
-        this._peerID = await this.ipfs.id()
-        this.peerIDstring = this._peerID.id
-        console.log('IPFS ' + (await this.ipfs.version()).version + ' node ready with id ' + this.peerIDstring)
+        this.peerIDstring = await(await this.ipfs.id()).id
+        console.log('Libp2p node ready with id ' + this.peerIDstring)
         this.ipfsInfo = {}
         this.ipfsInfo.peersCount = 0;
         this.showStats();
 
-        const minPeersCount = global.isBrowser ? 3 : 0 // refactor this into a config eventually
+        const minPeersCount = 1//global.isBrowser ? 1 : 0 // refactor this into a config eventually
         await this.waitForIPFSPeers(minPeersCount)
      
         this.localStorage = global.isBrowser ? new FileStorageBrowser() : new FileStorageNode()
@@ -249,7 +249,7 @@ export default class DataHandler
     {
         if(this.runningNode)
         {
-            if(this.networkCallbacks[data.network]) return true // we have already joined this network
+            // if(this.networkCallbacks[data.network]) return true // we have already joined this network
 
             this.networkCallbacks[data.network] = {
                 onMessage: data.onMessage,
