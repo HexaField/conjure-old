@@ -13,7 +13,7 @@ export default class Network
         this.roomStats.peersCount = 0
         // let packetCount = 0
 
-        console.log('Joining p2p networking for topic', this.topic, 'with peer ID', this.myPeerID)
+        // console.log('Joining p2p networking for topic', this.topic, 'with peer ID', this.myPeerID)
 
         this.room.on('subscribed', () => {
             console.log('Now connected!')
@@ -63,7 +63,7 @@ export default class Network
     
     async leave()
     {
-        console.log('Leaving network ' + this.topic + '...')
+        // console.log('Leaving network ' + this.topic + '...')
         await this.room.leave()
     }
 

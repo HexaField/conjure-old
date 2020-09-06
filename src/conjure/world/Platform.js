@@ -13,7 +13,7 @@ export default class Platform
         this.parentGroup = parentGroup
 
 
-        this.worldNameText = new TextRenderer3D(this.conjure, this.parentGroup, { text: 'Local Realm', width: 5, scale: 10 });
+        this.worldNameText = new TextRenderer3D(this.conjure, this.parentGroup, { text: args.platformLabel || '', width: 5, scale: 10 });
         this.worldNameText.group.position.set(0, 5, 0);
 
         this.floor = new ExtendedObject3D()

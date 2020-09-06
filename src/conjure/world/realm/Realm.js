@@ -4,6 +4,7 @@ import FeatureArtGallery from '../features/FeatureArtGallery'
 import FeatureLookingGlass from '../features/FeatureLookingGlass'
 import { REALM_WORLD_GENERATORS, REALM_VISIBILITY, REALM_WHITELIST } from './RealmData'
 import Platform from '../Platform'
+// import FeatureParser from './FeatureParser'
 
 export const GLOBAL_REALMS = {
     GALLERY: {
@@ -25,13 +26,7 @@ export const GLOBAL_REALMS = {
 }
 
 export const REALM_PROTOCOLS = {
-    HEARTBEAT: 'heartbeat', // {}
-    // DATABASE: {
-    //     REQUESTHASHS: 'database.requesthashs',
-    //     GIVEHASHS: 'database.givehashs',
-    //     REQUESTOBJECT: 'database.requestobject',
-    //     GIVEOBJECT: 'database.giveobject',
-    // },
+    HEARTBEAT: 'heartbeat',
     USER: {
         JOIN: 'user.join',
         UPDATE: 'user.update',
@@ -39,36 +34,6 @@ export const REALM_PROTOCOLS = {
         LEAVE: 'user.leave',
         ANIMATION: 'user.animation',
     },
-    // PROFILE: {
-    //     PROPAGATE: 'profile.propagate', // for storing data in the network
-    //     REQUEST: 'profile.request', // for asking for profile data based on id
-    //     GIVE: 'profile.give', // for giving profile data based on id
-    //     SERVICE: {
-    //         PAYID: {
-    //             REQUESTID: 'profile.service.payid.requestid',
-    //             GIVEID: 'profile.service.payid.getid',
-    //         },
-    //     }
-    // },
-    // REALM: {
-    //     REQUESTSETTINGS: 'realm.requestsettings',
-    //     GIVESETTINGS: 'realm.givesettings',
-    //     LOADEDREALM: 'realm.loadedrealm',
-    // },
-    // OBJECT: {
-    //     CREATE: 'object.create',
-    //     UPDATE: 'object.update',
-    //     GROUP: 'object.group',
-    //     MOVE: 'object.move',
-    //     DESTROY: 'object.destroy',
-    //     REQUESTPRIMARY: 'object.requestprimary',
-    //     ACCEPTPRIMARY: 'object.acceptprimary',
-    //     TRANSFORM: {
-    //         START: 'object.transform.start',
-    //         UPDATE: 'object.transform.update',
-    //         END: 'object.transform.end',
-    //     },
-    // },
 }
 
 export default class Realm
@@ -112,6 +77,15 @@ export default class Realm
     async preloadFeatures()
     {
         for(let feature of this.realmData.getData().worldSettings.features)
+        {
+            // if(typeof feature === 'object')
+            // {
+            //     let f = new FeatureParser(this, feature)
+            //     await f.parse()
+            //     await f.preload()
+            //     this.features.push(f)
+            //     continue
+            // }
             switch(feature)
             {
                 case 'Gallery': {
@@ -130,6 +104,7 @@ export default class Realm
 
                 default: break
             }
+        }
     }
 
     addNetworkProtocolCallback(protocol, callback)

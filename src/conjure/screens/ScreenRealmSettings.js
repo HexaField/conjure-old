@@ -100,30 +100,35 @@ export default class ScreenRealmSettings extends ScreenBase
 
     showScreen(active, args = {})
     {
+        // initial check for the case that we are trying to update a realm without one loaded
+        // maybe should move this to the place where it's called in this case?
+        if(active && !args.isCreating && !this.screenManager.conjure.getWorld().realm) 
+        {
+            return 'cancel'
+        }
         super.showScreen(active)
+        if(!active) return
+
         this.isCreating = Boolean(args.isCreating)
         if(this.isCreating && !this.data)
             this.fromService = false
-        this.jsonTree.setActive(active)
+        // this.jsonTree.setActive(active)
         this.jsonTree.setSchema(this.getSchema())
-        if(active)
+        if(this.isCreating)
         {
-            if(this.isCreating)
-            {
-                this.createButton.setText('Create')
-                this.createFromServiceButton.setHidden(false)
-                if(!this.data)
-                    this.data = new RealmData(args.data ? args.data.getData() : {})
-                this.jsonTree.updateTree(this.data.getData(), this.updateData)
-            }
-            else
-            {   
-                this.createButton.setText('Update')
-                this.createFromServiceButton.setHidden(true) // TODO: turn this into 'manage features' when in update mode
-                // when in updating mode, we always want to force to get the latest data
-                this.data = this.screenManager.conjure.getWorld().realm.realmData
-                this.jsonTree.updateTree(this.data.getData(), this.updateData)
-            }
+            this.createButton.setText('Create')
+            this.createFromServiceButton.setHidden(false)
+            if(!this.data)
+                this.data = new RealmData(args.data ? args.data.getData() : {})
+            this.jsonTree.updateTree(this.data.getData(), this.updateData)
+        }
+        else
+        {   
+            this.createButton.setText('Update')
+            this.createFromServiceButton.setHidden(true) // TODO: turn this into 'manage features' when in update mode
+            // when in updating mode, we always want to force to get the latest data
+            this.data = this.screenManager.conjure.getWorld().realm.realmData
+            this.jsonTree.updateTree(this.data.getData(), this.updateData)
         }
     }
 

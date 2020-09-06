@@ -16,7 +16,7 @@ async function loadIPFS() {
     console.log('Connecting to IPFS...')
     console.log(os.homedir())
     const ipfs = await IPFS.create({
-        repo: os.homedir() + (global.isDevelopment ? '/.ipfs-dev' : '/.ipfs') + '-' + Date.now() + '/',
+        repo: os.homedir() + (global.isDevelopment ? '/.ipfs-dev' : '/.ipfs'),// + '-' + Date.now() + '/',
         config: {
             Addresses: { 
                 Swarm: [

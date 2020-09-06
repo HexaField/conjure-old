@@ -4,7 +4,8 @@ var Pinput = (function() {
 	var realState = {
 		keyStates: new Array(256),
 		mouseStates: new Array(3),
-		mousePosition: {x: 0, y: 0}
+		mousePosition: {x: 0, y: 0},
+		mouseMovement: {x: 0, y: 0}
 	}
 	
 	// initializes all the keyboard states
@@ -23,6 +24,11 @@ var Pinput = (function() {
 		this.useRealState = false;
 
 		this.mousePosition = {
+			x: 0,
+			y: 0,
+		}
+
+		this.mouseMovement = {
 			x: 0,
 			y: 0,
 		}
@@ -264,6 +270,11 @@ var Pinput = (function() {
 		
 		this.mousePosition.x = realState.mousePosition.x;
 		this.mousePosition.y = realState.mousePosition.y;
+
+		this.mouseMovement.x = realState.mouseMovement.x;
+		this.mouseMovement.y = realState.mouseMovement.y;
+		realState.mouseMovement.x = 0;
+		realState.mouseMovement.y = 0;
 	};	
 
 	// creates event handlers which update they real state with 
@@ -291,6 +302,8 @@ var Pinput = (function() {
 	window.onmousemove = function(e) {
 		realState.mousePosition.x = e.clientX;
 		realState.mousePosition.y = e.clientY;
+		realState.mouseMovement.x = e.movementX || e.mozMovementX || e.webkitMovementX || 0;
+		realState.mouseMovement.y = e.movementY || e.mozMovementY || e.webkitMovementY || 0;
 	}
 
 	// initializes *realState*

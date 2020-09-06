@@ -150,9 +150,15 @@ export default class ScreenManager
             this.controlsEnabled = false
             this.hideHud();
         }
-        screen.showScreen(true, args);
-        screen.group.position.z = 0.1 * this.openScreens.length
-        this.openScreens.push(screen);
+        if(screen.showScreen(true, args) === 'cancel') // todo: change this to be return true/false instead of cancel
+        {
+            this.hideScreen(screen, args)
+        }
+        else
+        {
+            screen.group.position.z = 0.1 * this.openScreens.length
+            this.openScreens.push(screen);
+        }
     }
 
     closeAllScreens()
@@ -186,7 +192,7 @@ export default class ScreenManager
         }
     }
     
-    hideScreen(screen)
+    hideScreen(screen, args = {})
     {
         if(typeof screen === 'string')
         {
@@ -202,7 +208,7 @@ export default class ScreenManager
             for(let i = 0; i < this.openScreens.length; i++)
                 if(this.openScreens[i] === screen)
                 {
-                    screen.showScreen(false);
+                    screen.showScreen(false, args);
                     this.openScreens.splice(i, 1);
                 }
         }

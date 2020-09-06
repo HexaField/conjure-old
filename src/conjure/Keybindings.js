@@ -23,6 +23,6 @@ export default class Keybindings
     
     getKey(key)
     {
-        return this.keys[key];
+        return this.keys[String(key)];
     }
 }

@@ -30,6 +30,11 @@ export default class ScreenElementText extends ScreenElementBase
         super.setActive(active);
     }
 
+    getText()
+    {
+        return this.textObj.string;
+    }
+    
     getValue()
     {
         return this.textObj.string;

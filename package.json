@@ -41,7 +41,6 @@
     "big-integer": "^1.6.48",
     "discord-oauth2": "^2.3.0",
     "enable3d": "^0.19.1",
-    "etherscan-api": "^10.0.5",
     "file-type": "^14.7.1",
     "fs": "^0.0.1-security",
     "ipfs": "^0.50.0",

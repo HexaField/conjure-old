@@ -3,11 +3,10 @@ import { iterateChildrenWithFunction } from '../util/iterateRecursive'
 
 export default class ObjectControls
 {  
-    constructor(controlManager, controlInfo, controls)
+    constructor(controlManager, controls)
     {
         this.conjure = controlManager.conjure
         this.controlManager = controlManager;
-        this.controlInfo = controlInfo;
         this.controls = controls;
         this.storageBodyType = null;
         this.translationSnap = 0.5;
@@ -61,7 +60,6 @@ export default class ObjectControls
         if(updateArgs.input.isPressed('SPACEBAR', true))
         {
             this.controls.enabled = ! this.controls.enabled;
-            this.controlInfo.hidden = !this.controls.enabled;
         }
     }
 

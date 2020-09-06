@@ -27,7 +27,7 @@ export default class HUDExploreMode extends ScreenBase
 
         for(let tab of this.tabKeys)
         {
-            let button = new ScreenElementButton(this, this, -0.95, y, 0, 0.1, this.tabHeight, { text:this.tabs[tab], anchor:true})
+            let button = new ScreenElementButton(this, this, { x: -0.95, y: y, width: 0.1, height: this.tabHeight, text:this.tabs[tab], anchor:true })
             button.setOnClickCallback(this.clickTab, this.tabs[tab])
             this.registerElement(button)
             y -= this.tabHeight * 2

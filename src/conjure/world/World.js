@@ -181,7 +181,7 @@ export default class World
     {
         if(!id) 
         {
-            this.platform = new Platform(this.conjure, this.group)
+            this.platform = new Platform(this.conjure, this.group, { platformLabel: 'Local Realm' })
             this.conjure.setConjureMode(CONJURE_MODE.EXPLORE)
             return true
         }
@@ -322,7 +322,7 @@ export default class World
             this.onUserLeave(peerID)
         }
         this.users.push(new UserRemote(this.conjure, data.username, peerID))
-        global.CONSOLE.log('User ' + data.username + ' has joined')
+        global.CONSOLE.log(data.username + ' has joined')
     }
     
     
@@ -341,7 +341,7 @@ export default class World
         for(let u = 0; u < this.users.length; u++)
             if(peerID === this.users[u].peerID)
             {
-                global.CONSOLE.log('User ' + this.users[u].username + ' has left')
+                global.CONSOLE.log(this.users[u].username + ' has left')
                 // this.conjure.physics.destroy(this.users[u].group.body)
                 this.scene.remove(this.users[u].group)
                 this.users.splice(u, 1);

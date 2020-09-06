@@ -7,7 +7,7 @@ export default class AvatarControls
     constructor(conjure, user, domElement)
     {
         this.offset = new THREE.Vector3(0, user.eyeHeight, 0.1)
-        this.sensitivity = new THREE.Vector2(1, 1)
+        this.sensitivity = new THREE.Vector2(0.5, 0.5)
         this.radius = 8;
         this.targetRadius = 0
         this.interpolationFactor = 0.1
@@ -41,8 +41,10 @@ export default class AvatarControls
         this.jump = false;
         this.canJump = false;
 
-        this.mouseX = 0;
-        this.mouseY = 0;
+        this.mouseX = 0
+        this.mouseY = 0
+        this.lastMouseX = 0
+        this.lastMouseY = 0
         
         this.velocity = new THREE.Vector3();
         this.direction = new THREE.Vector3();
@@ -67,46 +69,23 @@ export default class AvatarControls
 
     input(updateArgs)
     {
-        if(updateArgs.input.isDown('FORWARD'))
-            this.forward = true;
-        else
-            this.forward = false;
+        this.forward = updateArgs.input.isDown('FORWARD')
+        this.left = updateArgs.input.isDown('LEFT')
+        this.backward = updateArgs.input.isDown('BACKWARD')
+        this.right = updateArgs.input.isDown('RIGHT')
         
-        if(updateArgs.input.isDown('LEFT'))
-            this.left = true;
-        else
-            this.left = false;
-
-        if(updateArgs.input.isDown('BACKWARD'))
-            this.backward = true;
-        else
-            this.backward = false;
-        
-        if(updateArgs.input.isDown('RIGHT'))
-            this.right = true;
-        else
-            this.right = false;
-
-        if(updateArgs.input.isDown('SHIFT', true))
-            this.sprint = true;
-        else
-            this.sprint = false;
-
-        if(updateArgs.input.isDown('CONTROL', true))
-            this.crouch = true;
-        else
-            this.crouch = false;
-
+        this.sprint = updateArgs.input.isDown('SHIFT', true)
+        this.crouch = updateArgs.input.isDown('CONTROL', true)
 		if(updateArgs.input.isPressed('JUMP'))
             this.user.jump();
     }
 
     onMouseMove( event )
     {
-        if ( !this.enabled || !this.isLocked ) return;
+        // if ( !this.enabled || !this.isLocked ) return;
 
-        this.mouseX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
-        this.mouseY = event.movementY || event.mozMovementY || event.webkitMovementY || 0;
+        // this.mouseX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
+        // this.mouseY = event.movementY || event.mozMovementY || event.webkitMovementY || 0;
     }
     
     updateCamera(deltaX, deltaY)
@@ -138,7 +117,7 @@ export default class AvatarControls
 
         if(this.enabled)
         {
-            this.updateCamera(this.mouseX * 0.4, this.mouseY * 0.4)
+            this.updateCamera(updateArgs.input.mouseDelta.x, updateArgs.input.mouseDelta.y)
 
             // Third Person Rotation
             const rotation = this.camera.getWorldDirection(this.vec)
@@ -219,8 +198,8 @@ export default class AvatarControls
             // refactor this to take distance to the camera in User.js instead
             this.user.setTransparency(this.zoom <= this.minDistance ? 0 : this.zoom);
         }
-        this.mouseX = 0;
-        this.mouseY = 0;
+        this.lastMouseX = updateArgs.input.mouse.x;
+        this.lastMouseY = updateArgs.input.mouse.y;
     }
 
 
