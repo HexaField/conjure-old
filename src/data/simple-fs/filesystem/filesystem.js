@@ -80,8 +80,10 @@ export default class FileSystem {
   }
 
   async writeFile (path, data, options) {
+    if(data === undefined)
+      data = {}
+    
     path = new Path(path).normalize()
-
     // if (!(data instanceof Blob)) {
     //   throw new Error('data must be instance of Blob')
     // }
@@ -103,11 +105,13 @@ export default class FileSystem {
   // Same as writeFile but it recursively creates directory
   // if not exists
   async outputFile (path, data, options) {
-    path = new Path(path).normalize()
-
+    
+    if(data === undefined)
+      data = {}
     // if (!(data instanceof Blob)) {
-    //   throw new Error('data must be instance of Blob')
-    // }
+      //   throw new Error('data must be instance of Blob')
+      // }
+    path = new Path(path).normalize()
 
     const parentPath = await this.mkdirParents(path.parent)
     const parent = await this.exists(parentPath)

@@ -8,8 +8,8 @@ export default class AssetManager
         this.assetCallbacks = {}
         this.receiveAsset = this.receiveAsset.bind(this)
         this.receiveRequest = this.receiveRequest.bind(this)
-        this.setProtocolCallback(GLOBAL_PROTOCOLS.ASSET.REQUEST, this.receiveRequest)
-        this.setProtocolCallback(GLOBAL_PROTOCOLS.ASSET.RECEIVE, this.receiveAsset)
+        this.dataHandler.getGlobalNetwork().setProtocolCallback(GLOBAL_PROTOCOLS.ASSET.REQUEST, this.receiveRequest)
+        this.dataHandler.getGlobalNetwork().setProtocolCallback(GLOBAL_PROTOCOLS.ASSET.RECEIVE, this.receiveAsset)
     }
 
     async initialise()
