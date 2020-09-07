@@ -14,7 +14,7 @@ export default class FileStorageNode
     async initialise()
     {
         if(await this.makeDirectory(this.rootDirectory))
-            console.log('Created    Root Directory: ' + this.rootDirectory)
+            console.log('Created Root Directory: ' + this.rootDirectory)
     }
 
     async makeDirectory(directory)

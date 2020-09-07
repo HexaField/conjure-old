@@ -14,7 +14,7 @@ export default class AssetManager
     async loadAsset(assetID)
     {
         try {
-            return JSON.parse(await this.dataHandler.getFiles().readFile(assetID))
+            return JSON.parse(await this.dataHandler.getNetworkFiles().readFile(assetID))
         }
         catch (error) {
             console.log('AssetManager: could not load asset with error', error)
@@ -25,7 +25,7 @@ export default class AssetManager
     async saveAsset(assetID, data)
     {
         try {
-            await this.dataHandler.getFiles().writeFile(assetID, data)
+            await this.dataHandler.getNetworkFiles().writeFile(assetID, data)
             console.log('AssetManager: Successfully saved asset')
             return true
         } catch (error) {

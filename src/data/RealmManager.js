@@ -96,7 +96,7 @@ export default class RealmManager
     {
         this.validateRealms()
         try {
-            await this.dataHandler.getFiles().writeFile('recent_realms.json', JSON.stringify(this.pinnedRealms))
+            await this.dataHandler.getNetworkFiles().writeFile('recent_realms.json', JSON.stringify(this.pinnedRealms))
         } catch (error) {
             console.log('ConjureDatabase: could not save recent realms', this.pinnedRealms, 'with error', error);
             // this.conjure.getGlobalHUD().log('Failed to read recent realms')
@@ -107,7 +107,7 @@ export default class RealmManager
     {
         try
         {
-            const data = await this.dataHandler.getFiles().readFile('recent_realms.json')
+            const data = await this.dataHandler.getNetworkFiles().readFile('recent_realms.json')
             if(!data) 
                 return []
             return JSON.parse(data)

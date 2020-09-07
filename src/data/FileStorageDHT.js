@@ -1,18 +1,17 @@
-// https://www.newline.co/@Mydrax/a-journey-to-asynchronous-programming-nodejs-fspromises-api--95ae553b
-// https://nodejs.org/dist/latest-v14.x/docs/api/fs.html#fs_fs_promises_api
-import FileSystem from '@forlagshuset/simple-fs'
-import Libp2pFS from './simple-fs-libp2p'
+import FileSystem from './simple-fs'
+import OrbitDBFS from './simple-fs-orbitdb'
 
-export default class FileStorageLibp2p
+export default class FileStorageDHT
 {  
-    constructor(libp2p)
+    constructor()
     {
-        this.rootDirectory = global.isDevelopment ? '/conjure-dev/' : '/conjure/'
-        this.files = new FileSystem({ storage: new Libp2pFS('DHT Storage', libp2p) })
+        this.rootDirectory = '/conjure/' // we want to keep it coherent across dev and prod contexts
+        this.files = new FileSystem({ storage: new OrbitDBFS('DHT Storage') })
     }
 
-    async initialise()
+    async initialise(orbitdb)
     {
+        await this.files.storage.initialise(orbitdb)
         if(!await this.files.exists(this.rootDirectory))
             await this.files.mkdirParents(this.rootDirectory)
     }
@@ -27,7 +26,7 @@ export default class FileStorageLibp2p
     {
         try {
             if(await this.files.exists(this.rootDirectory + filename))
-                return await (await this.files.readFile(this.rootDirectory + filename)).text()
+                return await (await this.files.readFile(this.rootDirectory + filename))
             return false
         } catch (err) {
             console.log('Error reading file at location', filename, err)
@@ -38,7 +37,7 @@ export default class FileStorageLibp2p
     async writeFile(filename, data)
     {
        try {
-            return await this.files.writeFile(this.rootDirectory + filename, new Blob([data]))
+            return await this.files.writeFile(this.rootDirectory + filename, data)
         } catch (err) {
             console.log('Error writing file at location', filename, err)
         }

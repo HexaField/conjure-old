@@ -3,13 +3,15 @@ import WebSocketServer, { WEB_SOCKET_PROTOCOL } from './WebSocketServer'
 import IPFS from './IPFS'
 import FileStorageBrowser from './FileStorageBrowser'
 import FileStorageNode from './FileStorageNode'
-import FileStorageLibp2p from './FileStorageLibp2p'
+import FileStorageDHT from './FileStorageDHT'
 import NetworkManager from './NetworkManager'
 import RealmManager from './RealmManager'
 import ProfileManager from './ProfileManager'
 import { GLOBAL_PROTOCOLS } from './NetworkManager'
 import GlobalNetwork from './GlobalNetwork'
 import { getParams } from './util/urldecoder'  
+import OrbitDB from 'orbit-db'
+import os from 'os'
 
 export default class DataHandler
 {
@@ -99,12 +101,16 @@ export default class DataHandler
         this.ipfsInfo.peersCount = 0;
         this.showStats();
 
+        this.orbitdb = await OrbitDB.createInstance(this.ipfs, { directory: os.homedir() + '/.orbitdb'})
+
         const minPeersCount = 1//global.isBrowser ? 1 : 0 // refactor this into a config eventually
         await this.waitForIPFSPeers(minPeersCount)
      
         this.localStorage = global.isBrowser ? new FileStorageBrowser() : new FileStorageNode()
         await this.localStorage.initialise()
-        // this.files = new FileStorageLibp2p(this.ipfs.libp2p)
+
+        this.networkStorage = new FileStorageDHT()
+        await this.networkStorage.initialise(this.orbitdb)
         
         this.networkManager = new NetworkManager(this)
 
@@ -143,7 +149,9 @@ export default class DataHandler
         this.webSocket.sendData(data)
     }
 
-    getFiles() { return this.localStorage }
+    getLocalFiles() { return this.localStorage }
+
+    getNetworkFiles() { return this.networkStorage }
 
     getGlobalNetwork() { return this.globalNetwork }
 
