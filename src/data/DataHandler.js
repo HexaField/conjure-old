@@ -102,11 +102,8 @@ export default class DataHandler
     initialiseServer()
     {
         let callback = async (error) => {
-            console.log('Lost connection with client' + error ? (' with error ' + error) : '')
-            if(this.running) 
-            {
-                await this.cleanupClient()
-            }
+            console.log('Lost connection with client' + (error ? ' with error ' + error : ''))
+            await this.cleanupClient()
         }
         this.webSocket = new WebSocketServer(this, callback)
     }

@@ -9,19 +9,20 @@ export default class WebSocketServer
         this.onConnect = this.onConnect.bind(this)
         this.onDisconnect = this.onDisconnect.bind(this)
         this.onData = this.onData.bind(this)
+        this.disconnectCallback = disconnectCallback
         this.heartbeatCallback = heartbeatCallback
 
         this.webSocket = new WebSocket.Server({ port: 9700 })
 
         this.webSocket.on('connection', (ws) => { this.onConnect(ws); })
-        this.webSocket.on('error', (error) => { this.onDisconnect(disconnectCallback, error); })
-        this.webSocket.on('close', () => { this.onDisconnect(disconnectCallback, false) })
+        this.webSocket.on('error', (error) => { this.onDisconnect(error); })
+        this.webSocket.on('close', () => { this.onDisconnect(false) })
     }
 
-    onDisconnect(callback, error)
+    onDisconnect(error)
     {
         clearInterval(this.heartbeat);
-        callback(error)
+        this.disconnectCallback(error)
     }
 
     onConnect(ws)
@@ -37,11 +38,15 @@ export default class WebSocketServer
         });
     
         this.heartbeat = setInterval(() => {
+            if(!this.webSocket.clients.has(ws))
+                this.onDisconnect()
             this.webSocket.clients.forEach((ws) => {
-                if (ws.isAlive === false) return ws.close();
-            
+                if (ws.isAlive === false) 
+                {
+                    return ws.terminate();
+                }
                 ws.isAlive = false;
-                ws.ping();
+                ws.ping('ping!');
             });
         }, 1000);
     }
