@@ -46,4 +46,13 @@ export default class NetworkManager
             await this.networks[network].leave()
         }
     }
+
+    async leaveAllClientNetworks()
+    {
+        for(let network of Object.keys(this.networks))
+        {
+            if(!this.networks[network].isGlobalNetwork)
+                await this.networks[network].leave()
+        }
+    }
 }

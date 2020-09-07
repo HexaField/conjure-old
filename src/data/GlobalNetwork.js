@@ -24,7 +24,7 @@ export default class GlobalNetwork
 
         this.dataHandler.networkManager.joinNetwork(this.networkID, this.parseReceiveData, this.onPeerJoin, this.onPeerLeave)
         this.setProtocolCallback(GLOBAL_PROTOCOLS.BROADCAST_INFO, (data, from) => {
-            console.log(from, ' has connected via ' + data.env + ' on ' + data.platform)
+            global.log((data.name || from) + ' has connected via ' + data.env + ' on ' + data.platform)
         })
     }
 
@@ -53,7 +53,8 @@ export default class GlobalNetwork
         this.sendTo(GLOBAL_PROTOCOLS.BROADCAST_INFO, {
                 env: global.isBrowser ? 'Browser' : 'Node',
                 version: global.conjureVersion,
-                platform: platform.description  
+                platform: platform.description,
+                // name: // todo: add client names (eg for bootstrap nodes etc)
             }, peerID)
     }
 

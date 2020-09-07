@@ -12,22 +12,22 @@ async function start()
     await dataHandler.initialise()
     
     // process.stdin.resume()
-    async function exitHandler(evtOrExitCodeOrError) {
-        try {
-            await dataHandler.cleanup()
-            process.exit(0)
-        } catch (e) {
-          console.error('EXIT HANDLER ERROR', e);
-        }
+    // async function exitHandler(evtOrExitCodeOrError) {
+    //     try {
+    //         await dataHandler.cleanupServer()
+    //         process.exit(0)
+    //     } catch (e) {
+    //       console.error('EXIT HANDLER ERROR', e);
+    //     }
       
-        process.exit(isNaN(+evtOrExitCode) ? 1 : +evtOrExitCode);
-      }
+    //     process.exit(isNaN(+evtOrExitCode) ? 1 : +evtOrExitCode);
+    //   }
       
-      [
-        'beforeExit', 'uncaughtException', 'unhandledRejection', 
-        'SIGHUP', 'SIGINT', 'SIGQUIT', 'SIGILL', 'SIGTRAP', 
-        'SIGABRT','SIGBUS', 'SIGFPE', 'SIGUSR1', 'SIGSEGV', 
-        'SIGUSR2', 'SIGTERM', 
-      ].forEach(evt => process.on(evt, exitHandler));
+    //   [
+    //     'beforeExit', 'uncaughtException', 'unhandledRejection', 
+    //     'SIGHUP', 'SIGINT', 'SIGQUIT', 'SIGILL', 'SIGTRAP', 
+    //     'SIGABRT','SIGBUS', 'SIGFPE', 'SIGUSR1', 'SIGSEGV', 
+    //     'SIGUSR2', 'SIGTERM', 
+    //   ].forEach(evt => process.on(evt, exitHandler));
 }
 start()

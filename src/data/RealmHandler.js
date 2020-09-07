@@ -6,7 +6,7 @@ import { GLOBAL_PROTOCOLS } from './GlobalNetwork'
     we really need a dht for this...
 */
 
-export default class RealmManager
+export default class RealmHandler
 {
     constructor(dataHandler)
     {

@@ -5,9 +5,9 @@ import FileStorageBrowser from './FileStorageBrowser'
 import FileStorageNode from './FileStorageNode'
 import FileStorageDHT from './FileStorageDHT'
 import NetworkManager from './NetworkManager'
-import RealmManager from './RealmManager'
-import AssetManager from './AssetManager'
-import ProfileManager from './ProfileManager'
+import RealmHandler from './RealmHandler'
+import AssetHandler from './AssetHandler'
+import ProfileHandler from './ProfileHandler'
 import { GLOBAL_PROTOCOLS } from './NetworkManager'
 import GlobalNetwork from './GlobalNetwork'
 import { getParams } from './util/urldecoder'  
@@ -18,46 +18,73 @@ export default class DataHandler
 {
     constructor()
     {
+        global.log = (...msg) => {
+            let now = new Date()
+            console.log(now.toTimeString().substring(0, 8) + ": ", ...msg)
+            // console.log(now.getHours() + ":" + now.getMinutes() + ":" + now.getSeconds() + ": ", ...msg)
+        }
     }
 
-    async cleanup()
+    async cleanupClient(browser)
     {
-        console.log('\nClosing websockets...')
-        this.webSocket.webSocket.close()
-        // console.log('Leaving networks...')
-        // await this.networkManager.exit()
-        // console.log('Closing IPFS...')
-        // await this.ipfs.stop()
+        if(browser) // clean up browser client
+        {
+            console.log('Leaving networks...')
+            await this.networkManager.exit()
+            // this.networkStorage.exit()
+            if(this.webSocket)
+            {
+                console.log('Closing connection to server...')
+                this.webSocket.webSocket.terminate()
+            }
+        }
+        else // clean up node server
+        {
+            console.log('Leaving client networks...')
+            await this.networkManager.leaveAllClientNetworks()    
+            this.networkCallbacks = {}
+        }
     }
+
+    // async cleanupServer()
+    // {
+    //     // console.log('Closing websocket server...')
+    //     // this.webSocket.webSocket.close()
+    // }
 
     async initialise(runAppCallback)
     {
-        this.running = false
+        this.runningClient = false
         if(global.isBrowser)
         {
-            await this.findNode(runAppCallback)
+            await this.initialiseClient(runAppCallback)
         }
         else
         {
             await this.loadDataHandler()
-            this.createWebSocket()
+            this.initialiseServer()
         }
     }
 
     // Try and connect to the node server
-    async findNode(runAppCallback)
+    async initialiseClient(runAppCallback)
     {
         this.runningNode = false
         let callback = async (error) => {
-            if(this.running) return
-            this.running = true
             if(error)
             {
-                console.log('Data Module: Could not find local node')
+                if(this.runningClient) 
+                {
+                    await this.cleanupClient(true)
+                    this.runningClient = false
+                    return
+                }
+                console.log('Data Module: Could not find local node', error)
                 const params = getParams(window.location.href)
                 global.isDevelopment = params.dev === 'true' || params.dev === true
                 console.log('Launching browser on ' + (global.isDevelopment ? 'development' : 'production' ) + ' network')   
-                await this.loadDataHandler() 
+                await this.loadDataHandler()
+                this.runningClient = true
             }
             else
             {
@@ -72,17 +99,24 @@ export default class DataHandler
     }
 
     // Creates a web socket for the browser to communicate with
-    createWebSocket()
+    initialiseServer()
     {
-        this.webSocket = new WebSocketServer(this)
+        let callback = async (error) => {
+            console.log('Lost connection with client' + error ? (' with error ' + error) : '')
+            if(this.running) 
+            {
+                await this.cleanupClient()
+            }
+        }
+        this.webSocket = new WebSocketServer(this, callback)
     }
 
     async waitForIPFSPeers(minPeersCount)
     {
-        console.log('Trying to connect to the network...')
+        console.log('Connecting to the network...')
         return await new Promise((resolve, reject) => {
             const interval = setInterval(() => {
-                console.log('Found', this.ipfsInfo.peersCount, 'peers')
+                // console.log('Found', this.ipfsInfo.peersCount, 'peers')
                 if(this.ipfsInfo.peersCount >= minPeersCount) 
                 {
                     resolve(true)
@@ -104,7 +138,7 @@ export default class DataHandler
 
         this.orbitdb = await OrbitDB.createInstance(this.ipfs, { directory: os.homedir() + '/.orbitdb'})
 
-        const minPeersCount = 1//global.isBrowser ? 1 : 0 // refactor this into a config eventually
+        const minPeersCount = 0//global.isBrowser ? 1 : 0 // refactor this into a config eventually
         await this.waitForIPFSPeers(minPeersCount)
      
         this.localStorage = global.isBrowser ? new FileStorageBrowser() : new FileStorageNode()
@@ -117,14 +151,14 @@ export default class DataHandler
 
         this.globalNetwork = new GlobalNetwork(this)
 
-        this.realmManager = new RealmManager(this)
-        await this.realmManager.initialise()
+        this.realmHandler = new RealmHandler(this)
+        await this.realmHandler.initialise()
 
-        this.profileManager = new ProfileManager(this)
-        await this.profileManager.initialise()
+        this.profileHandler = new ProfileHandler(this)
+        await this.profileHandler.initialise()
 
-        this.assetManager = new AssetManager(this)
-        await this.assetManager.initialise()
+        this.assetHandler = new AssetHandler(this)
+        await this.assetHandler.initialise()
 
         console.log('Data Module: Successfully loaded data module!')
     }
@@ -161,11 +195,11 @@ export default class DataHandler
 
     getNetworkManager() { return this.networkManager }
 
-    getProfileManager() { return this.profileManager }
+    getProfileManager() { return this.profileHandler }
 
-    getRealmManager() { return this.realmManager }
+    getRealmManager() { return this.realmHandler }
 
-    getAssetManager() { return this.assetManager }
+    getAssetManager() { return this.assetHandler }
 
     getIPFS() { return this.ipfs }
 
@@ -377,7 +411,7 @@ export default class DataHandler
             
             case 'ipfsGet': this.sendWebsocketData({ data: await this.ipfsGet(data.data), requestTimestamp: data.requestTimestamp}); break;
 
-            default: return;
+            default: console.log('ERROR: DataHandler: Received unknown protocol: ' + String(data.protocol)); return;
         }
     }
 

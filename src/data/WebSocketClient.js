@@ -17,8 +17,15 @@ export default class WebSocketClient
             this.webSocket.onerror = function(error) { connectCallback(error); }
             this.webSocket.onmessage = this.onData
             this.webSocket.onclose = this.onDisconnect
-            
+
         } catch(error) {}
+
+        window.addEventListener("beforeunload", (e) => {
+            e.preventDefault();
+            // e.returnValue = '';
+            console.log('Shutting down!')
+            this.connectCallback(true)
+        });
     }
 
     onConnect(event)
@@ -35,8 +42,6 @@ export default class WebSocketClient
             console.log('[close] Connection died')
             // this.connectCallback('[close] Connection died')
         }
-        this.connectCallback(true)
-
     }
 
     onData(event)

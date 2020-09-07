@@ -1,6 +1,6 @@
 import { GLOBAL_PROTOCOLS } from "./GlobalNetwork"
 
-export default class AssetManager
+export default class AssetHandler
 {
     constructor(dataHandler)
     {
@@ -30,7 +30,7 @@ export default class AssetManager
 
     async receiveRequest(data, from)
     {
-        this.dataHandler.getGlobalNetwork().sendData(GLOBAL_PROTOCOLS.ASSET.RECEIVE, { requestTimestamp: requestTimestamp, data: await this.loadAsset(assetID) })
+        this.dataHandler.getGlobalNetwork().sendTo(GLOBAL_PROTOCOLS.ASSET.RECEIVE, { requestTimestamp: data.content.requestTimestamp, data: await this.loadAsset(data.content.assetID) }, from)
     }
 
     async requestAsset(assetID)
@@ -42,7 +42,6 @@ export default class AssetManager
                     ? reject('Data Module: WebSocket request timed out')
                     : resolve(_returnedData) 
             })
-
             this.dataHandler.getGlobalNetwork().sendData(GLOBAL_PROTOCOLS.ASSET.REQUEST, { requestTimestamp: requestTimestamp, data: assetID })
         })
     }

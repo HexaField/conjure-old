@@ -1,4 +1,4 @@
-export default class ProfileManager
+export default class ProfileHandler
 {
     constructor(dataHandler)
     {
