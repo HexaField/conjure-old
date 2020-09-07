@@ -2,7 +2,11 @@ import platform from 'platform'
 
 export const GLOBAL_PROTOCOLS = {
     BROADCAST_REALMS: 'broadcast_realms',
-    BROADCAST_INFO: 'broadcast_info'
+    BROADCAST_INFO: 'broadcast_info',
+    ASSET: {
+        REQUEST: 'asset.request',
+        RECEIVE: 'asset.receive'
+    }
 }
 
 export default class GlobalNetwork

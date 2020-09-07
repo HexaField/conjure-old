@@ -6,6 +6,7 @@ import FileStorageNode from './FileStorageNode'
 import FileStorageDHT from './FileStorageDHT'
 import NetworkManager from './NetworkManager'
 import RealmManager from './RealmManager'
+import AssetManager from './AssetManager'
 import ProfileManager from './ProfileManager'
 import { GLOBAL_PROTOCOLS } from './NetworkManager'
 import GlobalNetwork from './GlobalNetwork'
@@ -122,6 +123,9 @@ export default class DataHandler
         this.profileManager = new ProfileManager(this)
         await this.profileManager.initialise()
 
+        this.assetManager = new AssetManager(this)
+        await this.assetManager.initialise()
+
         console.log('Data Module: Successfully loaded data module!')
     }
 
@@ -160,6 +164,8 @@ export default class DataHandler
     getProfileManager() { return this.profileManager }
 
     getRealmManager() { return this.realmManager }
+
+    getAssetManager() { return this.assetManager }
 
     getIPFS() { return this.ipfs }
 
@@ -211,6 +217,14 @@ export default class DataHandler
             return await this.awaitNodeResponse('loadAsset')
         else 
             return await this.getAssetManager().loadAsset(data)
+    }
+    
+    async requestAsset(data)
+    {
+        if(this.runningNode)
+            return await this.awaitNodeResponse('requestAsset')
+        else 
+            return await this.getAssetManager().requestAsset(data)
     }
     
     async saveAsset(data)
@@ -344,6 +358,7 @@ export default class DataHandler
 
             case 'loadAsset': this.sendWebsocketData({ data: await this.loadAsset(data.data), requestTimestamp: data.requestTimestamp}); break;
             case 'saveAsset': this.sendWebsocketData({ data: await this.saveAsset(data.data), requestTimestamp: data.requestTimestamp}); break;
+            case 'requestAsset': this.sendWebsocketData({ data: await this.requestAsset(data.data), requestTimestamp: data.requestTimestamp}); break;
 
             case 'pinRealm': this.sendWebsocketData({ data: await this.pinRealm(data.data), requestTimestamp: data.requestTimestamp}); break;
             case 'updateRealm': this.sendWebsocketData({ data: await this.updateRealm(data.data), requestTimestamp: data.requestTimestamp}); break;

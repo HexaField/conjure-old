@@ -26,7 +26,7 @@ export default class AssetManager
     constructor(conjure)
     {
         this.conjure = conjure;
-        this.useIPFS = false;
+        this.enableCaching = true;
         this.assets = {};
         for(let assetType of Object.values(ASSET_TYPE))
             this.assets[assetType] = {};
@@ -146,25 +146,25 @@ export default class AssetManager
         }
     }
 
-    async loadImageAssetFromHash(hash)
+    async loadImageAssetFromHash(name)
     {
-        let file = this.getByIPFSHash(ASSET_TYPE.TEXTURE, hash)
-        if(file)
-            return file.data.metaData.src
+        let asset = this.getByIPFSHash(ASSET_TYPE.TEXTURE, name)
+        if(asset)
+            return asset.data.metaData.src
         
-        const chunks = []
-        for await (const chunk of this.conjure.ipfs.cat('/ipfs/' + hash)) {
-            chunks.push(chunk)
-        }
-        if(chunks.length === 0)
-            return this.missingTextureData
-        file = JSON.parse(Buffer.concat(chunks).toString())
+        if(this.enableCaching)
+            asset = await this.conjure.getDataHandler().loadAsset('assets/' + name)
+        else
+            asset = await this.conjure.getDataHandler().requestAsset('assets/' + name)
 
-        let identical = this.getIdenticalTextureByImage(file.metaData.src)
+        if(!asset)
+            return this.missingTextureData
+
+        let identical = this.getIdenticalTextureByImage(asset.metaData.src)
         if(identical)
             return this.getByIPFSHash(ASSET_TYPE.TEXTURE, identical).metaData.src;
-        this.setByIPFSHash(ASSET_TYPE.TEXTURE, hash, file.data, undefined, file.metaData);
-        return file.metaData.src
+        this.setByIPFSHash(ASSET_TYPE.TEXTURE, name, asset.data, undefined, asset.metaData);
+        return asset.metaData.src
     }
     
     getIdenticalMaterial(material)
@@ -225,14 +225,11 @@ export default class AssetManager
         let id = this.getHashByTypeAndData(type, data)
         if(id)
             return id;
-        const file = {
-            path: path,
-            content: JSON.stringify({ data: data, metaData:metaData }),
-        }
-        if(this.useIPFS)
-            id = (await this.conjure.ipfs.add(file)).cid.toString();
-        else
-            id = String(Date.now())
+        
+        if(this.enableCaching)
+            await this.conjure.getDataHandler().saveAsset({ data: data, metaData:metaData })
+        id = String(Date.now()) // temp
+        
         this.setByIPFSHash(type, id, data, name, metaData);
         return id;
     }
@@ -240,7 +237,7 @@ export default class AssetManager
     async saveAssets(object)
     {
         // console.log('saveAssets', object)
-        if(!object || !this.useIPFS) return;
+        if(!object) return;
         if(object.geometry)
             object.geometry = this.getByIPFSHash(ASSET_TYPE.GEOMETRY, await this.createAsset(ASSET_TYPE.GEOMETRY, object.geometry, object.geometry.uuid)).data
         if(object.material)
