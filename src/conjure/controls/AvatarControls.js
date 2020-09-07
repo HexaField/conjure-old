@@ -113,6 +113,7 @@ export default class AvatarControls
         // if ( !this.enabled || !this.isLocked ) return
         
         this.raycaster.ray.origin.copy(this.camera.position);
+        if(!this.user.group.body) return // havent loaded user yet - should fix this
         this.user.group.body.setAngularVelocityY(0)
 
         if(this.enabled)
