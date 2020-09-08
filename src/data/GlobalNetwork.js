@@ -22,7 +22,7 @@ export default class GlobalNetwork
         this.onPeerJoin = this.onPeerJoin.bind(this)
         this.onPeerLeave = this.onPeerLeave.bind(this)
 
-        this.dataHandler.networkManager.joinNetwork(this.networkID, this.parseReceiveData, this.onPeerJoin, this.onPeerLeave)
+        this.network = this.dataHandler.networkManager.joinNetwork(this.networkID, this.parseReceiveData, this.onPeerJoin, this.onPeerLeave, { isGlobalNetwork: true })
         this.setProtocolCallback(GLOBAL_PROTOCOLS.BROADCAST_INFO, (data, from) => {
             global.log((data.name || from) + ' has connected via ' + data.env + ' on ' + data.platform)
         })
@@ -60,7 +60,7 @@ export default class GlobalNetwork
 
     onPeerLeave(peerID)
     {
-        console.log('User ', peerID, ' has left conjure.')
+        global.log(peerID, 'has disconnected.')
     }
 
     async leave()

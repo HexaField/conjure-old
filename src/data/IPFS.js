@@ -13,8 +13,7 @@ const wrtc = require('wrtc')
 
 
 async function loadIPFS() {
-    console.log('Connecting to IPFS...')
-    console.log(os.homedir())
+    global.log('Connecting to IPFS and making repo at' + os.homedir())
     const ipfs = await IPFS.create({
         repo: os.homedir() + (global.isDevelopment ? '/.ipfs-dev' : '/.ipfs'),// + '-' + Date.now() + '/',
         config: {

@@ -8,11 +8,12 @@ export default class NetworkManager
         this.networks = {}
     }
 
-    async joinNetwork(network, onMessage, onPeerJoin, onPeerLeave)
+    async joinNetwork(network, onMessage, onPeerJoin, onPeerLeave, params = {})
     {
         if(this.networks[network])
             await this.leaveNetwork(network)
-        this.networks[network] = new Network(this.dataHandler.getIPFS(), this.dataHandler.getPeerID(), network, onMessage, onPeerJoin, onPeerLeave, { showStats: true })
+        this.networks[network] = new Network(this.dataHandler.getIPFS(), this.dataHandler.getPeerID(), network, onMessage, onPeerJoin, onPeerLeave, { showStats: true, ...params })
+        return this.networks[network]
     }
 
     async leaveNetwork(network)
@@ -51,7 +52,7 @@ export default class NetworkManager
     {
         for(let network of Object.keys(this.networks))
         {
-            if(!this.networks[network].isGlobalNetwork)
+            if(!this.networks[network].userData.isGlobalNetwork)
                 await this.networks[network].leave()
         }
     }

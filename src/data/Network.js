@@ -8,6 +8,7 @@ export default class Network
         this.topic = (global.isDevelopment ? '/conjure-dev/' : '/conjure/') + topic
         this.room = new Room(ipfs, this.topic)
         this.myPeerID = peerID
+        this.userData = params
         this.roomStats = {}
         this.roomStats.peers = []
         this.roomStats.peersCount = 0

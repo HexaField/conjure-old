@@ -14,17 +14,17 @@ export default class FileStorageNode
     async initialise()
     {
         if(await this.makeDirectory(this.rootDirectory))
-            console.log('Created Root Directory: ' + this.rootDirectory)
+            global.log('Created Root Directory: ' + this.rootDirectory)
     }
 
     async makeDirectory(directory)
     {
         try {
-            // console.log('makeDirectory', directory)
+            // global.log('makeDirectory', directory)
             if(!await this.exists(directory))
                 return Boolean(await this.files.mkdir(directory, { recursive: true }))
         } catch (err) {
-            // console.log('Error making directory at location', directory, err)
+            // global.log('Error making directory at location', directory, err)
         }
         return false
     }
@@ -32,11 +32,11 @@ export default class FileStorageNode
     async exists(directory)
     {
         try {
-            // console.log('exists', directory)
+            // global.log('exists', directory)
             let stat = await this.files.stat(directory)
             return Boolean(stat)
         } catch (err) {
-            // console.log('Error finding status of file at location', directory, err)
+            // global.log('Error finding status of file at location', directory, err)
         }
         return false
     }
@@ -46,12 +46,12 @@ export default class FileStorageNode
     async readFile(filename)
     {
         try {
-            // console.log('readFile', this.rootDirectory + filename)
+            // global.log('readFile', this.rootDirectory + filename)
             if(await this.exists(this.rootDirectory + filename))
                 return await this.files.readFile(this.rootDirectory + filename)
             return false
         } catch (err) {
-            console.log('Error reading file at location', filename, err)
+            global.log('Error reading file at location', filename, err)
         }
         return false
     }
@@ -59,10 +59,10 @@ export default class FileStorageNode
     async writeFile(filename, data)
     {
        try {
-            // console.log('writeFile', this.rootDirectory + filename)
+            // global.log('writeFile', this.rootDirectory + filename)
             return await this.files.writeFile(this.rootDirectory + filename, data)
         } catch (err) {
-            console.log('Error writing file at location', filename, err)
+            global.log('Error writing file at location', filename, err)
         }
         return false
     }
@@ -74,38 +74,38 @@ export default class FileStorageNode
                 if(await this.files.unlink(this.rootDirectory + filename))
                     return true
         } catch (err) {
-            console.log('Error removing file at location', filename, err)
+            global.log('Error removing file at location', filename, err)
         }
         return false
     }
 
-    // async getFiles(directory)
-    // {
-    //     try {
-    //         return await this.getAllFilesIn(this.rootDirectory + directory)
-    //     } catch (err) {
-    //         console.log('Error getting files at location', directory, err)
-    //     }
-    //     return []
-    // }
+    async getFiles(directory)
+    {
+        try {
+            return await this.getAllFilesIn(this.rootDirectory + directory)
+        } catch (err) {
+            global.log('Error getting files at location', directory, err)
+        }
+        return []
+    }
 
-    // async getAllFilesIn(directory)
-    // {
-    //     let files = [];
-    //     if(!await this.exists(directory))
-    //     {
-    //         await this.files.mkdir(directory, { recursive: true })
-    //         return [];
-    //     }
-    //     let objects = await this.files.ls(directory)
-    //     for(let object of objects)
-    //     {
-    //         if(object.isFile())
-    //         {
-    //             let blob = await this.files.readFile(object.path);
-    //             files.push(await blob.text())
-    //         }
-    //     }
-    //     return files;
-    // }
+    async getAllFilesIn(directory)
+    {
+        let files = [];
+        if(!await this.exists(directory))
+        {
+            await this.files.mkdir(directory, { recursive: true })
+            return [];
+        }
+        let objects = await this.files.ls(directory)
+        for(let object of objects)
+        {
+            if(object.isFile())
+            {
+                let blob = await this.files.readFile(object.path);
+                files.push(await blob.text())
+            }
+        }
+        return files;
+    }
 }

@@ -23,7 +23,7 @@ export default class WebSocketClient
         window.addEventListener("beforeunload", (e) => {
             e.preventDefault();
             // e.returnValue = '';
-            console.log('Shutting down!')
+            global.log('Shutting down!')
             this.connectCallback(true)
         });
     }
@@ -36,10 +36,10 @@ export default class WebSocketClient
     onDisconnect(event)
     {
         if (event.wasClean) {
-            console.log(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`)
+            global.log(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`)
             // this.connectCallback(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`)
         } else {
-            console.log('[close] Connection died')
+            global.log('[close] Connection died')
             // this.connectCallback('[close] Connection died')
         }
     }
@@ -64,7 +64,7 @@ export default class WebSocketClient
         }
         catch(error)
         {
-            console.log(error, event, this.dataCallbacks)
+            global.log(error, event, this.dataCallbacks)
         }
     }
     

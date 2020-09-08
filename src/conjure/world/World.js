@@ -108,6 +108,7 @@ export default class World
         for(let realm of Object.keys(GLOBAL_REALMS))
         {
             this.globalRealms.push(GLOBAL_REALMS[realm])
+            await this.conjure.getDataHandler().pinRealm({data: GLOBAL_REALMS[realm], pin: true })
         }
     }
 

@@ -26,10 +26,10 @@ export default class FileStorageDHT
     {
         try {
             if(await this.files.exists(this.rootDirectory + filename))
-                return await (await this.files.readFile(this.rootDirectory + filename))
+                return await this.files.readFile(this.rootDirectory + filename)
             return false
         } catch (err) {
-            console.log('Error reading file at location', filename, err)
+            global.log('Error reading file at location', filename, err)
         }
         return false
     }
@@ -39,7 +39,7 @@ export default class FileStorageDHT
        try {
             return await this.files.writeFile(this.rootDirectory + filename, data)
         } catch (err) {
-            console.log('Error writing file at location', filename, err)
+            global.log('Error writing file at location', filename, err)
         }
         return false
     }
@@ -51,38 +51,37 @@ export default class FileStorageDHT
                 if(await this.files.unlink(this.rootDirectory + filename))
                     return true
         } catch (err) {
-            console.log('Error removing file at location', filename, err)
+            global.log('Error removing file at location', filename, err)
         }
         return false
     }
 
-    // async getFiles(directory)
-    // {
-    //     try {
-    //         return await this.getAllFilesIn(this.rootDirectory + directory)
-    //     } catch (err) {
-    //         console.log('Error getting files at location', directory, err)
-    //     }
-    //     return []
-    // }
+    async getFiles(directory)
+    {
+        try {
+            return await this.getAllFilesIn(this.rootDirectory + directory)
+        } catch (err) {
+            global.log('Error getting files at location', directory, err)
+        }
+        return []
+    }
 
-    // async getAllFilesIn(directory)
-    // {
-    //     let files = [];
-    //     if(!await this.files.exists(directory))
-    //     {
-    //         await this.files.mkdirParents(directory)
-    //         return [];
-    //     }
-    //     let objects = await this.files.ls(directory)
-    //     for(let object of objects)
-    //     {
-    //         if(object.isFile())
-    //         {
-    //             let blob = await this.files.readFile(object.path);
-    //             files.push(await blob.text())
-    //         }
-    //     }
-    //     return files;
-    // }
+    async getAllFilesIn(directory)
+    {
+        let files = []
+        if(!await this.files.exists(directory))
+        {
+            await this.files.mkdirParents(directory)
+            return []
+        }
+        let objects = await this.files.ls(directory)
+        for(let object of objects)
+        {
+            if(object.isFile())
+            {
+                files.push(await this.files.readFile(object.path))
+            }
+        }
+        return files;
+    }
 }

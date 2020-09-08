@@ -20,8 +20,8 @@ export default class DataHandler
     {
         global.log = (...msg) => {
             let now = new Date()
-            console.log(now.toTimeString().substring(0, 8) + ": ", ...msg)
-            // console.log(now.getHours() + ":" + now.getMinutes() + ":" + now.getSeconds() + ": ", ...msg)
+            console.log(now.toTimeString().substring(0, 8) + ":", ...msg)
+            // global.log(now.getHours() + ":" + now.getMinutes() + ":" + now.getSeconds() + ": ", ...msg)
         }
     }
 
@@ -29,18 +29,18 @@ export default class DataHandler
     {
         if(browser) // clean up browser client
         {
-            console.log('Leaving networks...')
+            global.log('Leaving networks...')
             await this.networkManager.exit()
             // this.networkStorage.exit()
             if(this.webSocket)
             {
-                console.log('Closing connection to server...')
+                global.log('Closing connection to server...')
                 this.webSocket.webSocket.terminate()
             }
         }
         else // clean up node server
         {
-            console.log('Leaving client networks...')
+            global.log('Leaving client networks...')
             await this.networkManager.leaveAllClientNetworks()    
             this.networkCallbacks = {}
         }
@@ -48,7 +48,7 @@ export default class DataHandler
 
     // async cleanupServer()
     // {
-    //     // console.log('Closing websocket server...')
+    //     // global.log('Closing websocket server...')
     //     // this.webSocket.webSocket.close()
     // }
 
@@ -79,16 +79,16 @@ export default class DataHandler
                     this.runningClient = false
                     return
                 }
-                console.log('Data Module: Could not find local node', error)
+                global.log('Data Module: Could not find local node', error)
                 const params = getParams(window.location.href)
                 global.isDevelopment = params.dev === 'true' || params.dev === true
-                console.log('Launching browser on ' + (global.isDevelopment ? 'development' : 'production' ) + ' network')   
+                global.log('Launching browser on ' + (global.isDevelopment ? 'development' : 'production' ) + ' network')   
                 await this.loadDataHandler()
                 this.runningClient = true
             }
             else
             {
-                console.log('Data Module: Successfully connected to local node!')
+                global.log('Data Module: Successfully connected to local node!')
                 this.networkCallbacks = {}
                 this.runningNode = true
             }
@@ -102,7 +102,7 @@ export default class DataHandler
     initialiseServer()
     {
         let callback = async (error) => {
-            console.log('Lost connection with client' + (error ? ' with error ' + error : ''))
+            global.log('Lost connection with client' + (error ? ' with error ' + error : ''))
             await this.cleanupClient()
         }
         this.webSocket = new WebSocketServer(this, callback)
@@ -110,10 +110,10 @@ export default class DataHandler
 
     async waitForIPFSPeers(minPeersCount)
     {
-        console.log('Connecting to the network...')
+        global.log('Connecting to the network...')
         return await new Promise((resolve, reject) => {
             const interval = setInterval(() => {
-                // console.log('Found', this.ipfsInfo.peersCount, 'peers')
+                // global.log('Found', this.ipfsInfo.peersCount, 'peers')
                 if(this.ipfsInfo.peersCount >= minPeersCount) 
                 {
                     resolve(true)
@@ -128,7 +128,7 @@ export default class DataHandler
     {
         this.ipfs = await IPFS.loadIPFS()
         this.peerIDstring = await(await this.ipfs.id()).id
-        console.log('Libp2p node ready with id ' + this.peerIDstring)
+        global.log('Libp2p node ready with id ' + this.peerIDstring)
         this.ipfsInfo = {}
         this.ipfsInfo.peersCount = 0;
         this.showStats();
@@ -157,7 +157,7 @@ export default class DataHandler
         this.assetHandler = new AssetHandler(this)
         await this.assetHandler.initialise()
 
-        console.log('Data Module: Successfully loaded data module!')
+        global.log('Data Module: Successfully loaded data module!')
     }
 
     showStats()
@@ -167,7 +167,7 @@ export default class DataHandler
                 const peers = await this.ipfs.swarm.peers()
                 this.ipfsInfo.peersCount = peers.length
             } catch (err) {
-                console.log('An error occurred trying to check our peers:', err)
+                global.log('An error occurred trying to check our peers:', err)
             }
         }, 1000)
     }
@@ -312,7 +312,7 @@ export default class DataHandler
             return await this.awaitNodeResponse('joinNetwork', { network: data.network })
         }
         else
-            return await this.getNetworkManager().joinNetwork(data.network, data.onMessage, data.onPeerJoin, data.onPeerLeave)
+            return Boolean(await this.getNetworkManager().joinNetwork(data.network, data.onMessage, data.onPeerJoin, data.onPeerLeave))
     }
 
     async sendDataNetwork(data)
@@ -349,7 +349,7 @@ export default class DataHandler
 
     async ipfsGet(cid)
     {
-        console.log('ipfsGet', cid)
+        global.log('ipfsGet', cid)
         if(this.runningNode)
             return await this.awaitNodeResponse('ipfsGet', cid)
         else
@@ -357,7 +357,7 @@ export default class DataHandler
             const chunks = []
             for await (const chunk of this.getIPFS().cat(cid)) {
                 chunks.push(chunk)
-                console.log(chunk)
+                global.log(chunk)
             }
 
             return Buffer.concat(chunks).toString()
@@ -408,7 +408,7 @@ export default class DataHandler
             
             case 'ipfsGet': this.sendWebsocketData({ data: await this.ipfsGet(data.data), requestTimestamp: data.requestTimestamp}); break;
 
-            default: console.log('ERROR: DataHandler: Received unknown protocol: ' + String(data.protocol)); return;
+            default: global.log('ERROR: DataHandler: Received unknown protocol: ' + String(data.protocol)); return;
         }
     }
 

@@ -52,7 +52,7 @@ export default class AssetHandler
             return JSON.parse(await this.dataHandler.getNetworkFiles().readFile(assetID))
         }
         catch (error) {
-            console.log('AssetManager: could not load asset with error', error)
+            global.log('AssetManager: could not load asset with error', error)
             return
         }
     }
@@ -61,10 +61,10 @@ export default class AssetHandler
     {
         try {
             await this.dataHandler.getNetworkFiles().writeFile(assetID, data)
-            console.log('AssetManager: Successfully saved asset')
+            global.log('AssetManager: Successfully saved asset')
             return true
         } catch (error) {
-            console.log('AssetManager: could not save asset', assetID, 'with error', error)
+            global.log('AssetManager: could not save asset', assetID, 'with error', error)
             return false
         }
     }

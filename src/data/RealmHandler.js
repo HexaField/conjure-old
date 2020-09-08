@@ -29,13 +29,13 @@ export default class RealmHandler
                 this.pinnedRealms.splice(i, 1)
         
         if(realmCountBeforeValidation - this.pinnedRealms.length > 0)
-            console.log('Invalidated ' + (realmCountBeforeValidation - this.pinnedRealms.length) + ' old realms')
+            global.log('Invalidated ' + (realmCountBeforeValidation - this.pinnedRealms.length) + ' old realms')
     }
     
     async initialise()
     {
         this.addRealms(await this.loadRealms())
-        console.log('Found', this.pinnedRealms.length, 'realms stored locally.')
+        global.log('Found', this.pinnedRealms.length, 'realms stored locally.')
     }
 
     receiveRealms(realms)
@@ -98,7 +98,7 @@ export default class RealmHandler
         try {
             await this.dataHandler.getLocalFiles().writeFile('recent_realms.json', JSON.stringify(this.pinnedRealms))
         } catch (error) {
-            console.log('ConjureDatabase: could not save recent realms', this.pinnedRealms, 'with error', error);
+            global.log('ConjureDatabase: could not save recent realms', this.pinnedRealms, 'with error', error);
             // this.conjure.getGlobalHUD().log('Failed to read recent realms')
         }
     }
@@ -113,7 +113,7 @@ export default class RealmHandler
             return JSON.parse(data)
         }
         catch (error) {
-            console.log('ConjureDatabase: could not read recent realms with error', error);
+            global.log('ConjureDatabase: could not read recent realms with error', error);
             // this.conjure.getGlobalHUD().log('Failed to load recent realms list')
             return
         }
@@ -126,8 +126,15 @@ export default class RealmHandler
         let needsUpdate = false
         if(pin)
         {
-            this.pinnedRealms.push(realmData)
-            needsUpdate = true
+            let exists = false
+            for(let i in this.pinnedRealms)
+                if(this.pinnedRealms[i].id === realmData.id)
+                    exists = true
+            if(!exists)
+            {
+                this.pinnedRealms.push(realmData)
+                needsUpdate = true
+            }
         }
         else
         {
