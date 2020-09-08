@@ -1,4 +1,5 @@
 import { GLOBAL_PROTOCOLS } from './GlobalNetwork'
+import FileStorageDHT from './FileStorageDHT'
 
 // TODO
 /*
@@ -19,14 +20,18 @@ export default class RealmHandler
 
         // this is hardcoded to clean up old realms as we are in rapid development
         this.earliestRealmTime = 1599176386000
+        this.databases = {}
     }
 
-    validateRealms()
+    async validateRealms()
     {
         let realmCountBeforeValidation = this.pinnedRealms.length
         for(let i in this.pinnedRealms)
             if(this.pinnedRealms[i].timestamp <= this.earliestRealmTime )
-                this.pinnedRealms.splice(i, 1)
+                {
+                    this.pinnedRealms.splice(i, 1)
+                    await this.removeDatabase(this.pinnedRealms[i].id)
+                }
         
         if(realmCountBeforeValidation - this.pinnedRealms.length > 0)
             global.log('Invalidated ' + (realmCountBeforeValidation - this.pinnedRealms.length) + ' old realms')
@@ -34,7 +39,7 @@ export default class RealmHandler
     
     async initialise()
     {
-        this.addRealms(await this.loadRealms())
+        await this.addRealms(await this.loadRealms())
         global.log('Found', this.pinnedRealms.length, 'realms stored locally.')
     }
 
@@ -62,6 +67,7 @@ export default class RealmHandler
             if(!exists)
             {
                 this.pinnedRealms.unshift(realm)
+                await this.addDatabase(realm.id)
             }
         }
         await this.saveRealms()
@@ -86,7 +92,8 @@ export default class RealmHandler
         }
         if(!exists)
         {
-            this.pinnedRealms.push(realmData)
+            this.pinnedRealms.unshift(realmData)
+            await this.addDatabase(realmData.id)
         }
         await this.saveRealms()
         this.dataHandler.getGlobalNetwork().sendData(GLOBAL_PROTOCOLS.BROADCAST_REALMS, this.pinnedRealms)
@@ -94,7 +101,7 @@ export default class RealmHandler
 
     async saveRealms()
     {
-        this.validateRealms()
+        await this.validateRealms()
         try {
             await this.dataHandler.getLocalFiles().writeFile('recent_realms.json', JSON.stringify(this.pinnedRealms))
         } catch (error) {
@@ -132,7 +139,8 @@ export default class RealmHandler
                     exists = true
             if(!exists)
             {
-                this.pinnedRealms.push(realmData)
+                this.pinnedRealms.unshift(realmData)
+                await this.addDatabase(realmData.id)
                 needsUpdate = true
             }
         }
@@ -142,6 +150,7 @@ export default class RealmHandler
                 if(this.pinnedRealms[i].id === realmData.id)
                 {
                     this.pinnedRealms.splice(i, 1)
+                    await this.removeDatabase(this.pinnedRealms[i].id)
                     needsUpdate = true
                     break
                 }
@@ -168,5 +177,39 @@ export default class RealmHandler
     getRealms()
     {
         return this.pinnedRealms
+    }
+
+    async addDatabase(id)
+    {
+        if(this.databases[id]) return
+        this.databases[id] = new FileStorageDHT()
+        await this.databases[id].initialise(this.dataHandler.orbitdb)
+    }
+
+    async removeDatabase(id)
+    {
+        if(!this.databases[id]) return
+        await this.databases[id].close()
+        delete this.databases[id]
+    }
+
+
+    //TODO: asset names
+    async createObject(realmID, data)
+    {
+        if(!this.databases[realmID]) return
+        return await this.databases[realmID].writeFile('/objects/' + hash, data)
+    }
+
+    async updateObject(realmID, data)
+    {
+        if(!this.databases[realmID]) return
+        return await this.databases[realmID].writeFile('/objects/' + hash, data)
+    }
+
+    async destroyObject(realmID, data)
+    {
+        if(!this.databases[realmID]) return
+        return await this.databases[realmID].removeFile('/objects/' + hash)
     }
 }

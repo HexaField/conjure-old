@@ -125,6 +125,7 @@ export default class World
             await this.realm.leave()
             this.destroyAllRemoteUsers()
         }
+
         // console.log('Joining realm', realmData)
         this.conjure.setConjureMode(CONJURE_MODE.LOADING)
 
@@ -233,7 +234,7 @@ export default class World
         }
         // if(this.conjure.conjureMode === CONJURE_MODE.EXPLORE)
         // {
-        //     let intersections = this.conjure.worldRaycaster.intersectObjects(this.objectManager.objects, true);
+        //     let intersections = this.conjure.worldRaycaster.intersectObjects(this.realm.getObjectManager().objects, true);
         //     if(intersections.length > 0 && intersections[0].distance < interactDistance)
         //     {
         //         interact = true;
@@ -383,5 +384,11 @@ export default class World
                 u.setPhysics(data.physics);
                 break
             }
+    }
+
+    getObjects()
+    {
+        if(!this.realm) return []
+        return this.realm.getObjectManager().objects
     }
 }

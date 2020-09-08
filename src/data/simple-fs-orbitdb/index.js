@@ -2,10 +2,15 @@
 
 export default class simple_fs_libp2p
 {
-    constructor (storageName = 'default')
+    constructor (storageName)
     {
         this.db = undefined
-        this.name = storageName
+        this.name = String(storageName)
+    }
+
+    async close()
+    {
+        return await this.db.close()
     }
 
     async initialise(orbitdb)

@@ -35,6 +35,9 @@ export default class AssetHandler
 
     async requestAsset(assetID)
     {
+        let asset = await this.loadAsset(assetID)
+        if(asset)
+            return asset
         return await new Promise((resolve, reject) => {
             const requestTimestamp = Date.now() + '-' + Math.round(Math.random() * 1000)
             this.addDataListener(requestTimestamp, (_returnedData) => { 
@@ -49,7 +52,7 @@ export default class AssetHandler
     async loadAsset(assetID)
     {
         try {
-            return JSON.parse(await this.dataHandler.getNetworkFiles().readFile(assetID))
+            return await this.dataHandler.getNetworkFiles().readFile(assetID)
         }
         catch (error) {
             global.log('AssetManager: could not load asset with error', error)

@@ -26,7 +26,7 @@ export default class ScreenHomeMenu extends ScreenBase
 
         for(let i = 0; i < this.segmentItems.length; i++)
         {
-            let segMesh = new THREE.Mesh(new THREE.RingBufferGeometry(0.25, 0.5, 8, 1, 0, Math.PI * 2 / this.segmentItems.length), material)
+            let segMesh = new THREE.Mesh(new THREE.RingBufferGeometry(0.25, 0.5, 8, 1, 0, Math.PI * 2 / this.segmentItems.length), new THREE.MeshBasicMaterial({ color: this.defaultColour3, side: THREE.DoubleSide, transparent: true, opacity: this.defaultOpacity}))
             let segTarget = new THREE.Mesh(new THREE.RingBufferGeometry(0.25, 0.5 * this.expandScale, 8, 1, 0, Math.PI * 2 / this.segmentItems.length), material)
             segMesh.rotateZ(i * Math.PI * 2 / this.segmentItems.length)
             segTarget.rotateZ(i * Math.PI * 2 / this.segmentItems.length)
@@ -62,6 +62,13 @@ export default class ScreenHomeMenu extends ScreenBase
     showScreen(active)
     {
         super.showScreen(active)
+        this.enableButton(2, Boolean(this.world.realm))
+    }
+
+    enableButton(number, enable)
+    {
+        this.segments[number].material.opacity = enable ? this.defaultOpacity : this.defaultOpacity * 0.75
+        enable ? this.segmentTargets[number].layers.enable(0) : this.segmentTargets[number].layers.disable(0)
     }
 
     update(updateArgs)

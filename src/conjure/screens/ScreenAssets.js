@@ -14,6 +14,7 @@ import ScreenElementLoadFile from './elements/ScreenElementLoadFile'
 import ScreenElementSprite from './elements/ScreenElementSprite'
 import ScreenElementTextureEditor from './elements/ScreenElementTextureEditor'
 import { number } from '../util/number'
+import ScreenElementStructure from './elements/ScreenElementStructure'
 
 const pi = Math.PI;
 const tau = pi * 2;
@@ -79,6 +80,10 @@ export default class ScreenAssets extends ScreenBase
         this.previewMesh = new ScreenElementMesh(this, this, { x: this.width/2 - 0.4, geometry: this.temporaryGeometry, material: this.temporaryMaterial, rotate:true, scale:0.25 })
         this.previewMesh.group.visible = false;
         this.registerElement(this.previewMesh);
+
+        this.previewStructure = new ScreenElementStructure(this, this, { x: this.width/3, rotate:true, scale:0.25 })
+        this.previewStructure.group.visible = false;
+        this.registerElement(this.previewStructure);
 
         this.previewImage = new ScreenElementSprite(this, this, { x: this.width/2 - 0.4, width: 0.2, height: 0.2 })
         this.registerElement(this.previewImage);
@@ -203,25 +208,40 @@ export default class ScreenAssets extends ScreenBase
         switch(this.currentAssetType)
         {
             case ASSET_TYPE.TEXTURE: 
+                this.previewImage.setIconTexture(this.currentAsset.data);
+
                 this.previewMesh.group.visible = false;
                 this.previewImage.group.visible = true;
-                this.previewImage.setIconTexture(this.currentAsset.data);
+                this.previewStructure.group.visible = false;
                 break;
+            
             case ASSET_TYPE.GEOMETRY: 
                 values = Object.values(values);
                 this.temporaryGeometry = new (this.geometryMappings.get(preset))(...values);
                 this.previewMesh.setGeometry(this.temporaryGeometry);
                 this.temporaryAsset = this.temporaryGeometry;
+
                 this.previewMesh.group.visible = true;
                 this.previewImage.group.visible = false;
+                this.previewStructure.group.visible = false;
                 break;
+            
             case ASSET_TYPE.MATERIAL: 
                 this.temporaryMaterial = new (this.materialMappings.get(preset))(values);
                 this.previewMesh.setMaterial(this.temporaryMaterial);
                 this.temporaryAsset = this.temporaryMaterial;
+
                 this.previewMesh.group.visible = true;
                 this.previewImage.group.visible = false;
+                this.previewStructure.group.visible = false;
                 break;
+            
+            case ASSET_TYPE.STRUCTURE:
+                this.previewMesh.group.visible = false;
+                this.previewImage.group.visible = false;
+                this.previewStructure.group.visible = true;
+                break;
+
             default: break;
         }
     }
@@ -353,9 +373,8 @@ export default class ScreenAssets extends ScreenBase
         this.detailsPanel.updateItems(0)
         this.assetPresetButton.setHidden(false)
 
-        if(this.assetPanel.items.length > 0 && this.schemas[data.type] && Object.keys(this.schemas[data.type]).length > 1)
+        if(this.detailsPanel.items.length > 0 && this.assetPanel.items.length > 0 && this.schemas[data.type] && Object.keys(this.schemas[data.type]).length > 1)
         {
-            // console.log(this.schemas[data.type], presetType, this.schemas[data.type][presetType])
             this.assetPresetButton.setValue(presetType)
             this.assetPresetButton.setHidden(false);
             this.assetSaveButton.setHidden(false);
@@ -378,6 +397,7 @@ export default class ScreenAssets extends ScreenBase
                 case ASSET_TYPE.TEXTURE: this.schemas[assetType] = this.getTextureSchema(); break;
                 case ASSET_TYPE.MATERIAL: this.schemas[assetType] = this.getMaterialSchema(); break; 
                 case ASSET_TYPE.GEOMETRY: this.schemas[assetType] = this.getGeometrySchema(); break; 
+                case ASSET_TYPE.STRUCTURE: this.schemas[assetType] = this.getStructureSchema(); break; 
                 default:break; 
             }
     }
@@ -416,11 +436,13 @@ export default class ScreenAssets extends ScreenBase
                     break;
                 case ASSET_TYPE.MATERIAL:
                     previewLabel.registerElement(new ScreenElementMesh(this, previewLabel, { x:-0.2, geometry: this.screenManager.conjure.assetManager.defaultGeometry, material: asset.data, rotate:true, scale:0.075 }))
-                    this.previewMesh.material = this.temporaryMaterial;
                     break;
                 case ASSET_TYPE.GEOMETRY:
-                    previewLabel.registerElement(new ScreenElementMesh(this, previewLabel, { x: -0.2, geometry: asset.data, material: this.screenManager.conjure.assetManager.normalMaterial, rotate:true, scale:0.075}))
-                    this.previewMesh.geometry = this.temporaryGeometry;
+                    previewLabel.registerElement(new ScreenElementMesh(this, previewLabel, { x: -0.2, geometry: asset.data, material: this.screenManager.conjure.assetManager.normalMaterial, rotate:true, scale:0.075 }))
+                    break;
+                case ASSET_TYPE.STRUCTURE:
+                    previewLabel.registerElement(new ScreenElementStructure(this, previewLabel, { x: -0.2, structure: asset.data, rotate:true, scale:0.075 }))
+                    this.previewStructure.structure = asset.data;
                     break;
                 default:break;
             }
@@ -445,7 +467,6 @@ export default class ScreenAssets extends ScreenBase
     async onSaveAsset()
     {
         if(!this.currentAsset) return;
-        console.log(this.currentAssetType);
         await this.screenManager.conjure.assetManager.saveAsset(this.currentAssetType, this.temporaryAsset.uuid, this.temporaryAsset)
     }
 
@@ -535,6 +556,14 @@ export default class ScreenAssets extends ScreenBase
                 "image": 'image',
                 // "uuid": 'static',
             },
+        }
+    }
+
+    getStructureSchema()
+    {
+        return {
+            "Group": '',
+            "Mesh": '',
         }
     }
 }

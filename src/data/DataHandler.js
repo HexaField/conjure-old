@@ -224,8 +224,6 @@ export default class DataHandler
         })
     }
 
-    // technically this could be genericified
-
     async loadProfile()
     {
         if(this.runningNode)
@@ -362,6 +360,14 @@ export default class DataHandler
 
             return Buffer.concat(chunks).toString()
         }
+    }
+
+    async createObject(data)
+    {
+        if(this.runningNode)
+            return await this.awaitNodeResponse('createObject', data)
+        else
+            return await this.getRealmManager().createObject(data.realm, data.object)
     }
 
     // ===  only on the client - receiving from the server === //

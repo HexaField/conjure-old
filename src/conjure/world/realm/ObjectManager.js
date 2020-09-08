@@ -1,5 +1,5 @@
 import { THREE, ExtendedMesh } from 'enable3d'
-import { number } from '../util/number'
+import { number } from '../../util/number'
 
 export const PHYSICS_TYPES = {
     NONE: 'None',
@@ -24,11 +24,12 @@ export const PHYSICS_SHAPES = {
 
 export default class ObjectManager
 {  
-    constructor(conjure, camera, scene)
+    constructor(world)
     {
-        this.conjure = conjure;
-        this.camera = camera;
-        this.scene = scene;
+        this.world = world;
+        this.conjure = world.conjure;
+        this.camera = world.camera;
+        this.scene = this.conjure.scene;
 
         this.objects = [];
         

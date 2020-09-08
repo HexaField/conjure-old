@@ -46,12 +46,12 @@ export default class ScreenObjectsHierarchy extends ScreenBase
     updateObjects()
     {
         if(!this.active) return;
-        this.jsonTree.updateTree(this.screenManager.conjure.getWorld().objectManager.objects, this.updateObjects);
+        this.jsonTree.updateTree(this.screenManager.conjure.getWorld().getObjects(), this.updateObjects);
     }
 
     groupingCallback(newParent, newChild)
     {
-        if(!this.screenManager.conjure.getWorld().objectManager.groupObjects(newParent, newChild))
+        if(!this.screenManager.conjure.getWorld().realm.getObjectManager().groupObjects(newParent, newChild))
             return false;
         return true
     }

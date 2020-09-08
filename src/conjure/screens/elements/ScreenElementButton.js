@@ -1,6 +1,7 @@
 import TextRenderer3D from '../text/TextRenderer3D'
 import { easyBox } from '../../util/MeshTemplates'
 import ScreenElementBase from './ScreenElementBase';
+import { THREE } from 'enable3d'
 
 export default class ScreenElementButton extends ScreenElementBase
 {  
@@ -11,6 +12,7 @@ export default class ScreenElementButton extends ScreenElementBase
         this.button = easyBox({ width: this.width, height: this.height, depth: 0.025 }, { color: this.defaultColour });
         this.button.material.transparent = true;
         this.button.material.opacity = this.defaultOpacity;
+        this.button.material.blending = THREE.NormalBlending
 
         this.group.add(this.button);
 

@@ -3,10 +3,15 @@ import OrbitDBFS from './simple-fs-orbitdb'
 
 export default class FileStorageDHT
 {  
-    constructor()
+    constructor(directory)
     {
-        this.rootDirectory = '/conjure/' // we want to keep it coherent across dev and prod contexts
-        this.files = new FileSystem({ storage: new OrbitDBFS('DHT Storage') })
+        this.rootDirectory = 'conjure-' + directory
+        this.files = new FileSystem({ storage: new OrbitDBFS(this.rootDirectory) })
+    }
+
+    async close()
+    {
+        return await this.files.storage.close()
     }
 
     async initialise(orbitdb)

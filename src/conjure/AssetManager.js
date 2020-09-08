@@ -4,10 +4,11 @@ import { createGeometry, createMaterial } from './util/wireframe'
 import { number } from './util/number'
 
 export const ASSET_TYPE = {
-    TEXTURE: 'Texture',
-    MATERIAL: 'Material',
-    GEOMETRY: 'Geometry',
-    STRUCTURE: 'Structure',
+    TEXTURE: 'Texture', // THREE.Texture
+    MATERIAL: 'Material', // THREE.Material
+    GEOMETRY: 'Geometry', // THREE.Geometry
+    STRUCTURE: 'Structure', // THREE.Group
+    MESH: 'Mesh', // THREE.Mesh
 }
 
 /* 
@@ -105,6 +106,9 @@ export default class AssetManager
         this.normalMaterialAssetHash = await this.saveAsset(ASSET_TYPE.MATERIAL, this.normalMaterial.uuid, this.normalMaterial, 'Normal');
         this.defaultGeometry = new THREE.BoxBufferGeometry(1, 1);
         this.defaultGeometryAssetHash = await this.saveAsset(ASSET_TYPE.GEOMETRY, this.defaultGeometry.uuid, this.defaultGeometry, 'Default');
+        
+        this.defaultMesh = (await this.conjure.load.gltf('sword')).scene;
+        this.defaultMeshAssetHash = await this.saveAsset(ASSET_TYPE.STRUCTURE, this.defaultMesh.uuid, this.defaultMesh, 'Chevalier');
     }
 
     // this is where you check to see if duplicate assets already exist
@@ -131,7 +135,13 @@ export default class AssetManager
                 if(geometry)
                     return geometry;
                 return await this.saveAsset(ASSET_TYPE.GEOMETRY, name, data, name);
-                            
+        
+            case ASSET_TYPE.MESH:
+                let mesh = this.getIdenticalMesh(data);
+                if(mesh)
+                    return mesh;
+                return await this.saveAsset(ASSET_TYPE.MESH, name, data, name);
+                
             case 'fbx':
                 let structureFBX = await this.conjure.load.fbx(data);
                 await this.saveAssets(structureFBX)
@@ -169,46 +179,51 @@ export default class AssetManager
     
     getIdenticalMaterial(material)
     {
-        let keys = Object.keys(this.assets[ASSET_TYPE.MATERIAL])
-        for(let key of keys)
-        {
-            if(_.isMatchWith(
-                    this.assets[ASSET_TYPE.MATERIAL][key].data,
-                    material,
-                    (value1, value2, k) => {
-                        if(!value1 === value2 || !_.isMatch(value1, value2))
-                        return k === "uuid" ? true : undefined;
-                    }
-                )
-            )
-            {
-                // console.log('found duplicate material', key)
-                return key;
-            }
-        }
-        // console.log('found unique material')
-        return;
+        // let keys = Object.keys(this.assets[ASSET_TYPE.MATERIAL])
+        // for(let key of keys)
+        // {
+        //     if(_.isMatchWith(
+        //             this.assets[ASSET_TYPE.MATERIAL][key].data,
+        //             material,
+        //             (value1, value2, k) => {
+        //                 if(!value1 === value2 || !_.isMatch(value1, value2))
+        //                 return k === "uuid" ? true : undefined;
+        //             }
+        //         )
+        //     )
+        //     {
+        //         // console.log('found duplicate material', key)
+        //         return key;
+        //     }
+        // }
+        // // console.log('found unique material')
+        // return;
     }
 
     getIdenticalGeometry(geometry)
     {
-        let keys = Object.keys(this.assets[ASSET_TYPE.GEOMETRY])
-        for(let key of keys)
-        {
-            if(_.isMatchWith(
-                    this.assets[ASSET_TYPE.GEOMETRY][key].data,
-                    geometry,
-                    (value1, value2, k) => {
-                        return k === "id" || k === "uuid" ? true : undefined;
-                    }
-                )
-            )
-            {
-                // console.log('found duplicate geometry', key)
-                return key;
-            }
-        }
-        return;
+        // let keys = Object.keys(this.assets[ASSET_TYPE.GEOMETRY])
+        // for(let key of keys)
+        // {
+        //     if(_.isMatchWith(
+        //             this.assets[ASSET_TYPE.GEOMETRY][key].data,
+        //             geometry,
+        //             (value1, value2, k) => {
+        //                 return k === "id" || k === "uuid" ? true : undefined;
+        //             }
+        //         )
+        //     )
+        //     {
+        //         // console.log('found duplicate geometry', key)
+        //         return key;
+        //     }
+        // }
+        // return;
+    }
+
+    getIdenticalMesh(mesh)
+    {
+        // TODO
     }
 
     getIdenticalTextureByImage(src) // returns hash

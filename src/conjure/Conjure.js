@@ -333,18 +333,17 @@ export class Conjure extends Scene3D
             conjure: this,
         }
         
-        this.getScreens().update(args)
-
         if(this.conjureMode !== CONJURE_MODE.LOADING)// & this.conjureMode !== CONJURE_MODE.WAITING)
         {
-            this.getWorld().update(args)
             this.getControls().update(args)
+
+            this.cameraScreenAttach.position.copy(this.cameraFollow.getWorldPosition(this.vec3))
+            this.cameraScreenAttach.quaternion.copy(this.cameraFollow.getWorldQuaternion(this.quat))
+    
+            this.getWorld().update(args)
         }
 
-        this.cameraScreenAttach.position.copy(this.cameraFollow.getWorldPosition(this.vec3))
-        this.cameraScreenAttach.quaternion.copy(this.cameraFollow.getWorldQuaternion(this.quat))
-
-        this.camera.updateMatrix() // TODO: check if this is necessary
+        this.getScreens().update(args)
     }
 
     resizeCanvas()

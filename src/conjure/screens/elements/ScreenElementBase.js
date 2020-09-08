@@ -136,6 +136,8 @@ export default class ScreenElementBase
             this.elements[i].setHidden(hidden);
         }
         this.setHTMLHidden(hidden)
+        if(!hidden)
+            this.setActive(this.parent.active)
     }
 
     setActive(active)

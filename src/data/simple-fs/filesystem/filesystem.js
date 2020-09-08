@@ -81,7 +81,7 @@ export default class FileSystem {
 
   async writeFile (path, data, options) {
     if(data === undefined)
-      data = {}
+      return
     
     path = new Path(path).normalize()
     // if (!(data instanceof Blob)) {
@@ -107,7 +107,7 @@ export default class FileSystem {
   async outputFile (path, data, options) {
     
     if(data === undefined)
-      data = {}
+      return
     // if (!(data instanceof Blob)) {
       //   throw new Error('data must be instance of Blob')
       // }

@@ -2,7 +2,7 @@ import { THREE } from 'enable3d'
 import ScreenElementButton from './elements/ScreenElementButton';
 import ScreenElementCycleButton from './elements/ScreenElementCycleButton';
 import ScreenBase from './ScreenBase';
-import { PHYSICS_TYPES, PHYSICS_SHAPES } from '../world/ObjectManager';
+import { PHYSICS_TYPES, PHYSICS_SHAPES } from '../world/realm/ObjectManager';
 import { createGeometry, createMaterial } from '../util/wireframe'
 import { POSTPROCESSING } from '../PostProcessing';
 
@@ -52,7 +52,7 @@ export default class ScreenObjectCreate extends ScreenBase
             newObject.layers.enable(POSTPROCESSING.BLOOM_SCENE)
             newObject.userData.payID = 'menger$conjure.realm'
 
-            await this.world.createObject(newObject);
+            await this.world.realm.createObject(newObject);
         }
         else
         {
@@ -76,7 +76,7 @@ export default class ScreenObjectCreate extends ScreenBase
                 destructable: false,
                 deformable: false
             }
-            await this.world.createObject(newObject);
+            await this.world.realm.createObject(newObject);
             this.screenManager.conjure.getControls().objectControls.attach(newObject, {detachOthers:true});
         }
     }
