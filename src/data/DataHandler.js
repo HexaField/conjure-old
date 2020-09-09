@@ -347,7 +347,6 @@ export default class DataHandler
 
     async ipfsGet(cid)
     {
-        global.log('ipfsGet', cid)
         if(this.runningNode)
             return await this.awaitNodeResponse('ipfsGet', cid)
         else
@@ -362,12 +361,38 @@ export default class DataHandler
         }
     }
 
+    async ipfsAdd(data)
+    {
+        if(this.runningNode)
+            return await this.awaitNodeResponse('ipfsAdd', data)
+        else
+        {
+            return await this.getIPFS().add(data)
+        }
+    }
+
     async createObject(data)
     {
         if(this.runningNode)
             return await this.awaitNodeResponse('createObject', data)
         else
-            return await this.getRealmManager().createObject(data.realm, data.object)
+            return await this.getRealmManager().createObject(data.realmID, data.uuid, data.data)
+    }
+
+    async updateObject(data)
+    {
+        if(this.runningNode)
+            return await this.awaitNodeResponse('updateObject', data)
+        else
+            return await this.getRealmManager().updateObject(data.realmID, data.uuid, data.data)
+    }
+
+    async destroyObject(data)
+    {
+        if(this.runningNode)
+            return await this.awaitNodeResponse('destroyObject', data)
+        else
+            return await this.getRealmManager().destroyObject(data.realmID, data.uuid)
     }
 
     // ===  only on the client - receiving from the server === //
@@ -401,6 +426,10 @@ export default class DataHandler
             case 'updateRealm': this.sendWebsocketData({ data: await this.updateRealm(data.data), requestTimestamp: data.requestTimestamp}); break;
             case 'getRealm': this.sendWebsocketData({ data: await this.getRealm(data.data), requestTimestamp: data.requestTimestamp}); break;
             case 'getRealms': this.sendWebsocketData({ data: await this.getRealms(), requestTimestamp: data.requestTimestamp}); break;
+            
+            case 'createObject': this.sendWebsocketData({ data: await this.createObject(data.data), requestTimestamp: data.requestTimestamp}); break;
+            case 'updateObject': this.sendWebsocketData({ data: await this.updateObject(data.data), requestTimestamp: data.requestTimestamp}); break;
+            case 'destroyObject': this.sendWebsocketData({ data: await this.destroyObject(data.data), requestTimestamp: data.requestTimestamp}); break;
 
             case 'joinNetwork': this.sendWebsocketData({ data: await this.joinNetwork({
                 network: data.data.network,
@@ -413,6 +442,7 @@ export default class DataHandler
             case 'leaveNetwork': this.sendWebsocketData({ data: await this.leaveNetwork(data.data), requestTimestamp: data.requestTimestamp}); break;
             
             case 'ipfsGet': this.sendWebsocketData({ data: await this.ipfsGet(data.data), requestTimestamp: data.requestTimestamp}); break;
+            case 'ipfsAdd': this.sendWebsocketData({ data: await this.ipfsAdd(data.data), requestTimestamp: data.requestTimestamp}); break;
 
             default: global.log('ERROR: DataHandler: Received unknown protocol: ' + String(data.protocol)); return;
         }

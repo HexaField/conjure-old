@@ -5,8 +5,8 @@ export default class FileStorageDHT
 {  
     constructor(directory)
     {
-        this.rootDirectory = 'conjure-' + directory
-        this.files = new FileSystem({ storage: new OrbitDBFS(this.rootDirectory) })
+        this.rootDirectory = '/conjure/' + directory
+        this.files = new FileSystem({ storage: new OrbitDBFS('conjure ' + directory) })
     }
 
     async close()
@@ -17,8 +17,10 @@ export default class FileStorageDHT
     async initialise(orbitdb)
     {
         await this.files.storage.initialise(orbitdb)
-        if(!await this.files.exists(this.rootDirectory))
-            await this.files.mkdirParents(this.rootDirectory)
+        // if(!await this.files.exists(this.rootDirectory))
+        await this.files.mkdirParents(this.rootDirectory)
+        await this.files.mkdirParents(this.rootDirectory + '/objects')
+        // console.log(this.files.storage.db.all)
     }
 
     async makeDirectory(directory)

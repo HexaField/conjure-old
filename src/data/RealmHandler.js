@@ -182,7 +182,7 @@ export default class RealmHandler
     async addDatabase(id)
     {
         if(this.databases[id]) return
-        this.databases[id] = new FileStorageDHT()
+        this.databases[id] = new FileStorageDHT(String(id))
         await this.databases[id].initialise(this.dataHandler.orbitdb)
     }
 
@@ -195,21 +195,21 @@ export default class RealmHandler
 
 
     //TODO: asset names
-    async createObject(realmID, data)
+    async createObject(realmID, uuid, data)
     {
         if(!this.databases[realmID]) return
-        return await this.databases[realmID].writeFile('/objects/' + hash, data)
+        return await this.databases[realmID].writeFile('/objects/' + uuid, data)
     }
 
-    async updateObject(realmID, data)
+    async updateObject(realmID, uuid, data)
     {
         if(!this.databases[realmID]) return
-        return await this.databases[realmID].writeFile('/objects/' + hash, data)
+        return await this.databases[realmID].writeFile('/objects/' + uuid, data)
     }
 
-    async destroyObject(realmID, data)
+    async destroyObject(realmID, uuid)
     {
         if(!this.databases[realmID]) return
-        return await this.databases[realmID].removeFile('/objects/' + hash)
+        return await this.databases[realmID].removeFile('/objects/' + uuid)
     }
 }

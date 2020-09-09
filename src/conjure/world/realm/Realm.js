@@ -66,9 +66,16 @@ export default class Realm
 
         this.realmData = realmData
         this.realmID = realmData.getID()
+
         this.receiveDataFromPeer = this.receiveDataFromPeer.bind(this)
         this.onPeerJoin = this.onPeerJoin.bind(this)
         this.onPeerLeave = this.onPeerLeave.bind(this)
+
+        this.onObjectCreate = this.onObjectCreate.bind(this)
+        this.onObjectUpdate = this.onObjectUpdate.bind(this)
+        this.onObjectGroup = this.onObjectGroup.bind(this)
+        this.onObjectMove = this.onObjectMove.bind(this)
+        this.onObjectDestroy = this.onObjectDestroy.bind(this)
 
         this.vec3 = new THREE.Vector3();
         this.quat = new THREE.Quaternion();
@@ -82,6 +89,12 @@ export default class Realm
     {
         await this.conjure.getDataHandler().joinNetwork({ network: this.realmID, onMessage: this.receiveDataFromPeer, onPeerJoin: this.onPeerJoin, onPeerLeave: this.onPeerLeave })
         
+        this.addNetworkProtocolCallback(REALM_PROTOCOLS.OBJECT.CREATE, this.onObjectCreate)
+        this.addNetworkProtocolCallback(REALM_PROTOCOLS.OBJECT.UPDATE, this.onObjectUpdate)
+        this.addNetworkProtocolCallback(REALM_PROTOCOLS.OBJECT.GROUP, this.onObjectGroup)
+        this.addNetworkProtocolCallback(REALM_PROTOCOLS.OBJECT.MOVE, this.onObjectMove)
+        this.addNetworkProtocolCallback(REALM_PROTOCOLS.OBJECT.DESTROY, this.onObjectDestroy)
+
         if(this.realmData.getData().worldSettings.worldGeneratorType === REALM_WORLD_GENERATORS.INFINITE_WORLD)
             this.terrain = new Terrain(this.conjure, this.world.group, this.realmData.getWorldSettings())
         else
@@ -210,10 +223,10 @@ export default class Realm
         return this.objectManager
     }
     
-    // onObjectCreate(data, peerID)
-    // {
-    //     this.loadObjectFromPeer(data.hash, data.timestamp, data.object);
-    // }
+    onObjectCreate(data, peerID)
+    {
+        this.loadObjectFromPeer(data.uuid, data.data);
+    }
     
     // update to actual object properties
     onObjectUpdate(data, peerID)
@@ -224,7 +237,7 @@ export default class Realm
     // update to actual object properties
     onObjectGroup(data, peerID)
     {
-        this.objectManager.groupObjects(this.objectManager.getObjectByUUID(data.newParentUUID), this.objectManager.getObjectByUUID(data.newChildUUID))
+        this.objectManager.groupObjects(this.objectManager.getObjectByUUID(data.newParentUUID), this.objectManager.getObjectByUUID(data.newChildUUID), true)
     }
 
     // update to object matrix
@@ -237,16 +250,25 @@ export default class Realm
         }
     }
     
-    onObjectDestroy(hash, peerID)
+    async onObjectDestroy(uuid, peerID)
     {
-        this.destroyObject(hash)
-        this.objectManager.destroyObjectByHash(hash);
+        await this.conjure.getDataHandler().destroyObject({ realmID: this.realmID, uuid: uuid })
+        this.objectManager.destroyObjectByHash(uuid);
     }
 
     // ------- //
     // OBJECTS //
     // ------- //
 
+    async loadObjectFromPeer(uuid, data)
+    {
+        try {
+            await this.conjure.getDataHandler().createObject({ realmID: this.realmID, uuid: uuid, data: data })
+            await this.loadObject(uuid, data)
+        } catch (error) {
+            console.log('REALM: could not load object', object.hash, 'with error', error);
+        }
+    }
     async createObject(object)
     {
         object.userData.originatorID = this.conjure.getProfile().getID();
@@ -255,30 +277,21 @@ export default class Realm
         object.updateMatrixWorld();
         this.restorePhysics(object);
         let json = await this.objectToJSON(object);
-        let metaData = { 
-            originatorID: this.conjure.getProfile().getID(),
-            realm: this.realmID,
-            timestamp: Date.now(), 
-        }
         this.conjure.screenManager.hideScreen();
-        let databaseObject = await this.conjure.getDataHandler().createObject(metaData, json)
-        if(databaseObject) // if adding to IPFS failed, don't put it into our world
+        let databaseObject = await this.conjure.getDataHandler().createObject({ realmID: this.realmID, uuid: object.uuid, data: json })
+        if(databaseObject) // if adding to database failed, don't put it into our world
         {
-            console.log('made object and giving it hash', databaseObject)
-            object.userData.hash = databaseObject.hash;
             this.objectManager.addObject(object)
             json = await this.objectToJSON(object);
-            this.sendData(REALM_PROTOCOLS.OBJECT.CREATE, { hash: databaseObject.hash, timestamp:databaseObject.timestamp, data:json });
+            this.sendData(REALM_PROTOCOLS.OBJECT.CREATE, { uuid: databaseObject.uuid, data:json });
         }
     }
 
-    // TODO: replace geometries & materials with asset hashes too 
-    // - do we need to do this before converting? (this will crash it bro...) 
-    // so need to use before conversion and save after conversion hmm
     async objectToJSON(obj)
     {
         let json = obj.toJSON();
-        
+        return json
+        // temp
         if(json.images)
             for(let i = 0; i < json.images.length; i++)
             {
@@ -301,20 +314,19 @@ export default class Realm
     }
 
 
-    async loadObject(data, hash)
+    async loadObject(uuid, data)
     {
         try
         {
-            if(data.images)
-                for(let i = 0; i < data.images.length; i++)
-                {
-                    if(!data.images[i].hash) continue;
-                    data.images[i].url = await this.conjure.assetManager.loadImageAssetFromHash(data.images[i].hash);
-                }
+            // if(data.images)
+            //     for(let i = 0; i < data.images.length; i++)
+            //     {
+            //         if(!data.images[i].hash) continue;
+            //         data.images[i].url = await this.conjure.assetManager.loadImageAssetFromHash(data.images[i].hash);
+            //     }
             let object = this.loadObjectAssets(data);
             await this.conjure.assetManager.saveAssets(object)
             // console.log(object)
-            object.userData.hash = hash;
             this.restorePhysics(object);
             this.objectManager.addObject(object)
             if(data.object.userData.lastUpdate)
@@ -363,13 +375,13 @@ export default class Realm
     async updateObject(obj)
     {
         if(!obj) return;
-        if(!obj.userData.hash) 
+        if(!obj.uuid) 
         {
             console.log('Tried to update object without a hash! Are you sure this object is a top parent?')
             return;
         }
         let json = await this.objectToJSON(obj)
-        await this.conjure.getDataHandler().updateObject(obj.userData.hash, json);
+        await this.conjure.getDataHandler().updateObject({ realmID: this.realmID, uuid: object.uuid, data: json });
     }
 
     async destroyObject(obj)
@@ -377,11 +389,11 @@ export default class Realm
         obj.userData.markedDestroyed = true;
         if(this.objectManager.getObject(obj))
         {
-            let success = await this.conjure.getDataHandler().destroyObject(obj.userData.hash)
+            let success = await this.conjure.getDataHandler().destroyObject({ realmID: this.realmID, uuid: object.uuid })
             if(success)
             {
                 this.objectManager.destroyObject(obj);
-                this.sendData(REALM_PROTOCOLS.OBJECT.DESTROY, obj.userData.hash, true);
+                this.sendData(REALM_PROTOCOLS.OBJECT.DESTROY, obj.uuid, true);
             }
             else
             {

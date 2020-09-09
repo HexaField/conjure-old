@@ -59,15 +59,15 @@ export default class ScreenObjectsHierarchy extends ScreenBase
     itemSelected(selected, item)
     {
         if(selected)
-            this.screen.screenManager.conjure.getControls().objectControls.attach(item, { ignoreScreenUpdate: true, detachOthers: !this.screen.screenManager.conjure.input.isDown('SHIFT', true)})
+            this.screenManager.conjure.getControls().objectControls.attach(item, { ignoreScreenUpdate: true, detachOthers: !this.screen.screenManager.conjure.input.isDown('SHIFT', true)})
         else
-            this.screen.screenManager.conjure.getControls().objectControls.detach(item, { ignoreScreenUpdate: true })
+            this.screenManager.conjure.getControls().objectControls.detach(item, { ignoreScreenUpdate: true })
     }
     
     itemHover(hover, item)
     {
         if(hover)
-            this.screen.screenManager.conjure.postProcessing.setHoverObject(item);
+            this.screenManager.conjure.postProcessing.setHoverObject(item);
     }
 
     selectObject(select, object)

@@ -109,7 +109,7 @@ export default class ObjectControls
                 if(!params.ignoreScreenUpdate)
                     this.conjure.getScreens().screenObjectsHierarchy.selectObject(false, object);
                 iterateChildrenWithFunction(object, (o) => {
-                    this.conjure.getWorld().restorePhysics(o);
+                    this.conjure.getWorld().realm.restorePhysics(o);
                 });
                 object.userData.needsUpdate = true;
             }
@@ -124,7 +124,7 @@ export default class ObjectControls
         this.controls.detach(object);
         
         iterateChildrenWithFunction(object, (o) => {
-            this.conjure.getWorld().restorePhysics(o);
+            this.conjure.getWorld().realm.restorePhysics(o);
         });
         object.userData.needsUpdate = true;
         this.conjure.postProcessing.removeSelectedObject(object);

@@ -275,7 +275,6 @@ export default class World
         }
     }
 
-
     receiveDataFromPeer(data, peerID)
     {
         /// send through a list of objects that are your copy
@@ -287,11 +286,6 @@ export default class World
             case REALM_PROTOCOLS.USER.MOVE: this.onUserMove(data.content, peerID); break;
             case REALM_PROTOCOLS.USER.LEAVE: this.onUserLeave(peerID); break;
             case REALM_PROTOCOLS.USER.ANIMATION: this.onUserAnimation(data.content, peerID); break;
-            // case REALM_PROTOCOLS.OBJECT.CREATE: this.onObjectCreate(data.content, peerID); break;
-            // case REALM_PROTOCOLS.OBJECT.UPDATE: this.onObjectUpdate(data.content, peerID); break;
-            // case REALM_PROTOCOLS.OBJECT.GROUP: this.onObjectGroup(data.content, peerID); break;
-            // case REALM_PROTOCOLS.OBJECT.MOVE: this.onObjectMove(data.content, peerID); break;
-            // case REALM_PROTOCOLS.OBJECT.DESTROY: this.onObjectDestroy(data.content, peerID); break;
             default: break;
         }
     }

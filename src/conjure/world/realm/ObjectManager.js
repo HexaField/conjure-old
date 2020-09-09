@@ -1,5 +1,6 @@
 import { THREE, ExtendedMesh } from 'enable3d'
 import { number } from '../../util/number'
+import { REALM_PROTOCOLS } from './Realm'
 
 export const PHYSICS_TYPES = {
     NONE: 'None',
@@ -24,11 +25,11 @@ export const PHYSICS_SHAPES = {
 
 export default class ObjectManager
 {  
-    constructor(world)
+    constructor(realm)
     {
-        this.world = world;
-        this.conjure = world.conjure;
-        this.camera = world.camera;
+        this.realm = realm
+        this.world = realm.world;
+        this.conjure = realm.conjure;
         this.scene = this.conjure.scene;
 
         this.objects = [];
@@ -65,7 +66,7 @@ export default class ObjectManager
         }
     }
 
-    async groupObjects(newParent, newChild)
+    async groupObjects(newParent, newChild, ignoreNetwork)
     {
         if(!newParent || !newChild || !newParent.parent || !newChild.parent) return; // something went wrong, trying to attach something and nothing
         if(newChild.parent === newParent) 
@@ -104,7 +105,8 @@ export default class ObjectManager
         await this.conjure.getWorld().updateObject(newTopParent)
 
         this.conjure.getScreens().screenObjectsHierarchy.updateObjects();
-        // this.conjure.getWorld().sendData(PROTOCOLS.OBJECT.UPDATE, {newParentUUID: newParent.UUID, newChildUUID: newObject.UUID}) // shouldn't need to use this as the two updateObjects should take care of this
+        if(!ignoreNetwork)
+            this.conjure.getWorld().sendData(REALM_PROTOCOLS.OBJECT.UPDATE, {newParentUUID: newParent.UUID, newChildUUID: newObject.UUID}) // shouldn't need to use this as the two updateObjects should take care of this
     }
 
     getObject(obj)

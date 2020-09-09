@@ -91,7 +91,7 @@ export default class FileSystem {
     const parent = await this.exists(path.parent)
 
     if (!parent) {
-      throw new Error('file needs parent')
+      throw new Error('file needs parent' + path.path)
     } else if (parent && parent.node.mode !== MODE.DIR) {
       throw new Error('parent should be dir')
     }
