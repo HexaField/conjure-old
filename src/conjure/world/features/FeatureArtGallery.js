@@ -1,22 +1,22 @@
 import { THREE } from 'enable3d'
 import Feature from "./Feature"
 import abiDecoder from 'abi-decoder'
-import FileType from 'file-type/browser'
-import bufferToBase64 from '../../util/bufferToBase64'
 import FeatureRoom from './FeatureRoom'
-import { Texture, VideoTexture } from 'three/build/three.module';
 import TextRenderer3D from '../../screens/text/TextRenderer3D';
 import { Sky } from 'three/examples/jsm/objects/Sky.js';
+import GifLoader from '../../util/three-gif-loader/gif-loader';
 
+//https://stackoverflow.com/questions/12586353/three-js-texture-to-datatexture
 export default class FeatureArtGallery extends Feature
 {
     constructor(realm)
     {
         super(realm)
-        this.piecesCount = 12
+        this.piecesCount = 16
         this.room = new FeatureRoom(realm.conjure, realm.group, { roomHeight: 0.1, roomWidth: this.piecesCount * 4 })
         this.superrareABI = [{"constant":true,"inputs":[{"name":"interfaceId","type":"bytes4"}],"name":"supportsInterface","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_enabled","type":"bool"}],"name":"enableWhitelist","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"name","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"tokenId","type":"uint256"}],"name":"getApproved","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"to","type":"address"},{"name":"tokenId","type":"uint256"}],"name":"approve","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"from","type":"address"},{"name":"to","type":"address"},{"name":"tokenId","type":"uint256"}],"name":"transferFrom","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"_tokenId","type":"uint256"},{"name":"_uri","type":"string"}],"name":"updateTokenMetadata","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"owner","type":"address"},{"name":"index","type":"uint256"}],"name":"tokenOfOwnerByIndex","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_address","type":"address"}],"name":"isWhitelisted","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_tokenId","type":"uint256"}],"name":"tokenCreator","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"from","type":"address"},{"name":"to","type":"address"},{"name":"tokenId","type":"uint256"}],"name":"safeTransferFrom","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"index","type":"uint256"}],"name":"tokenByIndex","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_tokenId","type":"uint256"}],"name":"deleteToken","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"tokenId","type":"uint256"}],"name":"ownerOf","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"owner","type":"address"}],"name":"balanceOf","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"renounceOwnership","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"_removedAddress","type":"address"}],"name":"removeFromWhitelist","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"owner","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"isOwner","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"symbol","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"to","type":"address"},{"name":"approved","type":"bool"}],"name":"setApprovalForAll","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"_whitelistees","type":"address[]"}],"name":"initWhitelist","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"from","type":"address"},{"name":"to","type":"address"},{"name":"tokenId","type":"uint256"},{"name":"_data","type":"bytes"}],"name":"safeTransferFrom","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"tokenId","type":"uint256"}],"name":"tokenURI","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_uri","type":"string"}],"name":"addNewToken","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"_newAddress","type":"address"}],"name":"addToWhitelist","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"owner","type":"address"},{"name":"operator","type":"address"}],"name":"isApprovedForAll","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"inputs":[{"name":"_name","type":"string"},{"name":"_symbol","type":"string"},{"name":"_oldSuperRare","type":"address"}],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_tokenId","type":"uint256"},{"indexed":false,"name":"_uri","type":"string"}],"name":"TokenURIUpdated","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_newAddress","type":"address"}],"name":"AddToWhitelist","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_removedAddress","type":"address"}],"name":"RemoveFromWhitelist","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"previousOwner","type":"address"},{"indexed":true,"name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"from","type":"address"},{"indexed":true,"name":"to","type":"address"},{"indexed":true,"name":"tokenId","type":"uint256"}],"name":"Transfer","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"owner","type":"address"},{"indexed":true,"name":"approved","type":"address"},{"indexed":true,"name":"tokenId","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"owner","type":"address"},{"indexed":true,"name":"operator","type":"address"},{"indexed":false,"name":"approved","type":"bool"}],"name":"ApprovalForAll","type":"event"}]
         this.pieces = []
+        this.gifLoader = new GifLoader();
     }
 
     async preload()
@@ -52,7 +52,7 @@ export default class FeatureArtGallery extends Feature
             let isSecondHalf = i >= this.piecesCount / 2
             let x = (this.room.roomWidth / this.piecesCount) * ((isSecondHalf ? i - (this.piecesCount / 2) : i)) - (this.room.roomWidth / 4) + 1
             let mesh = this.createPainting(new THREE.Vector3(
-                x * 2,
+                x * 2 * (isSecondHalf ? -1 : 1),
                 2.5,
                 (isSecondHalf ? 1 : -1) * this.room.roomLength * 0.45)
             )
@@ -91,37 +91,66 @@ export default class FeatureArtGallery extends Feature
             {
                 // let hash = input.params[0].value.split('/').slice(-1).pop()
                 let metadata = await(await fetch(input.params[0].value)).json()
-                
-                if(!metadata.media.dimensions) continue // we need dimensions to check its not yuge file
+                // if(!metadata.media.dimensions) continue // we need dimensions to check its not yuge file
 
-                if(metadata.media.mimeType.includes('gif') || metadata.media.mimeType.includes('mp4')) 
-                    continue
+                // if(metadata.media.mimeType.includes('mp4')) 
+                //     continue
 
-                let dimensions = metadata.media.dimensions.split('x')
-                
                 // make sure we arent going to crash the webpage...
-                if(Number(metadata.media.size) > 20 * 1000 * 1000) // limit to 20MB
+                if(Number(metadata.media.size) > 50 * 1000 * 1000) // limit each piece to 50MB
                     continue
 
-                let artworkData = await fetch(metadata.media.uri)
-                
-                let aspectRatio = Number(dimensions[0]) / Number(dimensions[1])
+                // let artworkData = await fetch(metadata.media.uri)
 
-                let data = await artworkData.arrayBuffer()
-                let type = await FileType.fromBuffer(data)
-
-                let dataURI = "data:" + type.mime + ";base64," + bufferToBase64(data)
-
-                let image = new Image()
-                let texture = new Texture()
-                texture.minFilter = THREE.LinearFilter;
-
-                if(metadata.media.mimeType.includes('gif') || metadata.media.mimeType.includes('mp4'))
+                // let data = await artworkData.arrayBuffer()
+                let type = metadata.media.mimeType.toString()
+                // console.log(type, metadata)
+                if(type.includes('gltf-binary'))
                 {
-                    // texture = new VideoTexture()
-                }   
-                else
+                    let model = await this.realm.conjure.load.gltf(metadata.media.uri)
+                    if(!model || !model.scene) continue
+                    this.pieces[i].mesh.material.visible = false
+                    this.pieces[i].mesh.add(model.scene)
+                }
+                else 
                 {
+                    let dimensions = metadata.media.dimensions.split('x')
+                    let texture = undefined
+
+                    if(type.includes('mp4'))
+                    {
+                        let video = document.createElement( 'video' );
+                        video.src = "textures/videos/Row1Col1.ogv";
+                        video.load(); // must call after setting/changing source
+                        video.play();
+                        video.loop = true
+                        let videoImage = document.createElement( 'canvas' );
+                        videoImage.width = Number(dimensions[0]);
+                        videoImage.height = Number(dimensions[1]);
+
+                        let videoImageContext = videoImage.getContext( '2d' );
+                        videoImageContext.fillStyle = '#000000';
+                        videoImageContext.fillRect( 0, 0, videoImage.width, videoImage.height );
+
+                        texture = new THREE.Texture( videoImage );
+                    }
+                    else if(type.includes('gif'))
+                    {
+                        texture = await this.gifLoader.load(metadata.media.uri)
+                    }
+                    else
+                    {
+                        texture = await this.realm.conjure.load.texture(metadata.media.uri)
+                    }
+                    texture.minFilter = THREE.LinearFilter;
+                    texture.magFilter = THREE.LinearFilter;
+                    texture.needsUpdate = true;
+
+                    this.pieces[i].mesh.material.map = texture
+                    this.pieces[i].mesh.material.transparent = type.includes('png')
+
+                    let aspectRatio = Number(dimensions[0]) / Number(dimensions[1])
+
                     if(aspectRatio > 1)
                         this.pieces[i].mesh.geometry.scale(aspectRatio, 1, 1)
                     if(aspectRatio < 1)
@@ -131,23 +160,13 @@ export default class FeatureArtGallery extends Feature
                         this.pieces[i].description.group.position.setY(aspectRatio * 2)
                         this.pieces[i].mesh.geometry.scale(1, aspectRatio, 1)
                     }
-                    this.pieces[i].createdBy.setText(metadata.createdBy.trim())
-                    this.pieces[i].name.setText(metadata.name.trim() + ', ' + metadata.yearCreated.trim())
-                    this.pieces[i].description.setText(this.explodeString(metadata.description.trim().replace('\n', ''), 100))
-                    
-                    this.pieces[i].mesh.material.map = texture
-                    if(type.mime.toString().includes('png'))
-                        this.pieces[i].mesh.material.transparent = true
-
-                    image.onload = () => {
-                        texture.image = image;
-                        texture.needsUpdate = true
-                    }
-                    image.src = dataURI
                 }
+                this.pieces[i].createdBy.setText(metadata.createdBy.trim())
+                this.pieces[i].name.setText(metadata.name.trim() + ', ' + metadata.yearCreated.trim())
+                this.pieces[i].description.setText(this.explodeString(metadata.description.trim().replace('\n', ''), 100))
 
                 i++;
-                console.log('Artwork number', i, 'of type',type.mime,'took', Date.now()-now,'ms to load ')
+                console.log('Artwork number', i, 'of type', type, 'took', Date.now()-now, 'ms to load ')
                 if(i >= this.piecesCount) return
             }
         }

@@ -13,6 +13,9 @@ export const GLOBAL_REALMS = {
         name: 'SuperRare Ethereum Gallery',
         timestamp: 0,
         visibility: REALM_VISIBILITY.PUBLIC,
+        worldData: {
+            playsAudio: true
+        },
         worldSettings: {
             features: ['Gallery'],
             worldGeneratorType: REALM_WORLD_GENERATORS.NONE
