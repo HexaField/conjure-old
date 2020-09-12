@@ -42,6 +42,9 @@ export default class TextRenderer3D
     {
         if(font !== undefined)
             this.font = font
+        
+        if(String(text) === this.string) return
+
         this.string = String(text)
         this.geometry = createText(this.font, { string: this.string, alignX: this.alignX, alignY: this.alignY })
         this.mesh.geometry = this.geometry

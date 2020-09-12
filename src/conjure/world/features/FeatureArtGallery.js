@@ -42,11 +42,14 @@ export default class FeatureArtGallery extends Feature
         this.realm.conjure.dirLight.position.copy(this.realm.conjure.sunPos)
         uniforms[ "sunPosition" ].value.copy(this.realm.conjure.sunPos);
 
-        this.realm.conjure.loadingScreen.setText('Loading art pieces...')
-        console.log('Loading art gallery...')
+        this.realm.conjure.loadingScreen.setText('Creating gallery...')
+        console.log('Creating gallery...')
 
         this.loadingTex = await this.realm.conjure.load.texture(this.realm.conjure.assetURL + 'assets/icons/loading.png')
         
+        this.loadingTex.minFilter = THREE.LinearFilter;
+        this.loadingTex.magFilter = THREE.LinearFilter;
+
         for(let i = 0; i < this.piecesCount; i++)
         {
             let isSecondHalf = i >= this.piecesCount / 2
@@ -59,11 +62,11 @@ export default class FeatureArtGallery extends Feature
             if(isSecondHalf)
                 mesh.rotateY(Math.PI)
         }
+        this.loadArtwork()
     }
 
     async load()
     {
-        this.loadArtwork()
     }
 
     async unload()
@@ -91,18 +94,8 @@ export default class FeatureArtGallery extends Feature
             {
                 // let hash = input.params[0].value.split('/').slice(-1).pop()
                 let metadata = await(await fetch(input.params[0].value)).json()
-                // if(!metadata.media.dimensions) continue // we need dimensions to check its not yuge file
-
-                // if(metadata.media.mimeType.includes('mp4')) 
-                //     continue
-
-                // make sure we arent going to crash the webpage...
-                if(Number(metadata.media.size) > 50 * 1000 * 1000) // limit each piece to 50MB
+                if(Number(metadata.media.size) > 100 * 1000 * 1000) // limit each piece to 100Mb
                     continue
-
-                // let artworkData = await fetch(metadata.media.uri)
-
-                // let data = await artworkData.arrayBuffer()
                 let type = metadata.media.mimeType.toString()
                 // console.log(type, metadata)
                 if(type.includes('gltf-binary'))
@@ -115,38 +108,51 @@ export default class FeatureArtGallery extends Feature
                 else 
                 {
                     let dimensions = metadata.media.dimensions.split('x')
-                    let texture = undefined
 
                     if(type.includes('mp4'))
                     {
                         let video = document.createElement( 'video' );
-                        video.src = "textures/videos/Row1Col1.ogv";
-                        video.load(); // must call after setting/changing source
-                        video.play();
+                        video.crossOrigin = "anonymous";
                         video.loop = true
-                        let videoImage = document.createElement( 'canvas' );
-                        videoImage.width = Number(dimensions[0]);
-                        videoImage.height = Number(dimensions[1]);
+                        // video.src = metadata.media.uri;
+                        // video.load()
+                        this.pieces[i].mesh.material.map = new THREE.VideoTexture(video)
+                        this.realm.conjure.getAudioManager().createFromMediaSource(video, this.pieces[i].mesh)
+                        this.pieces[i].mesh.userData.media = video
 
-                        let videoImageContext = videoImage.getContext( '2d' );
-                        videoImageContext.fillStyle = '#000000';
-                        videoImageContext.fillRect( 0, 0, videoImage.width, videoImage.height );
+                        var req = new XMLHttpRequest();
+                        req.open('GET', metadata.media.uri, true);
+                        req.responseType = 'blob';
 
-                        texture = new THREE.Texture( videoImage );
+                        req.onload = (result) => {
+                            if (result.target.status === 200)
+                            {
+                                let videoBlob = result.target.response;
+                                let vid = URL.createObjectURL(videoBlob);
+                                video.src = vid;
+                                video.play();
+                                video.volume = 0
+                            }
+                        }
+                        req.onerror = function() {
+                            console.log('Failed to get video at', metadata.media.uri)
+                        }
+                        req.send();
                     }
                     else if(type.includes('gif'))
                     {
-                        texture = await this.gifLoader.load(metadata.media.uri)
+                        this.pieces[i].mesh.material.map = await this.gifLoader.load(metadata.media.uri)
+                    }
+                    else if(type.includes('png') || type.includes('jpg') || type.includes('jpeg'))
+                    {
+                        this.pieces[i].mesh.material.map = await this.realm.conjure.load.texture(metadata.media.uri)
                     }
                     else
                     {
-                        texture = await this.realm.conjure.load.texture(metadata.media.uri)
+                        console.log('ArtGallery: Received unsupported file type:', type)
+                        continue
                     }
-                    texture.minFilter = THREE.LinearFilter;
-                    texture.magFilter = THREE.LinearFilter;
-                    texture.needsUpdate = true;
 
-                    this.pieces[i].mesh.material.map = texture
                     this.pieces[i].mesh.material.transparent = type.includes('png')
 
                     let aspectRatio = Number(dimensions[0]) / Number(dimensions[1])
@@ -162,7 +168,7 @@ export default class FeatureArtGallery extends Feature
                     }
                 }
                 this.pieces[i].createdBy.setText(metadata.createdBy.trim())
-                this.pieces[i].name.setText(metadata.name.trim() + ', ' + metadata.yearCreated.trim())
+                this.pieces[i].name.setText(metadata.name.trim() + ', ' + metadata.yearCreated.trim() + ', ' + Math.round(Number(metadata.media.size) / (1024 * 1024)) + 'Mb')
                 this.pieces[i].description.setText(this.explodeString(metadata.description.trim().replace('\n', ''), 100))
 
                 i++;

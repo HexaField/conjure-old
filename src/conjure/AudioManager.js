@@ -8,6 +8,17 @@ export default class AudioManager
         this.conjure = conjure
         this.buffers = {}
         this.sounds = []
+        this.sources = []
+    }
+
+    getSources()
+    {
+        return this.sources
+    }
+
+    getAudioContext()
+    {
+        return this.audioListener.context
     }
 
     getHasContext()
@@ -47,8 +58,21 @@ export default class AudioManager
             })
         })
     }
+
+    createFromMediaSource(mediaElement, mesh, args = {})
+    {
+        if(!this.audioListener) return
+
+        let sound = new THREE.PositionalAudio(this.audioListener)
+        sound.setMediaElementSource(mediaElement)
+        sound.setVolume(args.volume === undefined ? 1 : args.volume);
+        sound.setRefDistance(args.refDistance === undefined ? 20 : args.refDistance);
+        mesh.userData.sound = sound
+
+        this.sources.push(mesh)
+    }
     
-    // { loop, volume }
+    // { loop, volume, refDistance,  }
     play(buffer, args = {})
     {
         if(!this.audioListener || !this.buffers[buffer]) return
@@ -74,13 +98,24 @@ export default class AudioManager
     {
         if(!this.audioListener) return
         this.audioListener.setMasterVolume(number(amount))
+        this.updateSources()
     }
 
     async toggleMute()
     {
         if(!this.audioListener) 
             await this.create(false)
+        
         this.audioListener.setMasterVolume(this.audioListener.getMasterVolume() === 0 ? 1 : 0)
+        this.updateSources()
         return this.audioListener.getMasterVolume()
+    }
+
+    updateSources()
+    {
+        for(let source of this.sources)
+        {
+            source.userData.media.volume = this.audioListener.getMasterVolume()
+        }
     }
 }

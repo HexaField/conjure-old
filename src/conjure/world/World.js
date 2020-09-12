@@ -27,6 +27,8 @@ export default class World
         this.updatesPerSecond = 20; // update peers every 1/xth of a second 
         this.updateCount = 0;
         this.updateCountMax = 60 / this.updatesPerSecond;
+
+        this.interactMaxDistance = 4
         
         this.deltaThreshold = 0.1;
 
@@ -231,6 +233,17 @@ export default class World
                         this.conjure.screenManager.hudExplore.interact.setObject(this.users[user], INTERACT_TYPES.USER);
                     }
                 }
+        }
+        if(this.conjure.conjureMode === CONJURE_MODE.EXPLORE)
+        {
+            let intersections = this.conjure.worldRaycaster.intersectObjects(this.conjure.getAudioManager().getSources(), true);
+            if(intersections.length > 0 && intersections[0].distance < interactDistance)
+            {
+                interact = true;
+                this.conjure.screenManager.hudExplore.interact.setObject(intersections[0].object, INTERACT_TYPES.VIDEO);
+            }
+            if(!interact)
+                this.conjure.screenManager.hudExplore.interact.setObject();
         }
         // if(this.conjure.conjureMode === CONJURE_MODE.EXPLORE)
         // {

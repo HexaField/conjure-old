@@ -1,7 +1,6 @@
 import ScreenBase from '../ScreenBase';
-import HUDInteract, { INTERACT_TYPES } from './HUDInteract'
+import HUDInteract from './HUDInteract'
 import { THREE } from 'enable3d'
-import { REALM_PROTOCOLS } from '../../world/realm/Realm';
 
 export default class HUDExploreMode extends ScreenBase
 {  
@@ -16,9 +15,6 @@ export default class HUDExploreMode extends ScreenBase
 
         this.interact = new HUDInteract(this)
         this.group.add(this.interact.group)
-
-
-        this.screenManager.conjure.input.addKey('INTERACT', 'g');
     }
 
     showScreen(active)
@@ -29,20 +25,6 @@ export default class HUDExploreMode extends ScreenBase
     update(updateArgs)
     {
         super.update(updateArgs);
-        if(this.interact.object && updateArgs.input.isPressed('INTERACT'))
-        {
-            if(this.interact.type === INTERACT_TYPES.USER)
-            {
-                this.screenManager.screenUserPay.setUser(this.interact.object)
-                this.screenManager.showScreen(this.screenManager.screenUserPay)
-                this.screenManager.conjure.getWorld().realm.sendTo(REALM_PROTOCOLS.PROFILE.SERVICE.PAYID.REQUESTID, '', this.interact.object.peerID)
-            }
-            if(this.interact.type === INTERACT_TYPES.OBJECT && this.interact.object.userData.payID)
-            {
-                this.screenManager.screenUserPay.setObject(this.interact.object)
-                this.screenManager.showScreen(this.screenManager.screenUserPay)
-                // this.screenManager.conjure.getWorld().realm.sendTo(REALM_PROTOCOLS.PROFILE.SERVICE.PAYID.REQUESTID, '', this.interact.object.payID)
-            }
-        }
+        this.interact.update(updateArgs)
     }
 }

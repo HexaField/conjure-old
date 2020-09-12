@@ -12,7 +12,8 @@ module.exports = {
       rules: [{
         test: /\.js$/,
         include: path.resolve(__dirname, 'src'),
-        use: ['babel-loader']
+        exclude: /(node_modules)/,
+        use: ['babel-loader'],
       }]  
     },
     devtool: 'inline-source-map',
@@ -29,6 +30,12 @@ module.exports = {
       }),
     ],
     node: {
-      fs: 'empty'
+      module: 'empty',
+      dns: 'mock',
+      fs: 'empty',
+      http2: 'mock',
+      net: 'empty',
+      tls: 'empty',
+      child_process: 'empty',
     }
 };
