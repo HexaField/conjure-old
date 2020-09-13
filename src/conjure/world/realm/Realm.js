@@ -21,6 +21,19 @@ export const GLOBAL_REALMS = {
             worldGeneratorType: REALM_WORLD_GENERATORS.NONE
         }
     },
+    CAMPFIRE: {
+        id: 'Campfire',
+        name: 'Campfire',
+        timestamp: 0,
+        visibility: REALM_VISIBILITY.PUBLIC,
+        worldData: {
+            playsAudio: true
+        },
+        worldSettings: {
+            features: ['Campfire'],
+            worldGeneratorType: REALM_WORLD_GENERATORS.NONE
+        }
+    },
     EDEN: {
         id: 'Eden',
         name: 'Eden',
