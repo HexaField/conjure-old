@@ -46,6 +46,7 @@
     "fs": "^0.0.1-security",
     "ipfs": "^0.50.0",
     "ipfs-pubsub-room": "^2.0.1",
+    "libp2p-tcp": "^0.15.1",
     "libp2p-webrtc-star": "^0.20.1",
     "libp2p-websockets": "^0.14.0",
     "lodash": "^4.17.19",

@@ -46,9 +46,6 @@ export default class FeatureArtGallery extends Feature
         console.log('Creating gallery...')
 
         this.loadingTex = await this.realm.conjure.load.texture(this.realm.conjure.assetURL + 'assets/icons/loading.png')
-        
-        this.loadingTex.minFilter = THREE.LinearFilter;
-        this.loadingTex.magFilter = THREE.LinearFilter;
 
         for(let i = 0; i < this.piecesCount; i++)
         {
@@ -170,7 +167,11 @@ export default class FeatureArtGallery extends Feature
                 this.pieces[i].createdBy.setText(metadata.createdBy.trim())
                 this.pieces[i].name.setText(metadata.name.trim() + ', ' + metadata.yearCreated.trim() + ', ' + Math.round(Number(metadata.media.size) / (1024 * 1024)) + 'Mb')
                 this.pieces[i].description.setText(this.explodeString(metadata.description.trim().replace('\n', ''), 100))
-
+                
+                this.pieces[i].mesh.material.map.generateMipmaps = false;
+                this.pieces[i].mesh.material.map.wrapS = this.pieces[i].mesh.material.map.wrapT = THREE.ClampToEdgeWrapping;
+                this.pieces[i].mesh.material.map.minFilter = THREE.LinearFilter;
+                
                 i++;
                 console.log('Artwork number', i, 'of type', type, 'took', Date.now()-now, 'ms to load ')
                 if(i >= this.piecesCount) return

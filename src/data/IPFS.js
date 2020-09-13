@@ -3,6 +3,7 @@ const os = require('os')
 const _ = require('lodash')
 const WebrtcStar = require('libp2p-webrtc-star')
 const WS = require('libp2p-websockets')
+const TCP = require('libp2p-tcp')
 // const Bootstrap = require('libp2p-bootstrap')
 // const Gossipsub = require('libp2p-gossipsub')
 // const KadDHT = require('libp2p-kad-dht')
@@ -31,7 +32,7 @@ async function loadIPFS() {
         },
         libp2p: {
             modules: {
-                transport: [WebrtcStar, WS],
+                transport: [TCP, WebrtcStar, WS],
                 // streamMuxer: [MPLEX],
                 // connEncryption: [NOISE, SECIO],
                 // peerDiscovery: [Bootstrap],
