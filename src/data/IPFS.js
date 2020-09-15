@@ -1,15 +1,14 @@
 const IPFS = require('ipfs')
 const os = require('os')
-const _ = require('lodash')
 const WebrtcStar = require('libp2p-webrtc-star')
 const WS = require('libp2p-websockets')
 const TCP = require('libp2p-tcp')
 // const Bootstrap = require('libp2p-bootstrap')
-// const Gossipsub = require('libp2p-gossipsub')
-// const KadDHT = require('libp2p-kad-dht')
-// const MPLEX = require('libp2p-mplex')
-// const SECIO = require('libp2p-secio')
-// const { NOISE } = require('libp2p-noise')
+const Gossipsub = require('libp2p-gossipsub')
+const KadDHT = require('libp2p-kad-dht')
+const MPLEX = require('libp2p-mplex')
+const SECIO = require('libp2p-secio')
+const { NOISE } = require('libp2p-noise')
 const wrtc = require('wrtc')
 
 
@@ -32,12 +31,16 @@ async function loadIPFS() {
         },
         libp2p: {
             modules: {
-                transport: [TCP, WebrtcStar, WS],
-                // streamMuxer: [MPLEX],
-                // connEncryption: [NOISE, SECIO],
+                transport: [
+                    TCP, 
+                    WebrtcStar, 
+                    WS
+                ],
+                streamMuxer: [MPLEX],
+                connEncryption: [NOISE, SECIO],
                 // peerDiscovery: [Bootstrap],
-                // dht: KadDHT,
-                // pubsub: Gossipsub
+                dht: KadDHT,
+                pubsub: Gossipsub
             },
             config: {
                 transport: {
