@@ -62,7 +62,7 @@ module.exports = class Connection extends EventEmitter {
       .then(() => {
         this.emit('disconnect')
       }, (err) => {
-        this.emit('error', err)
+        // this.emit('error', err)
       })
   }
 

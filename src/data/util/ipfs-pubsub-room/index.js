@@ -76,7 +76,7 @@ class PubSubRoom extends EventEmitter {
     let conn = this._connections[peer]
     if (!conn) {
       conn = new Connection(peer, this._libp2p, this)
-      conn.on('error', (err) => this.emit('error', err))
+      // conn.on('error', (err) => this.emit('error', err))
       this._connections[peer] = conn
 
       conn.once('disconnect', () => {
@@ -117,6 +117,7 @@ class PubSubRoom extends EventEmitter {
 
     differences.added.forEach((peer) => this.emit('peer joined', peer))
     differences.removed.forEach((peer) => {
+      this._connections[peer].stop()
       delete this._connections[peer]
       this.emit('peer left', peer)
     })
