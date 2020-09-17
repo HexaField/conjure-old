@@ -194,6 +194,18 @@ export default class RealmHandler
         delete this.databases[id]
     }
 
+    async subscribe(realmID, additionCallback, removalCallback)
+    {
+        if(this.databases[realmID])
+            this.databases[realmID].registerCallbacks(additionCallback, removalCallback)
+    }
+
+    async unsubscribe(realmID)
+    {
+        if(this.databases[realmID])
+            this.databases[realmID].unregisterCallbacks()
+    }
+
     async createObject(realmID, uuid, data)
     {
         if(!this.databases[realmID]) return

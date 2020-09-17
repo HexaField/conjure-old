@@ -24,6 +24,8 @@ export default class SyncedDatabase extends NetworkInterface
         this.data = {} // { timestamp, value }
         this.isDatabaseUpToDate = false
         this.diskStorage = diskStorage
+        this.additionCallback = undefined
+        this.removalCallback = undefined
     }
 
     async initialise()
@@ -49,7 +51,7 @@ export default class SyncedDatabase extends NetworkInterface
             'syncedDatabase-' + this.databaseName, 
             this.callProtocol,
             (peerID) => {
-                // console.log('Peer started listening to database ' + database)
+                this.network.sendData(PROTOCOLS_SYNCED_DATABASE.requestKeys)
             },
             (peerID) => {
                 // console.log('Peer stopped listening to database ' + database)
@@ -101,9 +103,26 @@ export default class SyncedDatabase extends NetworkInterface
         await this.networkManager.leaveNetwork('syncedDatabase-' + this.databaseName)
     }
 
+    registerCallbacks(additionCallback, removalCallback)
+    {
+        this.additionCallback = additionCallback
+        this.removalCallback = removalCallback
+    }
+
+    unregisterCallbacks()
+    {
+        this.additionCallback = undefined
+        this.removalCallback = undefined
+    }
+
     addEntry(key, value, fromNetwork)
     {
-        if(!fromNetwork)
+        if(fromNetwork)
+        {
+            if(this.additionCallback)
+                this.additionCallback(value)
+        }
+        else
             this.network.sendData(PROTOCOLS_SYNCED_DATABASE.addEntry, { key, value })
         
         this.data[key] = { timestamp: Date.now(), value: value }
@@ -116,7 +135,12 @@ export default class SyncedDatabase extends NetworkInterface
         if(!this.data[key])
             return false
         
-        if(!fromNetwork)
+        if(fromNetwork)
+        {
+            if(this.removalCallback)
+                this.removalCallback(value)
+        }
+        else
             this.network.sendData(PROTOCOLS_SYNCED_DATABASE.removeEntry, key)
         
         delete this.data[key]
@@ -201,7 +225,7 @@ export default class SyncedDatabase extends NetworkInterface
         differences.removed.forEach((entry) => {
             this.removeEntry(key)
         })
-        differences.common((entry) => {
+        differences.common.forEach((entry) => {
             if(entry.timestamp > this.data[entry.key].timestamp)
                 neededKeys.push(entry.key)
         })

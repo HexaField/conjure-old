@@ -103,9 +103,10 @@ export default class Realm
 
     async preload()
     {
+        await this.conjure.getDataHandler().subscribeToRealm({ realmID: this.realmID, onEntryAddition: this.onObjectCreate, onEntryRemoval: this.onObjectDestroy })
         await this.conjure.getDataHandler().joinNetwork({ network: this.realmID, onMessage: this.receiveDataFromPeer, onPeerJoin: this.onPeerJoin, onPeerLeave: this.onPeerLeave })
         
-        this.addNetworkProtocolCallback(REALM_PROTOCOLS.OBJECT.CREATE, this.onObjectCreate)
+        // this.addNetworkProtocolCallback(REALM_PROTOCOLS.OBJECT.CREATE, this.onObjectCreate)
         this.addNetworkProtocolCallback(REALM_PROTOCOLS.OBJECT.UPDATE, this.onObjectUpdate)
         this.addNetworkProtocolCallback(REALM_PROTOCOLS.OBJECT.GROUP, this.onObjectGroup)
         this.addNetworkProtocolCallback(REALM_PROTOCOLS.OBJECT.MOVE, this.onObjectMove)
@@ -184,6 +185,7 @@ export default class Realm
     {
         this.getObjectManager().destroyAllObjects()
         await this.conjure.getDataHandler().leaveNetwork({ network: this.realmID })
+        await this.conjure.getDataHandler().unsubscribeFromRealm({ realmID: this.realmID })
         if(this.terrain)
         {
             this.terrain.destroy()
@@ -245,7 +247,7 @@ export default class Realm
         return this.objectManager
     }
     
-    onObjectCreate(data, peerID)
+    onObjectCreate(data)
     {
         this.loadObjectFromPeer(data.uuid, data.data);
     }

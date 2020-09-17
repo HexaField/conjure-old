@@ -45,7 +45,7 @@ export default class DataHandler
         {
             global.log('Leaving client networks...')
             await this.networkManager.leaveAllClientNetworks()    
-            this.networkCallbacks = {}
+            this.callbacks = {}
         }
     }
 
@@ -92,7 +92,7 @@ export default class DataHandler
             else
             {
                 global.log('Data Module: Successfully connected to local node!')
-                this.networkCallbacks = {}
+                this.callbacks = {}
                 this.runningNode = true
             }
             runAppCallback()
@@ -304,9 +304,9 @@ export default class DataHandler
     {
         if(this.runningNode)
         {
-            // if(this.networkCallbacks[data.network]) return true // we have already joined this network
+            // if(this.callbacks['network_' + data.network]) return true // we have already joined this network
 
-            this.networkCallbacks[data.network] = {
+            this.callbacks['network_' + data.network] = {
                 onMessage: data.onMessage,
                 onPeerJoin: data.onPeerJoin,
                 onPeerLeave: data.onPeerLeave,
@@ -339,8 +339,8 @@ export default class DataHandler
         {
             if(await this.awaitNodeResponse('leaveNetwork', data))
             {
-                if(this.networkCallbacks[data.network]) 
-                    delete this.networkCallbacks[data.network]
+                if(this.callbacks['network_' + data.network]) 
+                    delete this.callbacks['network_' + data.network]
                 return true
             }
             return false
@@ -407,14 +407,46 @@ export default class DataHandler
             return await this.getRealmManager().getObjects(data.realmID)
     }
 
+    // this will eventually be subscribing to a chunk
+    async subscribeToRealm(data)
+    {
+        if(this.runningNode)
+        {
+            this.callbacks['realm_' + data.realmID] = {
+                onEntryAddition: data.onEntryAddition,
+                onEntryRemoval: data.onEntryRemoval,
+            }
+            return await this.awaitNodeResponse('subscribeToRealm', { realmID: data.realmID })
+        }
+        else
+            return await this.getRealmManager().subscribe(data.realmID, data.onEntryAddition, data.onEntryRemoval)
+    }
+
+    // this will eventually be subscribing to a chunk
+    async unsubscribeFromRealm(data)
+    {
+        if(this.runningNode)
+        {
+            if(await this.awaitNodeResponse('unsubscribeFromRealm', data))
+            {
+                if(this.callbacks['realm_' + data.realmID]) 
+                   delete this.callbacks['realm_' + data.realmID]
+                return true
+            }
+            return false
+        }
+        else
+            return await this.getRealmManager().unsubscribe(data.realmID)
+    }
+
     // ===  only on the client - receiving from the server === //
     
-    // { data, network }
+    // { data, callback, event }
 
     receiveWebsocketData(data)
     {
-        if(data.network && this.networkCallbacks[data.network] && this.networkCallbacks[data.network][data.event])
-            this.networkCallbacks[data.network][data.event](data.data)
+        if(data.callback && this.callbacks[data.callback] && this.callbacks[data.callback][data.event])
+            this.callbacks[data.callback][data.event](data.data)
     }
 
     // ===  only on the server - receiving from the client === //
@@ -446,9 +478,9 @@ export default class DataHandler
 
             case 'joinNetwork': this.sendWebsocketData({ data: await this.joinNetwork({
                 network: data.data.network,
-                onMessage: (_data) => this.sendWebsocketData({ data: _data, network: data.data.network, event: 'onMessage' }),
-                onPeerJoin: (_data) => this.sendWebsocketData({ data: _data, network: data.data.network, event: 'onPeerJoin' }),
-                onPeerLeave: (_data) => this.sendWebsocketData({ data: _data, network: data.data.network, event: 'onPeerLeave' }),
+                onMessage: (_data) => this.sendWebsocketData({ data: _data, callback: data.data.network, event: 'onMessage' }),
+                onPeerJoin: (_data) => this.sendWebsocketData({ data: _data, callback: data.data.network, event: 'onPeerJoin' }),
+                onPeerLeave: (_data) => this.sendWebsocketData({ data: _data, callback: data.data.network, event: 'onPeerLeave' }),
             }), requestTimestamp: data.requestTimestamp}); break;
             case 'sendDataNetwork': this.sendWebsocketData({ data: await this.sendDataNetwork(data.data), requestTimestamp: data.requestTimestamp}); break;
             case 'sendToNetwork': this.sendWebsocketData({ data: await this.sendToNetwork(data.data), requestTimestamp: data.requestTimestamp}); break;
@@ -456,6 +488,13 @@ export default class DataHandler
             
             case 'ipfsGet': this.sendWebsocketData({ data: await this.ipfsGet(data.data), requestTimestamp: data.requestTimestamp}); break;
             case 'ipfsAdd': this.sendWebsocketData({ data: await this.ipfsAdd(data.data), requestTimestamp: data.requestTimestamp}); break;
+            
+            case 'subscribeToRealm': this.sendWebsocketData({ data: await this.subscribeToRealm({
+                realmID: data.data.realmID,
+                onEntryAddition: (_data) => this.sendWebsocketData({ data: _data, callback: data.data.realmID, event: 'onEntryAddition' }),
+                onEntryRemoval: (_data) => this.sendWebsocketData({ data: _data, callback: data.data.realmID, event: 'onEntryRemoval' }),
+            }), requestTimestamp: data.requestTimestamp}); break;
+            case 'unsubscribeFromRealm': this.sendWebsocketData({ data: await this.unsubscribeFromRealm(data.data), requestTimestamp: data.requestTimestamp}); break;
 
             default: global.log('ERROR: DataHandler: Received unknown protocol: ' + String(data.protocol)); return;
         }
