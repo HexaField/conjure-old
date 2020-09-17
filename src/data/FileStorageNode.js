@@ -1,28 +1,27 @@
-import { promises as fs } from 'fs'
+// import fs from 'fs-extra'
 import os from 'os'
 
 export default class FileStorageNode
 {  
-    constructor()
+    constructor()   
     {
         this.rootDirectory = os.homedir() + (global.isDevelopment ? '/.conjure-dev/' : '/.conjure/')
-        this.files = fs
+        this.files = require('fs-extra')
     }   
 
     // Internal
 
     async initialise()
     {
-        if(await this.makeDirectory(this.rootDirectory))
-            global.log('Created Root Directory: ' + this.rootDirectory)
+        
     }
 
     async makeDirectory(directory)
     {
         try {
             // global.log('makeDirectory', directory)
-            if(!await this.exists(directory))
-                return Boolean(await this.files.mkdir(directory, { recursive: true }))
+            if(!await this.exists(this.rootDirectory + directory))
+                return Boolean(await this.files.mkdir(this.rootDirectory + directory, { recursive: true }))
         } catch (err) {
             // global.log('Error making directory at location', directory, err)
         }
@@ -60,7 +59,7 @@ export default class FileStorageNode
     {
        try {
             // global.log('writeFile', this.rootDirectory + filename)
-            return await this.files.writeFile(this.rootDirectory + filename, data)
+            return await this.files.outputFile(this.rootDirectory + filename, data)
         } catch (err) {
             global.log('Error writing file at location', filename, err)
         }
@@ -94,7 +93,6 @@ export default class FileStorageNode
         let files = [];
         if(!await this.exists(directory))
         {
-            await this.files.mkdir(directory, { recursive: true })
             return [];
         }
         let objects = await this.files.ls(directory)
@@ -108,4 +106,36 @@ export default class FileStorageNode
         }
         return files;
     }
+
+    async getRecursively(dir) {
+        let files = await this.files.readdir(dir);
+        return Promise.all(files
+          .map(f => path.join(dir, f))
+          .map(async f => {
+            let stats = await this.files.lstat(f);
+            return stats.isDirectory() ? this.getRecursivelygetFiles(f) : f;
+          }));
+      }
+    // async getRecursively(directory)
+    // {
+    //     let files = [];
+    //     if(!await this.exists(directory))
+    //     {
+    //         return [];
+    //     }
+    //     let objects = await this.files.ls(directory)
+    //     for(let object of objects)
+    //     {
+    //         if(object.isFile())
+    //         {
+    //             let blob = await this.files.readFile(object.path);
+    //             files.push({ data: await blob.text(), filename: object.path })
+    //         }
+    //         else if(object.isDirectory())
+    //         {
+    //             files.push({ directory: await getRecursively(object.path) })
+    //         }
+    //     }
+    //     return files;
+    // }
 }

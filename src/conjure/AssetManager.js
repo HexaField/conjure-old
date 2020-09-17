@@ -162,10 +162,10 @@ export default class AssetManager
         if(asset)
             return asset.data.metaData.src
         
-        if(this.enableCaching)
-            asset = await this.conjure.getDataHandler().loadAsset('assets/' + name)
-        else
-            asset = await this.conjure.getDataHandler().requestAsset('assets/' + name)
+        // if(this.enableCaching)
+        //     asset = await this.conjure.getDataHandler().loadAsset('assets/' + name)
+        // else
+        //     asset = await this.conjure.getDataHandler().requestAsset('assets/' + name)
 
         if(!asset)
             return this.missingTextureData
@@ -241,8 +241,8 @@ export default class AssetManager
         if(id)
             return id;
         
-        if(this.enableCaching)
-            await this.conjure.getDataHandler().saveAsset({ data: data, metaData:metaData })
+        // if(this.enableCaching)
+        //     await this.conjure.getDataHandler().saveAsset({ data: data, metaData:metaData })
         id = String(Date.now()) // temp
         
         this.setByIPFSHash(type, id, data, name, metaData);

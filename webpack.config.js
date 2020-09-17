@@ -3,6 +3,7 @@ const CopyPlugin = require('copy-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 module.exports = {
+    externals: ['fs-extra', 'fs'],
     entry: './src/conjure/index.js',
     output: {
       path: path.resolve('dist'),
@@ -37,5 +38,5 @@ module.exports = {
       net: 'empty',
       tls: 'empty',
       child_process: 'empty',
-    }
+    },
 };

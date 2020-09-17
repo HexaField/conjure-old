@@ -1,5 +1,6 @@
 import { GLOBAL_PROTOCOLS } from './GlobalNetwork'
 import FileStorageDHT from './FileStorageDHT'
+import SyncedDatabase from './SyncedDatabase'
 
 // TODO
 /*
@@ -182,8 +183,8 @@ export default class RealmHandler
     async addDatabase(id)
     {
         if(this.databases[id]) return
-        this.databases[id] = new FileStorageDHT(String(id))
-        await this.databases[id].initialise(this.dataHandler.orbitdb)
+        this.databases[id] = new SyncedDatabase(this.dataHandler.getNetworkManager(), 'realms/' + String(id), this.dataHandler.getLocalFiles())
+        await this.databases[id].initialise()
     }
 
     async removeDatabase(id)
@@ -193,23 +194,27 @@ export default class RealmHandler
         delete this.databases[id]
     }
 
-
-    //TODO: asset names
     async createObject(realmID, uuid, data)
     {
         if(!this.databases[realmID]) return
-        return await this.databases[realmID].writeFile('/objects/' + uuid, data)
+        return await this.databases[realmID].addEntry(uuid, data)
     }
 
     async updateObject(realmID, uuid, data)
     {
         if(!this.databases[realmID]) return
-        return await this.databases[realmID].writeFile('/objects/' + uuid, data)
+        return await this.databases[realmID].addEntry(uuid, data)
     }
 
     async destroyObject(realmID, uuid)
     {
         if(!this.databases[realmID]) return
-        return await this.databases[realmID].removeFile('/objects/' + uuid)
+        return await this.databases[realmID].removeEntry(uuid)
+    }
+
+    async getObjects(realmID)
+    {
+        if(!this.databases[realmID]) return
+        return await this.databases[realmID].getAllValues()
     }
 }

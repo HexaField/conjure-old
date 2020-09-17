@@ -1,5 +1,4 @@
 import WebSocket from 'ws'
-import { WEBSOCKET_PROTOCOLS } from "./DataHandler"
 
 export default class WebSocketServer
 {

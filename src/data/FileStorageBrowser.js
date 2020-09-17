@@ -1,5 +1,3 @@
-// https://www.newline.co/@Mydrax/a-journey-to-asynchronous-programming-nodejs-fspromises-api--95ae553b
-// https://nodejs.org/dist/latest-v14.x/docs/api/fs.html#fs_fs_promises_api
 import FileSystem from '@forlagshuset/simple-fs'
 
 export default class FileStorageBrowser
@@ -22,6 +20,11 @@ export default class FileStorageBrowser
             await this.files.mkdirParents(this.rootDirectory + directory)
     }
 
+    async exists(directory)
+    {
+        return await this.files.exists(this.rootDirectory + directory)
+    }
+
     async readFile(filename)
     {
         try {
@@ -37,7 +40,7 @@ export default class FileStorageBrowser
     async writeFile(filename, data)
     {
        try {
-            return await this.files.writeFile(this.rootDirectory + filename, new Blob([data]))
+            return await this.files.outputFile(this.rootDirectory + filename, new Blob([data]))
         } catch (err) {
             console.log('ERROR writing file at location', filename, err)
         }
@@ -71,7 +74,6 @@ export default class FileStorageBrowser
         let files = [];
         if(!await this.files.exists(directory))
         {
-            await this.files.mkdirParents(directory)
             return [];
         }
         let objects = await this.files.ls(directory)
@@ -81,6 +83,29 @@ export default class FileStorageBrowser
             {
                 let blob = await this.files.readFile(object.path);
                 files.push(await blob.text())
+            }
+        }
+        return files;
+    }
+
+    async getRecursively(directory)
+    {
+        let files = [];
+        if(!await this.files.exists(directory))
+        {
+            return [];
+        }
+        let objects = await this.files.ls(directory)
+        for(let object of objects)
+        {
+            if(object.isFile())
+            {
+                let blob = await this.files.readFile(object.path);
+                files.push({data: await blob.text(), filename: object.path})
+            }
+            else if(object.isDirectory())
+            {
+                files.push({ directory: await getRecursively(object.path) })
             }
         }
         return files;

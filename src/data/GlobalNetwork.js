@@ -1,4 +1,5 @@
 import platform from 'platform'
+import NetworkInterface from './NetworkInterface'
 
 export const GLOBAL_PROTOCOLS = {
     BROADCAST_REALMS: 'broadcast_realms',
@@ -9,42 +10,25 @@ export const GLOBAL_PROTOCOLS = {
     }
 }
 
-export default class GlobalNetwork
+export default class GlobalNetwork extends NetworkInterface
 {
     constructor(dataHandler)
     {
+        super()
         this.dataHandler = dataHandler
 
         this.networkID = 'global'
-        this.protocolCallbacks = {}
         
-        this.parseReceiveData = this.parseReceiveData.bind(this)
         this.onPeerJoin = this.onPeerJoin.bind(this)
         this.onPeerLeave = this.onPeerLeave.bind(this)
+    }
 
-        this.network = this.dataHandler.networkManager.joinNetwork(this.networkID, this.parseReceiveData, this.onPeerJoin, this.onPeerLeave, { isGlobalNetwork: true })
+    async initialise()
+    {
+        this.network = await this.dataHandler.networkManager.joinNetwork(this.networkID, this.callProtocol, this.onPeerJoin, this.onPeerLeave, { isGlobalNetwork: true })
         this.setProtocolCallback(GLOBAL_PROTOCOLS.BROADCAST_INFO, (data, from) => {
             global.log((data.name || from) + ' has connected via ' + data.env + ' on ' + data.platform)
         })
-    }
-
-    // add callback for a certain protocol
-    setProtocolCallback(protocol, callback)
-    {
-        this.protocolCallbacks[protocol] = callback
-    }
-
-    // remove callback for a certain protocol
-    removeProtocolCallback(protocol)
-    {
-        delete this.protocolCallbacks[protocol]
-    }
-
-    parseReceiveData(data, from)
-    {
-        // console.log('GlobalNetwork: parseReceiveData: ', data.protocol)
-        if(this.protocolCallbacks[data.protocol] !== undefined)
-            this.protocolCallbacks[data.protocol](data.content, from);
     }
 
     onPeerJoin(peerID)
@@ -70,11 +54,11 @@ export default class GlobalNetwork
 
     async sendTo(protocol, content, peerID)
     {
-        await this.dataHandler.networkManager.sendTo(this.networkID, protocol, content, peerID)
+        await this.network.sendTo(protocol, content, peerID)
     }
 
     async sendData(protocol, content)
     {
-        await this.dataHandler.networkManager.sendData(this.networkID, protocol, content)
+        await this.network.sendData(protocol, content)
     }
 }

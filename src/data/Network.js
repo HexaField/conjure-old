@@ -9,10 +9,6 @@ export default class Network
         this.myPeerID = peerID
         this.userData = params
 
-        // this.room.on('subscribed', () => {
-        //     console.log('Now connected!')
-        // })
-
         this.room.on('peer joined', (peer) => {
             onPeerJoin(peer)
         })

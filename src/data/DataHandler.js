@@ -1,23 +1,26 @@
 import WebSocketClient from './WebSocketClient'
-import WebSocketServer, { WEB_SOCKET_PROTOCOL } from './WebSocketServer'
+import WebSocketServer from './WebSocketServer'
 import IPFS from './IPFS'
 import FileStorageBrowser from './FileStorageBrowser'
 import FileStorageNode from './FileStorageNode'
-import FileStorageDHT from './FileStorageDHT'
+// import FileStorageDHT from './FileStorageDHT'
 import NetworkManager from './NetworkManager'
 import RealmHandler from './RealmHandler'
 import AssetHandler from './AssetHandler'
 import ProfileHandler from './ProfileHandler'
-import { GLOBAL_PROTOCOLS } from './NetworkManager'
 import GlobalNetwork from './GlobalNetwork'
 import { getParams } from './util/urldecoder'  
-import OrbitDB from 'orbit-db'
+// import OrbitDB from 'orbit-db'
 import os from 'os'
 
 export default class DataHandler
 {
     constructor()
     {
+        // this is temporary and bad since webrtc seems to have a tantrum for no clear reason
+        process.on('unhandledRejection', (reason, promise) => {
+            console.log('Unhandled Rejection at:', reason.stack || reason)
+        })
         global.log = (...msg) => {
             let now = new Date()
             console.log(now.toTimeString().substring(0, 8) + ":", ...msg)
@@ -133,20 +136,21 @@ export default class DataHandler
         this.ipfsInfo.peersCount = 0;
         this.showStats();
 
-        this.orbitdb = await OrbitDB.createInstance(this.ipfs, { directory: os.homedir() + '/.orbitdb'})
+        // this.orbitdb = await OrbitDB.createInstance(this.ipfs, { directory: os.homedir() + '/.orbitdb'})
 
         const minPeersCount = 0//global.isBrowser ? 1 : 0 // refactor this into a config eventually
         await this.waitForIPFSPeers(minPeersCount)
      
         this.localStorage = global.isBrowser ? new FileStorageBrowser() : new FileStorageNode()
         await this.localStorage.initialise()
-
-        this.networkStorage = new FileStorageDHT()
-        await this.networkStorage.initialise(this.orbitdb)
         
         this.networkManager = new NetworkManager(this)
 
         this.globalNetwork = new GlobalNetwork(this)
+        await this.globalNetwork.initialise()
+
+        // this.networkStorage = new FileStorageDHT()
+        // await this.networkStorage.initialise(this.orbitdb)
 
         this.realmHandler = new RealmHandler(this)
         await this.realmHandler.initialise()
@@ -395,6 +399,14 @@ export default class DataHandler
             return await this.getRealmManager().destroyObject(data.realmID, data.uuid)
     }
 
+    async getObjects(data)
+    {
+        if(this.runningNode)
+            return await this.awaitNodeResponse('getObjects', data)
+        else
+            return await this.getRealmManager().getObjects(data.realmID)
+    }
+
     // ===  only on the client - receiving from the server === //
     
     // { data, network }
@@ -430,6 +442,7 @@ export default class DataHandler
             case 'createObject': this.sendWebsocketData({ data: await this.createObject(data.data), requestTimestamp: data.requestTimestamp}); break;
             case 'updateObject': this.sendWebsocketData({ data: await this.updateObject(data.data), requestTimestamp: data.requestTimestamp}); break;
             case 'destroyObject': this.sendWebsocketData({ data: await this.destroyObject(data.data), requestTimestamp: data.requestTimestamp}); break;
+            case 'getObjects': this.sendWebsocketData({ data: await this.getObjects(data.data), requestTimestamp: data.requestTimestamp}); break;
 
             case 'joinNetwork': this.sendWebsocketData({ data: await this.joinNetwork({
                 network: data.data.network,

@@ -172,6 +172,12 @@ export default class Realm
     {
         for(let feature of this.features)
             await feature.load()
+        
+        for(let object of await this.conjure.getDataHandler().getObjects({ realmID: this.realmID }))
+        {
+            console.log(object)
+            await this.loadObject(object)
+        }
     }
 
     async leave()
@@ -280,7 +286,7 @@ export default class Realm
     {
         try {
             await this.conjure.getDataHandler().createObject({ realmID: this.realmID, uuid: uuid, data: data })
-            await this.loadObject(uuid, data)
+            await this.loadObject(data)
         } catch (error) {
             console.log('REALM: could not load object', object.hash, 'with error', error);
         }
@@ -330,7 +336,7 @@ export default class Realm
     }
 
 
-    async loadObject(uuid, data)
+    async loadObject(data)
     {
         try
         {
