@@ -143,7 +143,6 @@ export default class User
                 else
                     this.setAction('idle', 0.2)
             }
-            console.log('finished')
         }.bind(this));
 
         this.sword = await this.conjure.load.gltf('sword')

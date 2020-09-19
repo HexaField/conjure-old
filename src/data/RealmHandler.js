@@ -226,7 +226,7 @@ export default class RealmHandler
 
     async getObjects(realmID)
     {
-        if(!this.databases[realmID]) return
+        if(!this.databases[realmID]) return []
         return await this.databases[realmID].getAllValues()
     }
 }

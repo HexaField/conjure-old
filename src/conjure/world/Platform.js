@@ -8,7 +8,7 @@ export default class Platform
     constructor(conjure, parentGroup, args = {})
     {
         this.conjure = conjure
-        this.platformSize = args.size || 10;
+        this.platformSize = args.size || 50;
         this.pos = args.pos || new Vector3();
         this.parentGroup = parentGroup
 
@@ -17,7 +17,7 @@ export default class Platform
         this.worldNameText.group.position.set(0, 5, 0);
 
         this.floor = new ExtendedObject3D()
-        this.floor.add(new THREE.Mesh(new THREE.PlaneBufferGeometry(this.platformSize, this.platformSize), new THREE.MeshBasicMaterial({side:THREE.DoubleSide})));
+        this.floor.add(new THREE.Mesh(new THREE.PlaneBufferGeometry(this.platformSize, this.platformSize), new THREE.MeshBasicMaterial({ visible: false })));
         this.floor.rotateX(Math.PI / 2)
         this.floor.position.copy(this.pos)
         this.parentGroup.add(this.floor);

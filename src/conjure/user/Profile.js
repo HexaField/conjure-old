@@ -28,16 +28,11 @@ export default class Profile
     getProfile() { return this.profileData }
     getID() { return this.profileData.id }
     getUsername() { return this.profileData.username }
-    getLastJoinedRealm() { return this.profileData.lastJoinedRealm }
     
     setUsername(newName)
     {
         this.profileData.username = newName
-    }
-
-    setLastJoinedRealm(id)
-    {
-        this.profileData.lastJoinedRealm = id
+        this.conjure.getWorld().sendData(REALM_PROTOCOLS.USER.UPDATE, { username: this.getUsername() })
     }
 
     createProfile()
@@ -93,12 +88,11 @@ export default class Profile
     saveProfile()
     {
         this.conjure.getDataHandler().saveProfile({ profile: this.profileData, services: this.getServiceManager().getServiceAsJson() })
-        this.conjure.getWorld().sendData(REALM_PROTOCOLS.USER.UPDATE, { username: this.getUsername() })
     }
 
     setProfileFromDatabase(data)
     {
-        this.setUsername(data.username)
+        this.profileData = data
         this.setProfileLoaded(true)
 
         this.conjure.getGlobalHUD().log('Successfully loaded profile!')

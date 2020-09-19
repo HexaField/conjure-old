@@ -1,13 +1,23 @@
 import { THREE, ExtendedGroup } from 'enable3d'
 import Terrain from './Terrain'
 import FeatureArtGallery from '../features/FeatureArtGallery'
-import FeatureLookingGlass from '../features/FeatureLookingGlass'
+import FeatureLobby from '../features/FeatureLobby'
 import { REALM_WORLD_GENERATORS, REALM_VISIBILITY, REALM_WHITELIST } from './RealmData'
 import Platform from '../Platform'
 import ObjectManager from './ObjectManager'
 // import FeatureParser from './FeatureParser'
 
 export const GLOBAL_REALMS = {
+    LOBBY: {
+        id: 'Lobby',
+        name: 'Lobby',
+        timestamp: 0,
+        visibility: REALM_VISIBILITY.PUBLIC,
+        worldSettings: {
+            features: ['Lobby'],
+            worldGeneratorType: REALM_WORLD_GENERATORS.NONE
+        }
+    },
     GALLERY: {
         id: 'Gallery',
         name: 'SuperRare Ethereum Gallery',
@@ -33,12 +43,6 @@ export const GLOBAL_REALMS = {
             features: ['Campfire'],
             worldGeneratorType: REALM_WORLD_GENERATORS.NONE
         }
-    },
-    EDEN: {
-        id: 'Eden',
-        name: 'Eden',
-        timestamp: 0,
-        visibility: REALM_VISIBILITY.PUBLIC,
     },
 }
 
@@ -114,8 +118,6 @@ export default class Realm
 
         if(this.realmData.getData().worldSettings.worldGeneratorType === REALM_WORLD_GENERATORS.INFINITE_WORLD)
             this.terrain = new Terrain(this.conjure, this.world.group, this.realmData.getWorldSettings())
-        else
-            this.terrain = new Platform(this.conjure, this.world.group)
         
         if(this.realmData.getData().worldData.playsAudio)
         {
@@ -146,8 +148,9 @@ export default class Realm
                     break
                 }
 
-                case 'Looking Glass': {
-                    let f = new FeatureLookingGlass(this)
+                case 'Lobby': {
+                    let f = new FeatureLobby(this)
+                    this.terrain = new Platform(this.conjure, this.world.group)
                     await f.preload()
                     this.features.push(f)
                     break
@@ -176,7 +179,6 @@ export default class Realm
         
         for(let object of await this.conjure.getDataHandler().getObjects({ realmID: this.realmID }))
         {
-            console.log(object)
             await this.loadObject(object)
         }
     }

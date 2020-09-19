@@ -2,7 +2,6 @@ import { THREE, ExtendedGroup } from 'enable3d'
 import Realm, { REALM_PROTOCOLS, GLOBAL_REALMS } from './realm/Realm'
 import User from '../user/User'
 import UserRemote from '../user/UserRemote'
-import Platform from './Platform'
 import { CONJURE_MODE } from '../Conjure';
 import { INTERACT_TYPES } from '../screens/hud/HUDInteract';
 import RealmData, { REALM_WORLD_GENERATORS, REALM_VISIBILITY, REALM_WHITELIST } from './realm/RealmData'
@@ -41,15 +40,18 @@ export default class World
 
     async loadDefault()
     {
-        if(this.conjure.urlParams.r && await this.getRealm(this.conjure.urlParams.r, true))
+        if(this.conjure.urlParams.r)
         {
-            if(!await this.joinRealmByID(this.conjure.urlParams.r))
-                await this.joinRealmByID(0)
+            if(await this.joinRealmByID(this.conjure.urlParams.r))
+                return
         }
         else
         {
-            await this.joinRealmByID(this.conjure.profile.getLastJoinedRealm())
+            if(await this.joinRealmByID(window.localStorage.getItem('conjure-profile-lastJoinedRealm')))
+                return
+
         }
+        await this.joinRealmByID('Lobby')
     }
 
     async getRealms(getPrivate)
@@ -117,11 +119,6 @@ export default class World
     async joinRealm(realmData)
     {
         if(this.realm && realmData.getID() === this.realm.realmID) return false
-        if(this.platform) 
-        {
-            this.platform.destroy()
-            this.platform = undefined
-        }
         if(this.realm)
         {
             await this.realm.leave()
@@ -132,7 +129,7 @@ export default class World
         this.conjure.setConjureMode(CONJURE_MODE.LOADING)
 
         this.realm = new Realm(this, realmData)
-        this.conjure.getProfile().setLastJoinedRealm(realmData.getID())
+        window.localStorage.setItem('conjure-profile-lastJoinedRealm', realmData.getID()) // make a thing for this
         
         await this.realm.preload()
         
@@ -154,12 +151,9 @@ export default class World
         }
 
         await this.realm.load() // load the realm
-
-        if(realmData.getData().worldData.spawnPosition)
-        {
-            this.spawnLocation = realmData.getData().worldData.spawnPosition
-            this.user.teleport(realmData.getData().worldData.spawnPosition.x, realmData.getData().worldData.spawnPosition.y, realmData.getData().worldData.spawnPosition.z)
-        }   
+        let spawn = realmData.getData().worldData.spawnPosition || new THREE.Vector3(0, 1, 0)
+        this.spawnLocation = spawn
+        this.user.teleport(spawn.x, spawn.y, spawn.z)
         
         this.realm.sendData(REALM_PROTOCOLS.USER.JOIN, {
             username: this.conjure.getProfile().getUsername()
@@ -183,12 +177,7 @@ export default class World
 
     async joinRealmByID(id)
     {
-        if(!id) 
-        {
-            this.platform = new Platform(this.conjure, this.group, { platformLabel: 'Local Realm' })
-            this.conjure.setConjureMode(CONJURE_MODE.EXPLORE)
-            return true
-        }
+        if(!id) return false
 
         let realm = await this.getRealm(id, true)
         if(!realm) return false

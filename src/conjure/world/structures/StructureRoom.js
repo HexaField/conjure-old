@@ -1,6 +1,6 @@
 import { THREE, ExtendedObject3D } from 'enable3d'
 
-export default class Gallery
+export default class StructureRoom
 {  
     constructor(conjure, parentGroup, roomArgs = {})
     {

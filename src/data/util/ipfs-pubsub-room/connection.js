@@ -58,11 +58,14 @@ module.exports = class Connection extends EventEmitter {
       for await (const message of source) {
         this.emit('message', message)
       }
+      stream.close()
     })
       .then(() => {
+        stream.close()
         this.emit('disconnect')
       }, (err) => {
-        // this.emit('error', err)
+        stream.close()
+        this.emit('error', err)
       })
   }
 
