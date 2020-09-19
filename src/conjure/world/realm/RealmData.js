@@ -5,6 +5,7 @@ export const REALM_WORLD_GENERATORS = {
 
 export const REALM_VISIBILITY = {
     PUBLIC: 'Public',
+    GLOBAL: 'Global',
     PRIVATE: 'Private'
 }
 

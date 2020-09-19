@@ -12,7 +12,7 @@ export const GLOBAL_REALMS = {
         id: 'Lobby',
         name: 'Lobby',
         timestamp: 0,
-        visibility: REALM_VISIBILITY.PUBLIC,
+        visibility: REALM_VISIBILITY.GLOBAL,
         worldSettings: {
             features: ['Lobby'],
             worldGeneratorType: REALM_WORLD_GENERATORS.NONE
@@ -22,7 +22,7 @@ export const GLOBAL_REALMS = {
         id: 'Gallery',
         name: 'SuperRare Ethereum Gallery',
         timestamp: 0,
-        visibility: REALM_VISIBILITY.PUBLIC,
+        visibility: REALM_VISIBILITY.GLOBAL,
         worldData: {
             playsAudio: true
         },
@@ -35,7 +35,7 @@ export const GLOBAL_REALMS = {
         id: 'Campfire',
         name: 'Campfire',
         timestamp: 0,
-        visibility: REALM_VISIBILITY.PUBLIC,
+        visibility: REALM_VISIBILITY.GLOBAL,
         worldData: {
             playsAudio: true
         },
@@ -101,6 +101,7 @@ export default class Realm
         this.quat = new THREE.Quaternion();
 
         this.features = []
+        this.loading = true
 
         this.networkProtocolCallbacks = {}
     }
@@ -181,6 +182,7 @@ export default class Realm
         {
             await this.loadObject(object)
         }
+        this.loading = false
     }
 
     async leave()

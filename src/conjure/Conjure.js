@@ -145,7 +145,7 @@ export class Conjure extends Scene3D
 
     initCamera()
     {
-        this.camera.fov = 80
+        this.camera.fov = 60
         this.camera.near = 0.1
         this.camera.far = 30000
 
@@ -246,6 +246,7 @@ export class Conjure extends Scene3D
 
     setConjureMode(mode)
     {
+        if(this.conjureMode === mode)  return
         if(this.conjureMode === CONJURE_MODE.LOADING && mode !== CONJURE_MODE.LOADING)
         {
             this.loadingScreen.renderer.clear(true)
@@ -253,7 +254,8 @@ export class Conjure extends Scene3D
         this.conjureMode = mode
         switch(mode)
         {
-            default: case CONJURE_MODE.LOADING: 
+            default: case CONJURE_MODE.LOADING:
+                this.postProcessing.clear()
                 this.loadingScreen.active = true
                 this.controlManager.enableCurrentControls(false)
                 this.screenManager.hideHud()
@@ -332,17 +334,12 @@ export class Conjure extends Scene3D
             worldRaycaster: this.worldRaycaster,
             conjure: this,
         }
-        
-        if(this.conjureMode !== CONJURE_MODE.LOADING)// & this.conjureMode !== CONJURE_MODE.WAITING)
-        {
-            this.getControls().update(args)
+        this.getControls().update(args)
 
-            this.cameraScreenAttach.position.copy(this.cameraFollow.getWorldPosition(this.vec3))
-            this.cameraScreenAttach.quaternion.copy(this.cameraFollow.getWorldQuaternion(this.quat))
-    
-            this.getWorld().update(args)
-        }
+        this.cameraScreenAttach.position.copy(this.cameraFollow.getWorldPosition(this.vec3))
+        this.cameraScreenAttach.quaternion.copy(this.cameraFollow.getWorldQuaternion(this.quat))
 
+        this.getWorld().update(args)
         this.getScreens().update(args)
     }
 

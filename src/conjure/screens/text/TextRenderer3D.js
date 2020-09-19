@@ -2,6 +2,7 @@
 import { THREE } from 'enable3d'
 import createText from './createText'
 import { number } from '../../util/number'
+import { POSTPROCESSING } from '../../PostProcessing';
 
 export default class TextRenderer3D
 {
@@ -18,6 +19,8 @@ export default class TextRenderer3D
         this.fit = params.fit // { x, y }
         this.fitScale = this.scale
         // console.log(params)
+        this.glow = Boolean(params.glow)
+
 
         this.string = String(params.string || params.text || '')
 
@@ -31,9 +34,14 @@ export default class TextRenderer3D
             side: this.renderSide,
         })
 
+        
         this.mesh = new THREE.Mesh(this.geometry, this.material)
         this.group.add(this.mesh)
         parent.add(this.group)
+
+        if(this.glow)
+            this.mesh.layers.enable(POSTPROCESSING.BLOOM_SCENE)
+        
         // this.group.add(easySphere(0.01)) // use this for debugging
         this.scaleText()
     }

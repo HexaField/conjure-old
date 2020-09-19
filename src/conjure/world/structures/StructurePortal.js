@@ -1,7 +1,7 @@
-import { THREE, ExtendedObject3D } from 'enable3d'
+import { THREE, ExtendedObject3D, ExtendedMesh, ExtendedGroup } from 'enable3d'
 import TextRenderer3D from '../../screens/text/TextRenderer3D';
 
-export default class Gallery
+export default class StructurePortal
 {  
     constructor(conjure, parentGroup, params = {})
     {
@@ -10,32 +10,30 @@ export default class Gallery
         this.portalHeight = params.portalHeight || 1; // Y
         this.portalLength = params.portalLength || 1; // Z
 
-        this.group = new THREE.Group();
-        this.group.position.set(params.position.x, params.position.y, params.position.z)
-        this.group.lookAt(0, 0, 0)
+        this.group = new ExtendedGroup();
         parentGroup.add(this.group);
+        this.group.position.set(params.position.x, params.position.y, params.position.z)
 
         this.portalMaterial = new THREE.MeshBasicMaterial({ visible: false })
 
         this.portalEntered = false
 
-        this.portal = new THREE.Mesh(new THREE.BoxBufferGeometry(this.portalWidth, this.portalLength, this.portalHeight),  this.portalMaterial)
+        this.portal = new ExtendedMesh(new THREE.BoxBufferGeometry(this.portalWidth, this.portalLength, this.portalHeight),  this.portalMaterial)
         this.group.add(this.portal);
-        if(params.realmID !== '')
-        {
-            conjure.physics.add.existing(this.group, { collisionFlags: 6, mass: 0 })
-            this.group.body.on.collision((otherObject, event) => {
-                if(this.portalEntered)
-                    return
-                this.portalEntered = true
-                
-                if (otherObject === this.conjure.getWorld().user.group)
-                    this.conjure.world.joinRealmByID(params.realmID)
-            })
-        }
+        this.portal.name = 'portal-' + params.realmData.id
 
-
-        this.nameplate = new TextRenderer3D(conjure, this.group, { text: params.realmID });
+        conjure.physics.add.existing(this.group, { collisionFlags: 6 })
+        this.group.body.on.collision((otherObject, event) => {
+            if(this.portalEntered)
+                return
+            this.portalEntered = true
+            console.log(params.realmData.id)
+            if (otherObject === this.conjure.getWorld().user.group)
+                this.conjure.world.joinRealmByID(params.realmData.id)
+        })
+        
+        this.nameplate = new TextRenderer3D(conjure, this.group, { text: params.realmData.name, color: params.color, glow: true });
+        this.nameplate.group.lookAt(new THREE.Vector3())
         this.nameplate.group.position.setY(1)
         this.nameplate.group.scale.setScalar(4)
     }

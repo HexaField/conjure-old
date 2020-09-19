@@ -36,6 +36,7 @@ export default class World
 
         this.globalRealms = []
         this.spawnLocation = new THREE.Vector3(0, 2, 0)
+        this.lastRealmID = 'Lobby'
     }
 
     async loadDefault()
@@ -121,36 +122,46 @@ export default class World
         if(this.realm && realmData.getID() === this.realm.realmID) return false
         if(this.realm)
         {
+            this.lastRealmID = this.realm.realmID
             await this.realm.leave()
             this.destroyAllRemoteUsers()
+            this.realm = undefined
         }
 
         // console.log('Joining realm', realmData)
         this.conjure.setConjureMode(CONJURE_MODE.LOADING)
 
-        this.realm = new Realm(this, realmData)
-        window.localStorage.setItem('conjure-profile-lastJoinedRealm', realmData.getID()) // make a thing for this
-        
-        await this.realm.preload()
-        
         if(realmData.getData().whitelist)
         {
-            if(realmData.getData().whitelist.type === REALM_WHITELIST.DISCORD)
+            if(realmData.getData().whitelist.type === REALM_WHITELIST.SERVICE)
             {
                 if(!this.conjure.getProfile().getServiceManager().getService('Discord').data) return false
                 if(!realmData.getData().whitelist.ids.includes(this.conjure.getProfile().getServiceManager().getService('Discord').data.discordID)) return false
             }
             if(realmData.getData().whitelist.type === REALM_WHITELIST.PASSCODE)
             {
+                this.conjure.setConjureMode(CONJURE_MODE.LOADING)
                 this.conjure.loadingScreen.setPasscodeVisible(true)
                 console.log('Waiting for valid passcode...')
-                await this.waitForPasscode(realmData.getData().whitelist.ids)
+                if(!await this.waitForPasscode(realmData.getData().whitelist.ids))
+                {
+                    console.log('Maybe another time...')
+                    return false
+                }
                 console.log('Passcode successful!')
                 this.conjure.loadingScreen.setPasscodeVisible(false)
+                this.conjure.loadingScreen.setText('Passcode successful!')
             }
         }
 
-        await this.realm.load() // load the realm
+        // ----------- //
+
+        this.realm = new Realm(this, realmData)
+        window.localStorage.setItem('conjure-profile-lastJoinedRealm', realmData.getID()) // make a thing for this
+        
+        await this.realm.preload()
+        await this.realm.load()
+
         let spawn = realmData.getData().worldData.spawnPosition || new THREE.Vector3(0, 1, 0)
         this.spawnLocation = spawn
         this.user.teleport(spawn.x, spawn.y, spawn.z)
@@ -165,9 +176,11 @@ export default class World
 
     async waitForPasscode(passcodes)
     {
-        return await new Promise((resolve) => {
+        return new Promise((resolve) => {
             this.conjure.loadingScreen.setPasscodeCallback(
                 async (attempt) => {
+                    if(attempt === undefined)
+                        resolve(false)
                     if(passcodes.includes(attempt))
                         resolve(true)
                 }
@@ -178,6 +191,8 @@ export default class World
     async joinRealmByID(id)
     {
         if(!id) return false
+        if(this.realm && this.realm.loading)
+            return false
 
         let realm = await this.getRealm(id, true)
         if(!realm) return false
@@ -185,7 +200,9 @@ export default class World
         let realmData = new RealmData(realm)
         if(!realmData) return false
         
-        return await this.joinRealm(realmData)
+        if(!await this.joinRealm(realmData))
+            await this.joinRealmByID(this.lastRealmID)
+        return true
     }
 
     getScreensDisabled()

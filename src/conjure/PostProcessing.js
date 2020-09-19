@@ -36,6 +36,11 @@ export default class PostProcessing
         this.addOutlines();
     }
 
+    clear()
+    {
+        this.conjure.renderer.clear(true, true, true);
+    }
+
     render()
     {
         this.conjure.renderer.clear();
@@ -45,7 +50,6 @@ export default class PostProcessing
         this.conjure.renderer.clearDepth();
         this.conjure.camera.layers.set(POSTPROCESSING.ENTIRE_SCENE)
         this.conjure.renderer.render(this.conjure.scene, this.conjure.camera);
-
     }
 
     addBloom()

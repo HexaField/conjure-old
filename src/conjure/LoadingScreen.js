@@ -15,20 +15,31 @@ export default class LoadingScreen
 
     init()
     {
-        this.renderer = new THREE.WebGLRenderer()
+        this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
         this.renderer.setClearColor( 0x000000, 0.0);
         this.renderer.setSize(window.innerWidth, window.innerHeight)
         this.renderer.setPixelRatio(window.devicePixelRatio ? window.devicePixelRatio : 1);
         this.renderer.domElement.style.position = 'absolute';
         this.renderer.domElement.style.outline = 'none'; // required
         this.renderer.domElement.style.top = 0;
-        this.renderer.domElement.style.zIndex = -1; // required
+        this.renderer.domElement.style.zIndex = 1; // required
         this.renderer.outputEncoding = THREE.sRGBEncoding;
         document.body.appendChild( this.renderer.domElement );
 
         this.camera = new THREE.PerspectiveCamera( 80, window.innerWidth / window.innerHeight, 0.1, 100 );
     
         this.scene = new THREE.Scene()
+        document.addEventListener( 'keydown', (event) => {
+            if(this.active && this.passcodeCallback) 
+            {
+                var keyCode = event.key
+                if(keyCode === 'Escape')
+                {
+                    this.passcodeCallback()
+                    this.active = false
+                }
+            }
+        }, false )
     }
 
     setPasscodeCallback(callback)
@@ -41,7 +52,7 @@ export default class LoadingScreen
         if(!focus && this.active)
         {
             if(this.passcodeCallback)
-            this.passcodeCallback(this.passcodeTextEntry.getText())
+                this.passcodeCallback(this.passcodeTextEntry.getText())
             this.passcodeTextEntry.actionFocus(true)
         }
     }
@@ -50,7 +61,7 @@ export default class LoadingScreen
     {
         this.passcodeText.getObject().visible = visible
         this.passcodeTextEntry.getObject().visible = visible
-        this.passcodeTextEntry.actionFocus(true)
+        this.passcodeTextEntry.actionFocus(visible)
     }
 
     create()
@@ -90,8 +101,8 @@ export default class LoadingScreen
     }
 
     update()
-    {
-        this.renderer.render(this.scene, this.camera)
+    {   
         this.passcodeTextEntry.updateCursor()
+        this.renderer.render(this.scene, this.camera)
     }
 }
