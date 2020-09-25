@@ -6,12 +6,12 @@
   "scripts": {
     "start": "sudo concurrently \"sudo yarn start-node\" \"yarn start-browser\"",
     "dev": "sudo concurrently \"sudo yarn dev-node\" \"yarn dev-browser\"",
-    "start-browser": "webpack-dev-server --define process.env.NODE_ENV='\"production\"' --mode development --progress --watch",
-    "dev-browser": "webpack-dev-server --mode development --progress --watch",
+    "start-browser": "webpack-dev-server --define process.env.NODE_ENV='\"production\"' --mode development --config ./webpack.dev.js --progress --watch",
+    "dev-browser": "webpack-dev-server --mode development --config ./webpack.dev.js --progress --watch",
     "start-node": "NODE_ENV=production nodemon --watch src/data --exec babel-node -- src/data --trace-warnings",
     "dev-node": "NODE_ENV=development nodemon --watch src/data --exec babel-node -- src/data --trace-warnings",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack --mode production"
+    "build": "webpack --mode production --config ./webpack.build.js"
   },
   "keywords": [],
   "author": "",
