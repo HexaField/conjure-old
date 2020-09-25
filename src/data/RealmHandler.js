@@ -30,8 +30,8 @@ export default class RealmHandler
         for(let i in this.pinnedRealms)
             if(this.pinnedRealms[i].timestamp <= this.earliestRealmTime )
                 {
-                    this.pinnedRealms.splice(i, 1)
                     await this.removeDatabase(this.pinnedRealms[i].id)
+                    this.pinnedRealms.splice(i, 1)
                 }
         
         if(realmCountBeforeValidation - this.pinnedRealms.length > 0)
@@ -150,8 +150,8 @@ export default class RealmHandler
             for(let i in this.pinnedRealms)
                 if(this.pinnedRealms[i].id === realmData.id)
                 {
-                    this.pinnedRealms.splice(i, 1)
                     await this.removeDatabase(this.pinnedRealms[i].id)
+                    this.pinnedRealms.splice(i, 1)
                     needsUpdate = true
                     break
                 }
