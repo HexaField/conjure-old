@@ -1,7 +1,10 @@
-import { THREE } from 'enable3d'
+import * as THREE from 'three'
+import { TextureLoader } from './util/BitmapTextureLoader'
 import _ from 'lodash'
 import { createGeometry, createMaterial } from './util/wireframe'
 import { number } from './util/number'
+
+import { SERVER_PROTOCOLS } from '../data/DataHandler'
 
 export const ASSET_TYPE = {
     TEXTURE: 'Texture', // THREE.Texture
@@ -31,7 +34,7 @@ export default class AssetManager
         this.assets = {};
         for(let assetType of Object.values(ASSET_TYPE))
             this.assets[assetType] = {};
-        this.textureLoader = new THREE.TextureLoader();
+        this.textureLoader = new TextureLoader();
     }
 
     createB64FromImage(image)
@@ -82,22 +85,22 @@ export default class AssetManager
         this.tronMaterial = createMaterial({thickness: 0.01})
 
         this.missingTexture = await this.conjure.load.texture('missing_texture');
-        this.missingTextureData = this.createB64FromImage(this.missingTexture.image)
-
+        // this.missingTextureData = this.createB64FromImage(this.missingTexture.image)
+        
         this.mengerTexture = await this.conjure.load.texture('menger_texture');
-        this.mengerImage = this.createB64FromImage(this.mengerTexture.image)
+        // this.mengerImage = this.createB64FromImage(this.mengerTexture.image)
         this.mengerTextureAssetHash = await this.saveAsset(ASSET_TYPE.TEXTURE, 'Menger', this.mengerTexture, 'Menger', { src:this.mengerImage });
         this.mengerMaterial = new THREE.MeshBasicMaterial({map: this.mengerTexture});
         this.mengerMaterialAssetHash = await this.saveAsset(ASSET_TYPE.MATERIAL, this.mengerMaterial.uuid, this.mengerMaterial, 'Menger');
         
         this.ponderTexture = await this.conjure.load.texture('ponder_texture');
-        this.ponderImage = this.createB64FromImage(this.ponderTexture.image)
+        // this.ponderImage = this.createB64FromImage(this.ponderTexture.image)
         this.ponderTextureAssetHash = await this.saveAsset(ASSET_TYPE.TEXTURE, 'Ponder', this.ponderTexture, 'Ponder', { src:this.ponderImage });
         this.ponderMaterial = new THREE.MeshBasicMaterial({map: this.ponderTexture});
         this.ponderMaterialAssetHash = await this.saveAsset(ASSET_TYPE.MATERIAL, this.ponderMaterial.uuid, this.ponderMaterial, 'Ponder');
 
         this.defaultTexture = await this.conjure.load.texture('default_texture');
-        this.defaultImage = this.createB64FromImage(this.defaultTexture.image)
+        // this.defaultImage = this.createB64FromImage(this.defaultTexture.image)
         this.defaultTextureAssetHash = await this.saveAsset(ASSET_TYPE.TEXTURE, 'Default', this.defaultTexture, 'Default', { src:this.defaultImage });
         this.defaultMaterial = new THREE.MeshBasicMaterial({map: this.defaultTexture});
         this.defaultMaterialAssetHash = await this.saveAsset(ASSET_TYPE.MATERIAL, this.defaultMaterial.uuid, this.defaultMaterial, 'Default');
@@ -162,10 +165,10 @@ export default class AssetManager
         if(asset)
             return asset.data.metaData.src
         
-        // if(this.enableCaching)
-        //     asset = await this.conjure.getDataHandler().loadAsset('assets/' + name)
-        // else
-        //     asset = await this.conjure.getDataHandler().requestAsset('assets/' + name)
+        if(this.enableCaching)
+            asset = await this.conjure.getDataHandler(SERVER_PROTOCOLS.LOAD_ASSET, 'assets/' + name)
+        else
+            asset = await this.conjure.getDataHandler(SERVER_PROTOCOLS.REQUEST_ASSET, 'assets/' + name)
 
         if(!asset)
             return this.missingTextureData
@@ -242,7 +245,7 @@ export default class AssetManager
             return id;
         
         // if(this.enableCaching)
-        //     await this.conjure.getDataHandler().saveAsset({ data: data, metaData:metaData })
+        //     await this.conjure.getDataHandler(SERVER_PROTOCOLS.SAVE_ASSET, { data: data, metaData:metaData })
         id = String(Date.now()) // temp
         
         this.setByIPFSHash(type, id, data, name, metaData);

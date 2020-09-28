@@ -6,6 +6,7 @@ import { CONJURE_MODE } from '../Conjure';
 import { INTERACT_TYPES } from '../screens/hud/HUDInteract';
 import RealmData, { REALM_WORLD_GENERATORS, REALM_VISIBILITY, REALM_WHITELIST } from './realm/RealmData'
 import _ from 'lodash'
+import { SERVER_PROTOCOLS } from '../../data/DataHandler';
 
 export default class World
 {
@@ -48,7 +49,7 @@ export default class World
         }
         else
         {
-            if(await this.joinRealmByID(window.localStorage.getItem('conjure-profile-lastJoinedRealm')))
+            if(await this.joinRealmByID(await self.simpleStorage.get('conjure-profile-lastJoinedRealm')))
                 return
 
         }
@@ -60,9 +61,8 @@ export default class World
         let realms = []
         
         realms.push(...this.globalRealms)
-        realms.push(...await this.conjure.getDataHandler().getRealms())
+        realms.push(...await this.conjure.getDataHandler(SERVER_PROTOCOLS.GET_REALMS))
         realms.push(...await this.conjure.getProfile().getServiceManager().getRealmsFromConnectedServices())
-
         realms = realms.filter(realm => getPrivate ? true : (realm.visibility && realm.visibility !== REALM_VISIBILITY.PRIVATE))
         return realms
     }
@@ -79,7 +79,7 @@ export default class World
         {
             realms.push({ realmData: realm, pinned: false })
         }
-        for(let pinned of (await this.conjure.getDataHandler().getRealms()).filter(realm => getPrivate ? true : (realm.visibility && realm.visibility !== REALM_VISIBILITY.PRIVATE)))
+        for(let pinned of (await this.conjure.getDataHandler(SERVER_PROTOCOLS.GET_REALMS)).filter(realm => getPrivate ? true : (realm.visibility && realm.visibility !== REALM_VISIBILITY.PRIVATE)))
         {
             let found = false
             for(let realm of realms)
@@ -102,8 +102,8 @@ export default class World
         for(let realm of this.globalRealms)
             if(id === realm.id && (getPrivate ? true : (realm.visibility && realm.visibility !== REALM_VISIBILITY.PRIVATE)))
                 return realm
-        
-        let realm = await this.conjure.getDataHandler().getRealm(id)
+        console.log(id)
+        let realm = await this.conjure.getDataHandler(SERVER_PROTOCOLS.GET_REALM, id)
         if(!realm) return
         return getPrivate ? realm : (realm.visibility && realm.visibility !== REALM_VISIBILITY.PRIVATE) ? realm : false
     }
@@ -113,7 +113,7 @@ export default class World
         for(let realm of Object.keys(GLOBAL_REALMS))
         {
             this.globalRealms.push(GLOBAL_REALMS[realm])
-            await this.conjure.getDataHandler().pinRealm({data: GLOBAL_REALMS[realm], pin: true })
+            await this.conjure.getDataHandler(SERVER_PROTOCOLS.PIN_REALM, {data: GLOBAL_REALMS[realm], pin: true })
         }
     }
 
@@ -157,7 +157,7 @@ export default class World
         // ----------- //
 
         this.realm = new Realm(this, realmData)
-        window.localStorage.setItem('conjure-profile-lastJoinedRealm', realmData.getID()) // make a thing for this
+        await self.simpleStorage.set('conjure-profile-lastJoinedRealm', realmData.getID()) // make a thing for this
         
         await this.realm.preload()
         await this.realm.load()

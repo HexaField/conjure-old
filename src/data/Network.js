@@ -1,11 +1,9 @@
-import Room from './util/ipfs-pubsub-room'
-
 export default class Network
 {  
     constructor(ipfs, peerID, topic, onMessage, onPeerJoin, onPeerLeave, params = {})
     {
         this.topic = (global.isDevelopment ? '/conjure-dev/' : '/conjure/') + topic
-        this.room = new Room(ipfs, this.topic)
+        this.room = new IpfsPubsubRoom(ipfs, this.topic)
         this.myPeerID = peerID
         this.userData = params
 

@@ -8,15 +8,17 @@
       <meta name="viewport" content="width=device-width, initial-scale=1" />
       <meta name="theme-color" content="#000000" />
 
+      <script src="https://cdn.jsdelivr.net/npm/ipfs/dist/index.min.js"></script>
       <script type="text/javascript" src="lib/discord.12.1.1.min.js"></script>
-      <script type="text/javascript" src="lib/pinput.js"></script>
+      <script type="text/javascript" src="lib/ipfs-pubsub-room/index.min.js"></script>
       
       <!-- <base href="/"> -->
     </head>
     <body>
-      <script type="text/javascript" src="bundle.js"></script>
+      <script type="text/javascript" src="/_dist_/conjure/index.js"></script>
       <div id="container"></div>
-      <canvas id="drawing-canvas" height="128" width="128"></canvas>
+      <!-- <canvas id="drawing-canvas" height="128" width="128"></canvas> -->
+      <canvas id="conjure-canvas" tabindex="1" style="width: 100%; height: 100%"></canvas>
 
       <!-- <div id="loadInfo">
         <p>

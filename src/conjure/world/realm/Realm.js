@@ -5,6 +5,7 @@ import FeatureLobby from '../features/FeatureLobby'
 import { REALM_WORLD_GENERATORS, REALM_VISIBILITY, REALM_WHITELIST } from './RealmData'
 import Platform from '../Platform'
 import ObjectManager from './ObjectManager'
+import { SERVER_PROTOCOLS } from '../../../data/DataHandler'
 // import FeatureParser from './FeatureParser'
 
 export const GLOBAL_REALMS = {
@@ -108,8 +109,8 @@ export default class Realm
 
     async preload()
     {
-        await this.conjure.getDataHandler().subscribeToRealm({ realmID: this.realmID, onEntryAddition: this.onObjectCreate, onEntryRemoval: this.onObjectDestroy })
-        await this.conjure.getDataHandler().joinNetwork({ network: this.realmID, onMessage: this.receiveDataFromPeer, onPeerJoin: this.onPeerJoin, onPeerLeave: this.onPeerLeave })
+        await this.conjure.getDataHandler(SERVER_PROTOCOLS.REALM_SUBSCRIBE, { realmID: this.realmID, onEntryAddition: this.onObjectCreate, onEntryRemoval: this.onObjectDestroy })
+        await this.conjure.getDataHandler(SERVER_PROTOCOLS.NETWORK_JOIN, { network: this.realmID, onMessage: this.receiveDataFromPeer, onPeerJoin: this.onPeerJoin, onPeerLeave: this.onPeerLeave })
         
         // this.addNetworkProtocolCallback(REALM_PROTOCOLS.OBJECT.CREATE, this.onObjectCreate)
         this.addNetworkProtocolCallback(REALM_PROTOCOLS.OBJECT.UPDATE, this.onObjectUpdate)
@@ -178,7 +179,7 @@ export default class Realm
         for(let feature of this.features)
             await feature.load()
         
-        for(let object of await this.conjure.getDataHandler().getObjects({ realmID: this.realmID }))
+        for(let object of await this.conjure.getDataHandler(SERVER_PROTOCOLS.GET_OBJECTS, { realmID: this.realmID }))
         {
             await this.loadObject(object)
         }
@@ -188,8 +189,8 @@ export default class Realm
     async leave()
     {
         this.getObjectManager().destroyAllObjects()
-        await this.conjure.getDataHandler().leaveNetwork({ network: this.realmID })
-        await this.conjure.getDataHandler().unsubscribeFromRealm({ realmID: this.realmID })
+        await this.conjure.getDataHandler(SERVER_PROTOCOLS.NETWORK_LEAVE, { network: this.realmID })
+        await this.conjure.getDataHandler(SERVER_PROTOCOLS.REALM_UNSUBSCRIBE, { realmID: this.realmID })
         if(this.terrain)
         {
             this.terrain.destroy()
@@ -238,12 +239,12 @@ export default class Realm
 
     sendData(protocol, content)
     {
-        this.conjure.getDataHandler().sendDataNetwork({ network: this.realmID, protocol, content });
+        this.conjure.getDataHandler(SERVER_PROTOCOLS.NETWORK_SEND_DATA, { network: this.realmID, protocol, content });
     }
 
     sendTo(protocol, content, peerID)
     {
-        this.conjure.getDataHandler().sendToNetwork({ network: this.realmID, protocol, content, peerID });
+        this.conjure.getDataHandler(SERVER_PROTOCOLS.NETWORK_SEND_TO, { network: this.realmID, protocol, content, peerID });
     }
 
     getObjectManager()
@@ -280,7 +281,7 @@ export default class Realm
     
     async onObjectDestroy(uuid, peerID)
     {
-        await this.conjure.getDataHandler().destroyObject({ realmID: this.realmID, uuid: uuid })
+        await this.conjure.getDataHandler(SERVER_PROTOCOLS.DESTROY_OBJECT, { realmID: this.realmID, uuid: uuid })
         this.objectManager.destroyObjectByHash(uuid);
     }
 
@@ -291,7 +292,7 @@ export default class Realm
     async loadObjectFromPeer(uuid, data)
     {
         try {
-            await this.conjure.getDataHandler().createObject({ realmID: this.realmID, uuid: uuid, data: data })
+            await this.conjure.getDataHandler(SERVER_PROTOCOLS.CREATE_OBJECT, { realmID: this.realmID, uuid: uuid, data: data })
             await this.loadObject(data)
         } catch (error) {
             console.log('REALM: could not load object', object.hash, 'with error', error);
@@ -306,7 +307,7 @@ export default class Realm
         this.restorePhysics(object);
         let json = await this.objectToJSON(object);
         this.conjure.screenManager.hideScreen();
-        let databaseObject = await this.conjure.getDataHandler().createObject({ realmID: this.realmID, uuid: object.uuid, data: json })
+        let databaseObject = await this.conjure.getDataHandler(SERVER_PROTOCOLS.CREATE_OBJECT, { realmID: this.realmID, uuid: object.uuid, data: json })
         if(databaseObject) // if adding to database failed, don't put it into our world
         {
             this.objectManager.addObject(object)
@@ -394,10 +395,11 @@ export default class Realm
     {
         await this.updateObject(obj) // temp fix
 
-        // await this.conjure.getDataHandler().updateObjectPosition(obj.userData.hash, obj.userData.lastUpdate);
+        // args to data handler need to be objectified
+        // await this.conjure.getDataHandler(SERVER_PROTOCOLS.UPDATE_OBJECT, obj.userData.hash, obj.userData.lastUpdate);
         // if(!obj.userData.hash) return;
         // let json = await this.objectToJSON(obj)
-        // await this.conjure.getDataHandler().updateObject(obj.userData.hash, json);
+        // await this.conjure.getDataHandler(SERVER_PROTOCOLS.UPDATE_OBJECT, obj.userData.hash, json);
     }
 
     async updateObject(obj)
@@ -409,7 +411,7 @@ export default class Realm
             return;
         }
         let json = await this.objectToJSON(obj)
-        await this.conjure.getDataHandler().updateObject({ realmID: this.realmID, uuid: object.uuid, data: json });
+        await this.conjure.getDataHandler(SERVER_PROTOCOLS.UPDATE_OBJECT, { realmID: this.realmID, uuid: object.uuid, data: json });
     }
 
     async destroyObject(obj)
@@ -417,7 +419,7 @@ export default class Realm
         obj.userData.markedDestroyed = true;
         if(this.objectManager.getObject(obj))
         {
-            let success = await this.conjure.getDataHandler().destroyObject({ realmID: this.realmID, uuid: object.uuid })
+            let success = await this.conjure.getDataHandler(SERVER_PROTOCOLS.DESTROY_OBJECT, { realmID: this.realmID, uuid: object.uuid })
             if(success)
             {
                 this.objectManager.destroyObject(obj);

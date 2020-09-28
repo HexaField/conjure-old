@@ -1,4 +1,4 @@
-import { THREE } from 'enable3d'
+import * as THREE from 'three'
 import { number } from './util/number';
 
 export default class AudioManager
@@ -35,7 +35,9 @@ export default class AudioManager
             this.conjure.getLoadingScreen().setText('WARNING!\n\nThis realm automatically plays audio.\nPlease click to continue.') 
             await this.conjure.getLoadingScreen().awaitInput()
         }
+        console.log(window.AudioContext, self.AudioContext)
 
+        // window.AudioContext = self.AudioContext
         this.audioListener = new THREE.AudioListener();
         
         await this.audioListener.context.resume()

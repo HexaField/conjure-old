@@ -1,13 +1,18 @@
 const path = require('path');
 const CopyPlugin = require('copy-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-
+const webpack = require('webpack')
 module.exports = {
     externals: ['fs-extra', 'fs'],
-    entry: './src/conjure/index.js',
+    entry: {
+      index: './src/index.js',
+      worker: './src/worker.js',
+      app: './src/conjure/index.js',
+    },
     output: {
-      path: path.resolve('dist'),
-      filename: 'bundle.js',
+      filename: '[name].js',	
+      pathinfo: false,	
+      globalObject: "self"
     },
     module: {
       rules: [{
@@ -19,10 +24,20 @@ module.exports = {
     },
     devtool: 'inline-source-map',
     devServer: {
-      open: true,
       port: 3000,
     },
+    optimization: {
+      splitChunks: {
+        cacheGroups: {
+          default:false
+        }
+      },
+      runtimeChunk: false
+    },
     plugins: [
+      new webpack.optimize.LimitChunkCountPlugin({
+          maxChunks: 1,
+      }),
       new CleanWebpackPlugin(),
       new CopyPlugin({
         patterns: [

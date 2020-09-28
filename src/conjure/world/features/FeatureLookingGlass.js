@@ -1,13 +1,13 @@
-import { THREE } from 'enable3d'
+import * as THREE from 'three'
 import Feature from "./Feature"
 
 import { Water } from './Water2.js';
 import { Sky } from 'three/examples/jsm/objects/Sky.js';
 import Platform from '../Platform'  
-import { easyOrigin } from '../../util/MeshTemplates';
+// import { easyOrigin } from '../../util/MeshTemplates';
 // import SkyboxMilkyway from './SkyboxMilkyway'
 // import VolumetricClouds from './VolumetricClouds'
-import TWEEN from '@tweenjs/tween.js';
+// import TWEEN from '@tweenjs/tween.js';
 
 export default class FeatureArtGallery extends Feature
 {

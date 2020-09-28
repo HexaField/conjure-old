@@ -1,15 +1,6 @@
-export class App
-{
-    constructor(dataHandler)
-    {
-        this.dataHandler = dataHandler
-        this.start = this.start.bind(this)
-    }
+export default async function(data) {
 
-    start()
-    {
-        console.log('Starting conjure...')
-        const { startConjure } = require('./Conjure')
-        startConjure(this.dataHandler)
-    }
+    console.log('Starting conjure...', data)
+    const { startConjure } = await import('./Conjure.js')
+    startConjure(data)
 }

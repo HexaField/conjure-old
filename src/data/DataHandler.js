@@ -1,26 +1,24 @@
 import WebSocketClient from './WebSocketClient'
 import WebSocketServer from './WebSocketServer'
 import IPFS from './IPFS'
-import FileStorageBrowser from './FileStorageBrowser'
-import FileStorageNode from './FileStorageNode'
-// import FileStorageDHT from './FileStorageDHT'
 import NetworkManager from './NetworkManager'
-import RealmHandler from './RealmHandler'
-import AssetHandler from './AssetHandler'
-import ProfileHandler from './ProfileHandler'
 import GlobalNetwork from './GlobalNetwork'
-import { getParams } from './util/urldecoder'  
+import RealmHandler from './RealmHandler'
+import ProfileHandler from './ProfileHandler'
+import AssetHandler from './AssetHandler'
+
+
+// import FileStorageDHT from './FileStorageDHT'
 // import OrbitDB from 'orbit-db'
-import os from 'os'
 
 export default class DataHandler
 {
     constructor()
     {
         // this is temporary and bad since webrtc seems to have a tantrum for no clear reason
-        process.on('unhandledRejection', (reason, promise) => {
-            console.log('Unhandled Rejection at:', reason.stack || reason)
-        })
+        // process.on('unhandledRejection', (reason, promise) => {
+        //     console.log('Unhandled Rejection at:', reason.stack || reason)
+        // })
         global.log = (...msg) => {
             let now = new Date()
             console.log(now.toTimeString().substring(0, 8) + ":", ...msg)
@@ -58,6 +56,7 @@ export default class DataHandler
     async initialise(runAppCallback)
     {
         this.runningClient = false
+        this.addProtocolFunctions()
         if(global.isBrowser)
         {
             await this.initialiseClient(runAppCallback)
@@ -83,9 +82,6 @@ export default class DataHandler
                     return
                 }
                 global.log('Data Module: Could not find local node', error)
-                const params = getParams(window.location.href)
-                global.isDevelopment = params.dev === 'true' || params.dev === true
-                global.log('Launching browser on ' + (global.isDevelopment ? 'development' : 'production' ) + ' network')   
                 await this.loadDataHandler()
                 this.runningClient = true
             }
@@ -141,7 +137,7 @@ export default class DataHandler
         const minPeersCount = 0//global.isBrowser ? 1 : 0 // refactor this into a config eventually
         await this.waitForIPFSPeers(minPeersCount)
      
-        this.localStorage = global.isBrowser ? new FileStorageBrowser() : new FileStorageNode()
+        this.localStorage = new (await (global.isBrowser ? (await import('./FileStorageBrowser')) : (await import('./FileStorageNode'))).default)()
         await this.localStorage.initialise()
         
         this.networkManager = new NetworkManager(this)
@@ -228,215 +224,186 @@ export default class DataHandler
         })
     }
 
-    async loadProfile()
+    async receiveRequest(data, callbackFunction) 
     {
-        if(this.runningNode)
-            return await this.awaitNodeResponse('loadProfile')
-        else 
-            return await this.getProfileManager().loadProfile()
-    }
-    
-    async saveProfile(data)
-    {
-        if(this.runningNode)
-            return await this.awaitNodeResponse('saveProfile', data)
+        // console.log(data)
+        if(data.protocol && this.protocolFunctions[data.protocol] && callbackFunction)
+            callbackFunction({ data: await this.protocolFunctions[data.protocol](data.data), requestTimestamp: data.requestTimestamp })
         else
-            return await this.getProfileManager().saveProfile(data)
+            console.warn('ERROR: Unrecognizable server request: ', data)
     }
 
-    async loadAsset(data)
+    addProtocolFunctions()
     {
-        if(this.runningNode)
-            return await this.awaitNodeResponse('loadAsset')
-        else 
-            return await this.getAssetManager().loadAsset(data)
-    }
-    
-    async requestAsset(data)
-    {
-        if(this.runningNode)
-            return await this.awaitNodeResponse('requestAsset')
-        else 
-            return await this.getAssetManager().requestAsset(data)
-    }
-    
-    async saveAsset(data)
-    {
-        if(this.runningNode)
-            return await this.awaitNodeResponse('saveAsset', data)
-        else
-            return await this.getAssetManager().saveAsset(data)
-    }
+        this.protocolFunctions = {
+            [SERVER_PROTOCOLS.LOAD_PROFILE]: async (data) => {
+                if(this.runningNode)
+                    return await this.awaitNodeResponse(SERVER_PROTOCOLS.LOAD_PROFILE)
+                else 
+                    return await this.getProfileManager().loadProfile()
+            },
+            [SERVER_PROTOCOLS.SAVE_PROFILE]: async (data) => {
+                if(this.runningNode)
+                    return await this.awaitNodeResponse(SERVER_PROTOCOLS.SAVE_PROFILE, data)
+                else
+                    return await this.getProfileManager().saveProfile(data)
+            },
+            [SERVER_PROTOCOLS.LOAD_ASSET]: async (data) => {
+                if(this.runningNode)
+                    return await this.awaitNodeResponse(SERVER_PROTOCOLS.LOAD_ASSET)
+                else 
+                    return await this.getAssetManager().loadAsset(data)
+            },
+            [SERVER_PROTOCOLS.REQUEST_ASSET]: async (data) => {
+                if(this.runningNode)
+                    return await this.awaitNodeResponse(SERVER_PROTOCOLS.REQUEST_ASSET)
+                else 
+                    return await this.getAssetManager().requestAsset(data)
+            },
+            [SERVER_PROTOCOLS.SAVE_ASSET]: async (data) => {
+                if(this.runningNode)
+                    return await this.awaitNodeResponse(SERVER_PROTOCOLS.SAVE_ASSET, data)
+                else
+                    return await this.getAssetManager().saveAsset(data)
+            },
+            [SERVER_PROTOCOLS.PIN_REALM]: async (data) => {
+                if(this.runningNode)
+                    return await this.awaitNodeResponse(SERVER_PROTOCOLS.PIN_REALM, data)
+                else 
+                    return await this.getRealmManager().pinRealm(data.data, data.pin)
+            },
+            [SERVER_PROTOCOLS.UPDATE_REALM]: async (data) => {
+                if(this.runningNode)
+                    return await this.awaitNodeResponse(SERVER_PROTOCOLS.UPDATE_REALM, data)
+                else
+                    return await this.getRealmManager().updateRealm(data)
+            },
+            [SERVER_PROTOCOLS.GET_REALM]: async (data) => {
+                if(this.runningNode)
+                    return await this.awaitNodeResponse(SERVER_PROTOCOLS.GET_REALM, data)
+                else
+                    return await this.getRealmManager().getRealm(data)
+            },
+            [SERVER_PROTOCOLS.GET_REALMS]: async (data) => {
+                if(this.runningNode)
+                    return await this.awaitNodeResponse(SERVER_PROTOCOLS.GET_REALMS)
+                else
+                    return await this.getRealmManager().getRealms()
+            },
+            [SERVER_PROTOCOLS.NETWORK_JOIN]: async (data) => {
+                if(this.runningNode)
+                {
+                    // if(this.callbacks['network_' + data.network]) return true // we have already joined this network
 
-    async pinRealm(data)
-    {
-        if(this.runningNode)
-            return await this.awaitNodeResponse('pinRealm', data)
-        else 
-            return await this.getRealmManager().pinRealm(data.data, data.pin)
-    }
-    
-    async updateRealm(data)
-    {
-        if(this.runningNode)
-            return await this.awaitNodeResponse('updateRealm', data)
-        else
-            return await this.getRealmManager().updateRealm(data)
-    }
-    
-    async getRealm(data)
-    {
-        if(this.runningNode)
-            return await this.awaitNodeResponse('getRealm', data)
-        else
-            return await this.getRealmManager().getRealm(data)
-    }
+                    this.callbacks['network_' + data.network] = {
+                        onMessage: data.onMessage,
+                        onPeerJoin: data.onPeerJoin,
+                        onPeerLeave: data.onPeerLeave,
+                    }
+                    return await this.awaitNodeResponse(SERVER_PROTOCOLS.NETWORK_JOIN, { network: data.network })
+                }
+                else
+                    return Boolean(await this.getNetworkManager().joinNetwork(data.network, data.onMessage, data.onPeerJoin, data.onPeerLeave))
+            },
+            [SERVER_PROTOCOLS.NETWORK_SEND_DATA]: async (data) => {
+                if(this.runningNode)
+                    return await this.awaitNodeResponse(SERVER_PROTOCOLS.NETWORK_SEND_DATA, data)
+                else
+                    return await this.getNetworkManager().sendData(data.network, data.protocol, data.content)
+            },
+            [SERVER_PROTOCOLS.NETWORK_SEND_TO]: async (data) => {
+                if(this.runningNode)
+                    return await this.awaitNodeResponse(SERVER_PROTOCOLS.NETWORK_SEND_TO, data)
+                else
+                    return await this.getNetworkManager().sendTo(data.network, data.protocol, data.content, data.peerID)
+            },
+            [SERVER_PROTOCOLS.NETWORK_LEAVE]: async (data) => {
+                if(this.runningNode)
+                {
+                    if(await this.awaitNodeResponse(SERVER_PROTOCOLS.NETWORK_LEAVE, data))
+                    {
+                        if(this.callbacks['network_' + data.network]) 
+                            delete this.callbacks['network_' + data.network]
+                        return true
+                    }
+                    return false
+                }
+                else
+                    return await this.getNetworkManager().leaveNetwork(data.network)
+            },
+            [SERVER_PROTOCOLS.IPFS_GET]: async (data) => {
+                if(this.runningNode)
+                    return await this.awaitNodeResponse(SERVER_PROTOCOLS.IPFS_GET, cid)
+                else
+                {
+                    const chunks = []
+                    for await (const chunk of this.getIPFS().cat(cid)) {
+                        chunks.push(chunk)
+                        global.log(chunk)
+                    }
 
-    async getRealms()
-    {
-        if(this.runningNode)
-            return await this.awaitNodeResponse('getRealms')
-        else
-            return await this.getRealmManager().getRealms()
-    }
-
-    async joinNetwork(data)
-    {
-        if(this.runningNode)
-        {
-            // if(this.callbacks['network_' + data.network]) return true // we have already joined this network
-
-            this.callbacks['network_' + data.network] = {
-                onMessage: data.onMessage,
-                onPeerJoin: data.onPeerJoin,
-                onPeerLeave: data.onPeerLeave,
+                    return Buffer.concat(chunks).toString()
+                }
+            },
+            [SERVER_PROTOCOLS.IPFS_ADD]: async (data) => {
+                if(this.runningNode)
+                    return await this.awaitNodeResponse(SERVER_PROTOCOLS.IPFS_ADD, data)
+                else
+                {
+                    return await this.getIPFS().add(data)
+                }
+            },
+            [SERVER_PROTOCOLS.CREATE_OBJECT]: async (data) => {
+                if(this.runningNode)
+                    return await this.awaitNodeResponse(SERVER_PROTOCOLS.CREATE_OBJECT, data)
+                else
+                    return await this.getRealmManager().createObject(data.realmID, data.uuid, data.data)
+            },
+            [SERVER_PROTOCOLS.UPDATE_OBJECT]: async (data) => {
+                if(this.runningNode)
+                    return await this.awaitNodeResponse(SERVER_PROTOCOLS.UPDATE_OBJECT, data)
+                else
+                    return await this.getRealmManager().updateObject(data.realmID, data.uuid, data.data)
+            },
+            [SERVER_PROTOCOLS.DESTROY_OBJECT]: async (data) => {
+                if(this.runningNode)
+                    return await this.awaitNodeResponse(SERVER_PROTOCOLS.DESTROY_OBJECT, data)
+                else
+                    return await this.getRealmManager().destroyObject(data.realmID, data.uuid)
+            },
+            [SERVER_PROTOCOLS.GET_OBJECTS]: async (data) => {
+                if(this.runningNode)
+                    return await this.awaitNodeResponse(SERVER_PROTOCOLS.GET_OBJECTS, data)
+                else
+                    return await this.getRealmManager().getObjects(data.realmID)
+            },
+            [SERVER_PROTOCOLS.REALM_SUBSCRIBE]: async (data) => {
+                if(this.runningNode)
+                {
+                    this.callbacks['realm_' + data.realmID] = {
+                        onEntryAddition: data.onEntryAddition,
+                        onEntryRemoval: data.onEntryRemoval,
+                    }
+                    return await this.awaitNodeResponse(SERVER_PROTOCOLS.REALM_SUBSCRIBE, { realmID: data.realmID })
+                }
+                else
+                    return await this.getRealmManager().subscribe(data.realmID, data.onEntryAddition, data.onEntryRemoval)
+            },
+            [SERVER_PROTOCOLS.REALM_UNSUBSCRIBE]: async (data) => {
+                if(this.runningNode)
+                {
+                    if(await this.awaitNodeResponse(SERVER_PROTOCOLS.REALM_UNSUBSCRIBE, data))
+                    {
+                        if(this.callbacks['realm_' + data.realmID]) 
+                        delete this.callbacks['realm_' + data.realmID]
+                        return true
+                    }
+                    return false
+                }
+                else
+                    return await this.getRealmManager().unsubscribe(data.realmID)
             }
-            return await this.awaitNodeResponse('joinNetwork', { network: data.network })
         }
-        else
-            return Boolean(await this.getNetworkManager().joinNetwork(data.network, data.onMessage, data.onPeerJoin, data.onPeerLeave))
-    }
-
-    async sendDataNetwork(data)
-    {
-        if(this.runningNode)
-            return await this.awaitNodeResponse('sendDataNetwork', data)
-        else
-            return await this.getNetworkManager().sendData(data.network, data.protocol, data.content)
-    }
-
-    async sendToNetwork(data)
-    {
-        if(this.runningNode)
-            return await this.awaitNodeResponse('sendToNetwork', data)
-        else
-            return await this.getNetworkManager().sendTo(data.network, data.protocol, data.content, data.peerID)
-    }
-
-    async leaveNetwork(data)
-    {
-        if(this.runningNode)
-        {
-            if(await this.awaitNodeResponse('leaveNetwork', data))
-            {
-                if(this.callbacks['network_' + data.network]) 
-                    delete this.callbacks['network_' + data.network]
-                return true
-            }
-            return false
-        }
-        else
-            return await this.getNetworkManager().leaveNetwork(data.network)
-    }
-
-    async ipfsGet(cid)
-    {
-        if(this.runningNode)
-            return await this.awaitNodeResponse('ipfsGet', cid)
-        else
-        {
-            const chunks = []
-            for await (const chunk of this.getIPFS().cat(cid)) {
-                chunks.push(chunk)
-                global.log(chunk)
-            }
-
-            return Buffer.concat(chunks).toString()
-        }
-    }
-
-    async ipfsAdd(data)
-    {
-        if(this.runningNode)
-            return await this.awaitNodeResponse('ipfsAdd', data)
-        else
-        {
-            return await this.getIPFS().add(data)
-        }
-    }
-
-    async createObject(data)
-    {
-        if(this.runningNode)
-            return await this.awaitNodeResponse('createObject', data)
-        else
-            return await this.getRealmManager().createObject(data.realmID, data.uuid, data.data)
-    }
-
-    async updateObject(data)
-    {
-        if(this.runningNode)
-            return await this.awaitNodeResponse('updateObject', data)
-        else
-            return await this.getRealmManager().updateObject(data.realmID, data.uuid, data.data)
-    }
-
-    async destroyObject(data)
-    {
-        if(this.runningNode)
-            return await this.awaitNodeResponse('destroyObject', data)
-        else
-            return await this.getRealmManager().destroyObject(data.realmID, data.uuid)
-    }
-
-    async getObjects(data)
-    {
-        if(this.runningNode)
-            return await this.awaitNodeResponse('getObjects', data)
-        else
-            return await this.getRealmManager().getObjects(data.realmID)
-    }
-
-    // this will eventually be subscribing to a chunk
-    async subscribeToRealm(data)
-    {
-        if(this.runningNode)
-        {
-            this.callbacks['realm_' + data.realmID] = {
-                onEntryAddition: data.onEntryAddition,
-                onEntryRemoval: data.onEntryRemoval,
-            }
-            return await this.awaitNodeResponse('subscribeToRealm', { realmID: data.realmID })
-        }
-        else
-            return await this.getRealmManager().subscribe(data.realmID, data.onEntryAddition, data.onEntryRemoval)
-    }
-
-    // this will eventually be subscribing to a chunk
-    async unsubscribeFromRealm(data)
-    {
-        if(this.runningNode)
-        {
-            if(await this.awaitNodeResponse('unsubscribeFromRealm', data))
-            {
-                if(this.callbacks['realm_' + data.realmID]) 
-                   delete this.callbacks['realm_' + data.realmID]
-                return true
-            }
-            return false
-        }
-        else
-            return await this.getRealmManager().unsubscribe(data.realmID)
     }
 
     // ===  only on the client - receiving from the server === //
@@ -452,52 +419,83 @@ export default class DataHandler
     // ===  only on the server - receiving from the client === //
 
     // { protocol, requestTimestamp, data }
-    
+
     async parseWebsocketData(data)
     {
         switch(data.protocol)
         {   
-            case 'ping': this.sendWebsocketData({ data: 'pong', requestTimestamp: data.requestTimestamp}); break;
+            case SERVER_PROTOCOLS.PING: this.sendWebsocketData({ data: 'pong', requestTimestamp: data.requestTimestamp}); break;
 
-            case 'loadProfile': this.sendWebsocketData({ data: await this.loadProfile(), requestTimestamp: data.requestTimestamp}); break;
-            case 'saveProfile': this.sendWebsocketData({ data: await this.saveProfile(data.data), requestTimestamp: data.requestTimestamp}); break;
+            case SERVER_PROTOCOLS.LOAD_PROFILE: this.sendWebsocketData({ data: await this.loadProfile(), requestTimestamp: data.requestTimestamp}); break;
+            case SERVER_PROTOCOLS.SAVE_PROFILE: this.sendWebsocketData({ data: await this.saveProfile(data.data), requestTimestamp: data.requestTimestamp}); break;
 
-            case 'loadAsset': this.sendWebsocketData({ data: await this.loadAsset(data.data), requestTimestamp: data.requestTimestamp}); break;
-            case 'saveAsset': this.sendWebsocketData({ data: await this.saveAsset(data.data), requestTimestamp: data.requestTimestamp}); break;
-            case 'requestAsset': this.sendWebsocketData({ data: await this.requestAsset(data.data), requestTimestamp: data.requestTimestamp}); break;
+            case SERVER_PROTOCOLS.LOAD_ASSET: this.sendWebsocketData({ data: await this.loadAsset(data.data), requestTimestamp: data.requestTimestamp}); break;
+            case SERVER_PROTOCOLS.SAVE_ASSET: this.sendWebsocketData({ data: await this.saveAsset(data.data), requestTimestamp: data.requestTimestamp}); break;
+            case SERVER_PROTOCOLS.REQUEST_ASSET: this.sendWebsocketData({ data: await this.requestAsset(data.data), requestTimestamp: data.requestTimestamp}); break;
 
-            case 'pinRealm': this.sendWebsocketData({ data: await this.pinRealm(data.data), requestTimestamp: data.requestTimestamp}); break;
-            case 'updateRealm': this.sendWebsocketData({ data: await this.updateRealm(data.data), requestTimestamp: data.requestTimestamp}); break;
-            case 'getRealm': this.sendWebsocketData({ data: await this.getRealm(data.data), requestTimestamp: data.requestTimestamp}); break;
-            case 'getRealms': this.sendWebsocketData({ data: await this.getRealms(), requestTimestamp: data.requestTimestamp}); break;
+            case SERVER_PROTOCOLS.PIN_REALM: this.sendWebsocketData({ data: await this.pinRealm(data.data), requestTimestamp: data.requestTimestamp}); break;
+            case SERVER_PROTOCOLS.UPDATE_REALM: this.sendWebsocketData({ data: await this.updateRealm(data.data), requestTimestamp: data.requestTimestamp}); break;
+            case SERVER_PROTOCOLS.GET_REALM: this.sendWebsocketData({ data: await this.getRealm(data.data), requestTimestamp: data.requestTimestamp}); break;
+            case SERVER_PROTOCOLS.GET_REALMS: this.sendWebsocketData({ data: await this.getRealms(), requestTimestamp: data.requestTimestamp}); break;
             
-            case 'createObject': this.sendWebsocketData({ data: await this.createObject(data.data), requestTimestamp: data.requestTimestamp}); break;
-            case 'updateObject': this.sendWebsocketData({ data: await this.updateObject(data.data), requestTimestamp: data.requestTimestamp}); break;
-            case 'destroyObject': this.sendWebsocketData({ data: await this.destroyObject(data.data), requestTimestamp: data.requestTimestamp}); break;
-            case 'getObjects': this.sendWebsocketData({ data: await this.getObjects(data.data), requestTimestamp: data.requestTimestamp}); break;
+            case SERVER_PROTOCOLS.CREATE_OBJECT: this.sendWebsocketData({ data: await this.createObject(data.data), requestTimestamp: data.requestTimestamp}); break;
+            case SERVER_PROTOCOLS.UPDATE_OBJECT: this.sendWebsocketData({ data: await this.updateObject(data.data), requestTimestamp: data.requestTimestamp}); break;
+            case SERVER_PROTOCOLS.DESTROY_OBJECT: this.sendWebsocketData({ data: await this.destroyObject(data.data), requestTimestamp: data.requestTimestamp}); break;
+            case SERVER_PROTOCOLS.GET_OBJECTS: this.sendWebsocketData({ data: await this.getObjects(data.data), requestTimestamp: data.requestTimestamp}); break;
 
-            case 'joinNetwork': this.sendWebsocketData({ data: await this.joinNetwork({
+            case SERVER_PROTOCOLS.NETWORK_JOIN: this.sendWebsocketData({ data: await this.joinNetwork({
                 network: data.data.network,
                 onMessage: (_data) => this.sendWebsocketData({ data: _data, callback: data.data.network, event: 'onMessage' }),
                 onPeerJoin: (_data) => this.sendWebsocketData({ data: _data, callback: data.data.network, event: 'onPeerJoin' }),
                 onPeerLeave: (_data) => this.sendWebsocketData({ data: _data, callback: data.data.network, event: 'onPeerLeave' }),
             }), requestTimestamp: data.requestTimestamp}); break;
-            case 'sendDataNetwork': this.sendWebsocketData({ data: await this.sendDataNetwork(data.data), requestTimestamp: data.requestTimestamp}); break;
-            case 'sendToNetwork': this.sendWebsocketData({ data: await this.sendToNetwork(data.data), requestTimestamp: data.requestTimestamp}); break;
-            case 'leaveNetwork': this.sendWebsocketData({ data: await this.leaveNetwork(data.data), requestTimestamp: data.requestTimestamp}); break;
+            case SERVER_PROTOCOLS.NETWORK_SEND_DATA: this.sendWebsocketData({ data: await this.sendDataNetwork(data.data), requestTimestamp: data.requestTimestamp}); break;
+            case SERVER_PROTOCOLS.NETWORK_SEND_TO: this.sendWebsocketData({ data: await this.sendToNetwork(data.data), requestTimestamp: data.requestTimestamp}); break;
+            case SERVER_PROTOCOLS.NETWORK_LEAVE: this.sendWebsocketData({ data: await this.leaveNetwork(data.data), requestTimestamp: data.requestTimestamp}); break;
             
-            case 'ipfsGet': this.sendWebsocketData({ data: await this.ipfsGet(data.data), requestTimestamp: data.requestTimestamp}); break;
-            case 'ipfsAdd': this.sendWebsocketData({ data: await this.ipfsAdd(data.data), requestTimestamp: data.requestTimestamp}); break;
+            case SERVER_PROTOCOLS.IPFS_GET: this.sendWebsocketData({ data: await this.ipfsGet(data.data), requestTimestamp: data.requestTimestamp}); break;
+            case SERVER_PROTOCOLS.IPFS_ADD: this.sendWebsocketData({ data: await this.ipfsAdd(data.data), requestTimestamp: data.requestTimestamp}); break;
             
-            case 'subscribeToRealm': this.sendWebsocketData({ data: await this.subscribeToRealm({
+            case SERVER_PROTOCOLS.REALM_SUBSCRIBE: this.sendWebsocketData({ data: await this.realmSubscribe({
                 realmID: data.data.realmID,
                 onEntryAddition: (_data) => this.sendWebsocketData({ data: _data, callback: data.data.realmID, event: 'onEntryAddition' }),
                 onEntryRemoval: (_data) => this.sendWebsocketData({ data: _data, callback: data.data.realmID, event: 'onEntryRemoval' }),
             }), requestTimestamp: data.requestTimestamp}); break;
-            case 'unsubscribeFromRealm': this.sendWebsocketData({ data: await this.unsubscribeFromRealm(data.data), requestTimestamp: data.requestTimestamp}); break;
+            case SERVER_PROTOCOLS.REALM_UNSUBSCRIBE: this.sendWebsocketData({ data: await this.realmUnsubscribe(data.data), requestTimestamp: data.requestTimestamp}); break;
 
             default: global.log('ERROR: DataHandler: Received unknown protocol: ' + String(data.protocol)); return;
         }
     }
 
+}
+
+export const SERVER_PROTOCOLS = {
+    PING: 'ping',
+    LOAD_PROFILE: 'loadProfile',
+    SAVE_PROFILE: 'saveProfile',
+
+    LOAD_ASSET:   'loadAsset',
+    SAVE_ASSET:   'saveAsset',
+    REQUEST_ASSET: 'requestAsset',
+
+    PIN_REALM: 'pinRealm',
+    UPDATE_REALM: 'updateRealm',
+    GET_REALM: 'getRealm',
+    GET_REALMS: 'getRealms',
+
+    CREATE_OBJECT: 'createObject',
+    UPDATE_OBJECT: 'updateObject',
+    DESTROY_OBJECT: 'destroyObject',
+    GET_OBJECTS: 'getObjects',
+
+    NETWORK_JOIN: 'joinNetwork',
+    NETWORK_SEND_DATA: 'sendDataNetwork',
+    NETWORK_SEND_TO: 'sendToNetwork',
+    NETWORK_LEAVE: 'networkLeave',
+
+    IPFS_GET: 'ipfsGet',
+    IPFS_ADD: 'ipfsAdd',
+
+    REALM_SUBSCRIBE: 'realmSubscribe',
+    REALM_UNSUBSCRIBE: 'realmUnsubscribe'
 }

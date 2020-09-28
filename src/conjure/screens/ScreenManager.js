@@ -1,4 +1,4 @@
-import { THREE } from 'enable3d'
+import * as THREE from 'three'
 import { CONJURE_MODE } from '../Conjure'
 
 import HUDGlobal from './hud/HUDGlobal'

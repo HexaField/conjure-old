@@ -1,4 +1,4 @@
-import { THREE } from 'enable3d'
+import * as THREE from 'three'
 import { OrbitControls } from "./OrbitControls"
 import { TransformControls } from "./TransformControls"
 import FlyControls from './FlyControls'
@@ -20,7 +20,7 @@ export default class ControlManager
         this.world = conjure.getWorld();
         this.scene = conjure.scene;
         this.camera = conjure.camera;
-        this.domElement = conjure.renderer.domElement;
+        this.domElement = conjure.inputElement;
         
         this.controlsEnabled = false;
 

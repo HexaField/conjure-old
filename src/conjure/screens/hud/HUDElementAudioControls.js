@@ -1,5 +1,5 @@
 
-import { THREE } from 'enable3d'
+import * as THREE from 'three'
 import ScreenElementText from '../elements/ScreenElementText';
 import ScreenElementSprite from '../elements/ScreenElementSprite';
 

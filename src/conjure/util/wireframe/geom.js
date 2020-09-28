@@ -1,4 +1,4 @@
-import { THREE } from 'enable3d'
+import * as THREE from 'three'
 
 export function addBarycentricCoordinates (bufferGeometry, removeEdge, isTerrain) {
   const attrib = bufferGeometry.getIndex() || bufferGeometry.getAttribute('position');

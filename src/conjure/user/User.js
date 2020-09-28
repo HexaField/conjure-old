@@ -1,6 +1,6 @@
 import { THREE, ExtendedObject3D } from 'enable3d'
 import { REALM_PROTOCOLS } from '../world/realm/Realm'
-import { easySphere, easyOrigin } from '../util/MeshTemplates';
+// import { easySphere, easyOrigin } from '../util/MeshTemplates';
 
 export default class User
 {

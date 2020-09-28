@@ -1,4 +1,4 @@
-import { THREE } from 'enable3d'
+import * as THREE from 'three'
 import { easyPlane } from '../../util/MeshTemplates'
 import ScreenElementBase from './ScreenElementBase';
 import ScreenElementButton from './ScreenElementButton';

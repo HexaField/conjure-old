@@ -1,15 +1,21 @@
-import { Project, Scene3D, PhysicsLoader, THREE } from 'enable3d'
-import { CSS3DRenderer } from 'three/examples/jsm/renderers/CSS3DRenderer.js'
+import Ammo from '../../lib/ammo.worker.js';
+import { AmmoPhysics } from '@enable3d/ammo-physics';
+import Mixers from './util/mixers'
+
+import * as THREE from 'three'
+import Loaders from './util/loaders'
+
+import Fonts from './screens/text/Fonts'
+import LoadingScreen from './LoadingScreen'
 import Input from './Input' 
-import World from './world/World'
+import PostProcessing from './PostProcessing'
+import AssetManager from './AssetManager';
 import Profile from './user/Profile'
+import { Store, get as getIDBItem, set as setIDBItem, keys as keysIDBItem, del as delIDBItem, clear as clearIDBItem } from 'idb-keyval';
+
+import World from './world/World'
 import ControlManager, { CONTROL_SCHEME } from './controls/ControlManager'
 import ScreenManager from './screens/ScreenManager'
-import PostProcessing from './PostProcessing'
-import LoadingScreen from './LoadingScreen'
-import AssetManager from './AssetManager';
-import Fonts from './screens/text/Fonts'
-import { getParams } from '../data/util/urldecoder'
 import AudioManager from './AudioManager'
 
 export const CONJURE_MODE = {
@@ -19,52 +25,74 @@ export const CONJURE_MODE = {
     CONJURE: 'Conjure',
 }
 
-export class Conjure extends Scene3D
+export class Conjure
 {
-    constructor()
+    constructor(data)
     {
-        super({ key: 'Conjure'})
+        console.log(data)
+        this.canvas = data.canvas
+        this.inputElement = data.inputElement
+        this.dataHandler = data.userData.dataHandler
+        this.urlParams = data.userData.urlParams
 
         this.assetURL = "https://assets.conjure.world/"
-        if(window.location.href.includes('localhost'))
-            this.assetURL = 'assets/dist/'
+        
+        this.start()
     }
 
-    async preload()
+    async start()
     {
-        this.loadingScreen.setText('Downloading assets...') 
-        await this.load.preload('playerModel', this.assetURL + 'assets/models/ybot_anims.glb')
-        await this.load.preload('sword', this.assetURL + 'assets/models/chevalier/scene.gltf')
-        await this.load.preload('default_realm', this.assetURL + 'assets/icons/default_realm.png')
-        await this.load.preload('speaker', this.assetURL + 'assets/icons/speaker.png')
-        await this.load.preload('speakermute', this.assetURL + 'assets/icons/speakermute.png')
-        await this.load.preload('global_icon', this.assetURL + 'assets/icons/global.png')
-        await this.load.preload('pin_full', this.assetURL + 'assets/icons/pin_full.png')
-        await this.load.preload('pin_empty', this.assetURL + 'assets/icons/pin_empty.png')
+        const conjureDataStoreName = 'conjureSimpleDataStore'
+        const customStore = new Store(conjureDataStoreName, conjureDataStoreName);
+        
+        self.simpleStorage = {
+          async get(key) {
+            return await getIDBItem(key, customStore);
+          },
+          async set(key, val) {
+            return await setIDBItem(key, val, customStore);
+          },
+          async del(key) {
+            return await delIDBItem(key, customStore);
+          },
+          async clear() {
+            return await clearIDBItem(customStore);
+          },
+          async keys() {
+            return await keysIDBItem(customStore);
+          },
+        };
 
-        await this.load.preload('missing_texture', this.assetURL + 'assets/textures/missing_texture.png')
-        await this.load.preload('menger_texture', this.assetURL + 'assets/textures/menger_texture.png')
-        await this.load.preload('ponder_texture', this.assetURL + 'assets/textures/ponder_texture.png')
-        await this.load.preload('default_texture', this.assetURL + 'assets/textures/default_texture.png')
+        await this.init()
+        await this.preload()
+        this.physics = new AmmoPhysics(this.scene);
+        this.mixers = new Mixers()
+        this.animationMixers = this.mixers.mixers
+        
+        await this.create()
+
+        const animate = () => {
+            if (this.resizeRendererToDisplaySize(this.renderer)) {
+              this.camera.aspect = this.inputElement.clientWidth / this.inputElement.clientHeight;
+              this.camera.updateProjectionMatrix();
+            }
+            this.update()
+            requestAnimationFrame(animate)
+        };
+        requestAnimationFrame(animate)
     }
 
-    // async preload(label, url)
-    // {
 
-    // }
-
-    // async load(type, name)
-    // {
-    //     let asset = await this.dataHandler.loadAsset(name)
-    //     if(!asset)
-    //         asset = await this.dataHandler.saveAsset(name, )
-    // }
-
-    setDataHandler(dataHandler) {
-        this.dataHandler = dataHandler
+    resizeRendererToDisplaySize(renderer) {
+        const canvas = renderer.domElement;
+        const width = window.clientWidth;
+        const height = window.clientHeight;
+        const needResize = canvas.width !== width || canvas.height !== height;
+        if (needResize) {
+            this.resizeCanvas(width, height);
+        }
+        return needResize;
     }
-    
-    // getters
     
     getWorld() { return this.world }
     getScreens() { return this.screenManager }
@@ -73,7 +101,7 @@ export class Conjure extends Scene3D
     getFont(font) { return this.getFonts().getFont(font) }
     getDefaultFont() { return this.fonts.getDefault() }
     getProfile() { return this.profile }
-    getDataHandler() { return this.dataHandler }
+    async getDataHandler(protocol, data) { return await this.inputElement.request(protocol, data) }
     getGlobalHUD() { return this.screenManager.hudGlobal }
     getAudioManager() { return this.audioManager }
     getLoadingScreen() { return this.loadingScreen }
@@ -82,8 +110,7 @@ export class Conjure extends Scene3D
 
     async init()
     {
-        this.urlParams = getParams(window.location.href)
-
+        this.clock = new THREE.Clock()
         global.THISFRAME = Date.now()
         this.loadTimer = global.THISFRAME
         this.conjureMode = CONJURE_MODE.LOADING
@@ -97,12 +124,9 @@ export class Conjure extends Scene3D
         this.loadingScreen.create()
         this.loadingScreen.setText('Initialising...')
 
-        this.initRenderer()
-        this.initCamera()
         this.initScene()
-
-        this.resizeCanvas = this.resizeCanvas.bind(this)
-        window.onresize = this.resizeCanvas
+        this.initCamera()
+        this.initRenderer()
 
         this.mouseRaycaster = new THREE.Raycaster()
         this.worldRaycaster = new THREE.Raycaster()
@@ -116,19 +140,15 @@ export class Conjure extends Scene3D
 
     initRenderer()
     {
+        this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, canvas: this.canvas })
+        this.renderer.setPixelRatio(window.devicePixelRatio)
+
         this.renderer.outputEncoding = THREE.sRGBEncoding
         this.renderer.shadowMap.enabled = true
         this.renderer.shadowMap.type = THREE.PCFSoftShadowMap
-        const DPR = window.devicePixelRatio ? window.devicePixelRatio : 1
-        this.renderer.setPixelRatio(DPR)
         this.renderer.toneMapping = THREE.ReinhardToneMapping
 
         this.renderer.setClearColor( 0x000000, 1.0)
-        this.renderer.domElement.style.position = 'absolute' // required
-        this.renderer.domElement.style.outline = 'none' // required
-        this.renderer.domElement.style.zIndex = 0 // required
-        this.renderer.domElement.style.top = 0 
-        this.renderer.domElement.style.background = ''
 
         // this.rendererCSS = new CSS3DRenderer({alpha: true, antialias: true})
         // this.rendererCSS.setSize( window.innerWidth, window.innerHeight )
@@ -139,15 +159,16 @@ export class Conjure extends Scene3D
         // document.body.appendChild(this.rendererCSS.domElement);
         // document.body.removeChild(this.renderer.domElement);
         // this.rendererCSS.domElement.appendChild(this.renderer.domElement);
-
-        this.postProcessing = new PostProcessing(this);
     }
 
     initCamera()
     {
-        this.camera.fov = 60
-        this.camera.near = 0.1
-        this.camera.far = 30000
+        this.camera = new THREE.PerspectiveCamera(
+          60,
+          window.clientWidth / window.clientHeight,
+          0.1,
+          10000,
+        );
 
         this.cameraFollow = new THREE.Group()
         this.cameraFollow.position.setZ(-0.25)
@@ -167,9 +188,9 @@ export class Conjure extends Scene3D
 
     initScene()
     {
+        this.scene = new THREE.Scene()
         this.scene.fog = new THREE.FogExp2( 0x344242, 0.001 );
-        this.sceneCSS = new THREE.Scene()
-
+        
         let ambientLight = new THREE.AmbientLight( 0xcccccc, 0.2 );
         this.scene.add( ambientLight );
 
@@ -196,10 +217,44 @@ export class Conjure extends Scene3D
         this.scene.add(this.dirLight)
     }
 
+    // async preload(label, url)
+    // {
+
+    // }
+
+    // async load(type, name)
+    // {
+    //     let asset = await this.dataHandler.loadAsset(name)
+    //     if(!asset)
+    //         asset = await this.dataHandler.saveAsset(name, )
+    // }
+
+    async preload()
+    {
+        THREE.Cache.enabled = true
+        this.cache = THREE.Cache
+        this.textureAnisotropy = 1
+        this.load = new Loaders(this.cache, this.textureAnisotropy)
+        this.loadingScreen.setText('Downloading assets...') 
+            
+        await this.load.preload('playerModel', this.assetURL + 'assets/models/ybot_anims.glb')
+        await this.load.preload('sword', this.assetURL + 'assets/models/chevalier/scene.gltf')
+        await this.load.preload('default_realm', this.assetURL + 'assets/icons/default_realm.png')
+        await this.load.preload('speaker', this.assetURL + 'assets/icons/pin_full.png')
+        await this.load.preload('pin_empty', this.assetURL + 'assets/icons/pin_empty.png')
+
+        await this.load.preload('missing_texture', this.assetURL + 'assets/textures/missing_texture.png')
+        await this.load.preload('menger_texture', this.assetURL + 'assets/textures/menger_texture.png')
+        await this.load.preload('ponder_texture', this.assetURL + 'assets/textures/ponder_texture.png')
+        await this.load.preload('default_texture', this.assetURL + 'assets/textures/default_texture.png')
+    }
+
     // this is for creating conjure-specific things
     async create()
     {
         console.log('Took', (Date.now() - this.loadTimer)/1000, ' seconds to load.')
+
+        this.postProcessing = new PostProcessing(this);
 
         this.loadingScreen.setText('Loading default assets...') 
         this.assetManager = new AssetManager(this)
@@ -283,8 +338,8 @@ export class Conjure extends Scene3D
         }
     }
     
-    _update()
-    {
+    update()
+    {   
         const delta = this.clock.getDelta() * 1000
         const time = this.clock.getElapsedTime()
     
@@ -294,7 +349,7 @@ export class Conjure extends Scene3D
         } 
         else
         {
-            this.update(parseFloat(time.toFixed(3)), parseInt(delta.toString()))
+            this.updateConjure(parseFloat(time.toFixed(3)), parseInt(delta.toString()))
 
             if(this.conjureMode !== CONJURE_MODE.WAITING)
             {
@@ -309,7 +364,7 @@ export class Conjure extends Scene3D
         }
     }
 
-    update(time, delta)
+    updateConjure(time, delta)
     {
         let deltaSeconds = delta / 1000
         if(deltaSeconds > 0.1) deltaSeconds = 0.1 // so physics doesnt go insane
@@ -343,44 +398,24 @@ export class Conjure extends Scene3D
         this.getScreens().update(args)
     }
 
-    resizeCanvas()
+    resizeCanvas(width, height)
     {
-        this.canvas.width  = window.innerWidth
-        this.canvas.height = window.innerHeight
-
-        this.canvas.style.width = '100%'
-        this.canvas.style.height= '100%'
-        
-        this.canvasHalfWidth = Math.round(this.canvas.width/2)
-        this.canvasHalfHeight = Math.round(this.canvas.height/2)
-
-        const { width, height } = this.canvas   
-
-        let ratio = width / height
-        this.camera.aspect = ratio
-        this.camera.updateProjectionMatrix()
-        
-        this.renderer.setSize(width, height)
-        this.loadingScreen.renderer.setSize(width, height)
-        // this.rendererCSS.setSize(width, height)
-        this.postProcessing.composer.setSize(width, height)
+        if(!width || !height) return
+        this.renderer.setSize(width, height, false)
+        this.loadingScreen.renderer.setSize(width, height, false)
+        // this.rendererCSS.setSize(width, height, false)
+        this.postProcessing.composer.setSize(width, height, false)
         if(this.screenManager)
-            this.screenManager.resizeScreens(ratio)
+            this.screenManager.resizeScreens(width / height)
         // this.postProcessing.effectFXAA.uniforms['resolution'].value.set(1 / this.canvas.width, 1 / this.canvas.height)
     }
 }
 
-export function startConjure(dataHandler)
+export function startConjure(data)
 {
-    PhysicsLoader('lib', () => {
-        const project = new Project({
-            scenes: [Conjure],
-            renderer: new THREE.WebGLRenderer({ alpha: true, antialias: true }),
-            gravity: { x: 0, y: -9.81, z: 0},
-            maxSubSteps: 100,
-            fixedTimeStep: 1 / 180
-        })
-        project.scenes.get('Conjure').setDataHandler(dataHandler)
-    })
+    if(!data)
+        console.error('ERROR at conjure start, missing data')
 
+    Ammo();
+    new Conjure(data)
 }

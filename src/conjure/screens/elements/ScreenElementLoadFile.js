@@ -1,4 +1,4 @@
-import { THREE } from 'enable3d'
+import * as THREE from 'three'
 import ScreenElementButton from './ScreenElementButton';
 import HTMLObject from '../../util/HTMLObject'
 

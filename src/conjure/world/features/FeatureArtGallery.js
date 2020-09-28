@@ -1,4 +1,4 @@
-import { THREE } from 'enable3d'
+import * as THREE from 'three'
 import Feature from "./Feature"
 import abiDecoder from 'abi-decoder'
 import StructureRoom from '../structures/StructureRoom'
@@ -79,7 +79,7 @@ export default class FeatureArtGallery extends Feature
     async loadArtwork()
     {
         abiDecoder.addABI(this.superrareABI);
-        let txlist = await(await fetch((window.location.href.includes('localhost') ? 'https://cors-anywhere.herokuapp.com/' : '') + 'https://api.etherscan.io/api?module=account&action=txlist&address=0xb932a70a57673d89f4acffbe830e8ed7f75fb9e0&startblock=0&endblock=latest&page=1&sort=desc&offset=100')).json();
+        let txlist = await(await fetch('https://cors-anywhere.herokuapp.com/https://api.etherscan.io/api?module=account&action=txlist&address=0xb932a70a57673d89f4acffbe830e8ed7f75fb9e0&startblock=0&endblock=latest&page=1&sort=desc&offset=100')).json();
         if(!txlist.result) return
         let i = 0;
         for(let txn of txlist.result)

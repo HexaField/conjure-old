@@ -1,5 +1,5 @@
 
-import { THREE } from 'enable3d'
+import * as THREE from 'three'
 import createText from './createText'
 import { number } from '../../util/number'
 import { POSTPROCESSING } from '../../PostProcessing';

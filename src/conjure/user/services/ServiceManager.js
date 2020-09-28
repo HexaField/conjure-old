@@ -1,5 +1,7 @@
-import ProfileServiceDiscord from "./ProfileServiceDiscord"
+// import ProfileServiceDiscord from "./ProfileServiceDiscord"
 // import ProfileServicePayID from "./ProfileServicePayID"
+
+import { SERVER_PROTOCOLS } from '../../../data/DataHandler'
 
 export default class ServiceManager
 {  
@@ -8,7 +10,7 @@ export default class ServiceManager
         this.conjure = conjure
         this.services = {}
 
-        this.addService(new ProfileServiceDiscord(this))
+        // this.addService(new ProfileServiceDiscord(this))
         // this.addService(new ProfileServicePayID(this))
     }
 
@@ -89,7 +91,7 @@ export default class ServiceManager
             let ids = await service.getRealmsIDs()
             for(let i in ids)
             {
-                let realm = await this.conjure.getDataHandler().getRealm(ids[i].id)
+                let realm = await this.conjure.getDataHandler(SERVER_PROTOCOLS.GET_REALM, ids[i].id)
                 if(realm)
                     realmsFound.push(realm)
             }
@@ -100,6 +102,7 @@ export default class ServiceManager
     setServicesFromDatabase(data)
     {
         for(let service of Object.keys(data))
-            this.getService(service).readFromJson(data[service])
+            if(this.getService(service))
+                this.getService(service).readFromJson(data[service])
     }
 }

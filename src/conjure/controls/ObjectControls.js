@@ -1,4 +1,4 @@
-import { THREE, ExtendedGroup } from 'enable3d';
+import * as THREE from 'three';
 import { iterateChildrenWithFunction } from '../util/iterateRecursive'
 
 export default class ObjectControls
@@ -67,7 +67,7 @@ export default class ObjectControls
     {
         if(this.controls.objects.length > 1)
         {
-            let newGroup = new ExtendedGroup();
+            let newGroup = new THREE.Group();
             for(let obj of this.controls.objects)
             {
                 obj.parent.remove(obj);

@@ -1,4 +1,4 @@
-import { THREE } from 'enable3d'
+import * as THREE from 'three'
 // import Events from './Events'
 import { number } from '../util/number'
 

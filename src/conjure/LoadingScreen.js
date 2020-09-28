@@ -1,5 +1,4 @@
-import TextRenderer3D from './screens/text/TextRenderer3D'
-import { THREE } from 'enable3d'
+import * as THREE from 'three'
 import ThreeEditableText from 'three-typeable-text'
 
 export default class LoadingScreen
@@ -10,23 +9,17 @@ export default class LoadingScreen
         this.passcodeLoseFocus = this.passcodeLoseFocus.bind(this)
         this.active = false
         this.passcodeCallback = undefined
-        this.init()
+        this.init(conjure.canvas)
     }
 
-    init()
+    init(canvas)
     {
-        this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
+        this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, canvas })
         this.renderer.setClearColor( 0x000000, 0.0);
-        this.renderer.setSize(window.innerWidth, window.innerHeight)
-        this.renderer.setPixelRatio(window.devicePixelRatio ? window.devicePixelRatio : 1);
-        this.renderer.domElement.style.position = 'absolute';
-        this.renderer.domElement.style.outline = 'none'; // required
-        this.renderer.domElement.style.top = 0;
-        this.renderer.domElement.style.zIndex = 1; // required
-        this.renderer.outputEncoding = THREE.sRGBEncoding;
-        document.body.appendChild( this.renderer.domElement );
+        this.renderer.setPixelRatio(window.devicePixelRatio);
+        this.renderer.setSize(window.clientWidth, window.clientHeight, false);
 
-        this.camera = new THREE.PerspectiveCamera( 80, window.innerWidth / window.innerHeight, 0.1, 100 );
+        this.camera = new THREE.PerspectiveCamera( 80, window.clientWidth / window.clientHeight, 0.1, 100 );
     
         this.scene = new THREE.Scene()
         document.addEventListener( 'keydown', (event) => {

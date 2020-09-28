@@ -1,4 +1,4 @@
-import { THREE } from 'enable3d'
+import * as THREE from 'three'
 import { addBarycentricCoordinates, unindexBufferGeometry } from './geom'
 import frag from './frag.js'
 import vert from './vert.js'

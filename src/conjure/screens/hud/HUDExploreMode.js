@@ -1,6 +1,6 @@
 import ScreenBase from '../ScreenBase';
 import HUDInteract from './HUDInteract'
-import { THREE } from 'enable3d'
+import * as THREE from 'three'
 
 export default class HUDExploreMode extends ScreenBase
 {  

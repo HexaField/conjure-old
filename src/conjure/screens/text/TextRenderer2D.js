@@ -1,5 +1,5 @@
 
-import { THREE } from 'enable3d'
+import * as THREE from 'three'
 import SpriteText from 'three-spritetext';
 
 export default class TextRenderer2D

@@ -1,5 +1,6 @@
 import { THREE, JoyStick } from 'enable3d'
 import Keybindings from './Keybindings';
+import Pinput from './util/pinput'
 
 export default class Input
 {
@@ -7,7 +8,7 @@ export default class Input
     {
         this.conjure = conjure;
         this.isTouchDevice = 'ontouchstart' in window
-        this.input = new window.Pinput();
+        this.input = new Pinput();
         this.mouse = new THREE.Vector2();
         this.mouseDelta = new THREE.Vector2();
         this.scroll = 0;

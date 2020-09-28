@@ -1,4 +1,4 @@
-import { THREE } from 'enable3d'
+import * as THREE from 'three'
 import ScreenBase from './ScreenBase';
 import { easyPlane } from '../util/MeshTemplates'
 import HTMLObject from '../util/HTMLObject';
@@ -17,7 +17,7 @@ export default class ScreenTextureEditor extends ScreenBase
         this.pos = new THREE.Vector2();
         
         this.resolution = 1000;
-
+/*
         this.drawingCanvas = document.getElementById('drawing-canvas');
         this.drawingContext = this.drawingCanvas.getContext('2d');
         // this.drawingCanvas.style.width = ''+(this.width*this.resolution)+'px';
@@ -34,7 +34,7 @@ export default class ScreenTextureEditor extends ScreenBase
 
         this.textureRender = easyPlane({ width: this.width, height: this.height, }, { color: 0xffffff })
         this.group.add(this.textureRender);
-        this.textureRender.material.map = this.texture;
+        this.textureRender.material.map = this.texture;*/
     }
 
     draw()

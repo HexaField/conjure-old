@@ -1,4 +1,4 @@
-import { THREE } from 'enable3d'
+import * as THREE from 'three'
 import ScreenElementButton from './elements/ScreenElementButton';
 import ScreenElementCycleButton from './elements/ScreenElementCycleButton';
 import ScreenBase from './ScreenBase';

@@ -1,6 +1,5 @@
 import ScreenBase from './ScreenBase';
-import { THREE } from 'enable3d'
-import { Vector2 } from 'three'
+import * as THREE from 'three'
 import ScreenElementText from './elements/ScreenElementText'
 import { number } from '../util/number'
 
@@ -37,7 +36,7 @@ export default class ScreenHomeMenu extends ScreenBase
             this.group.add(segTarget)
 
             let angle = (i + 0.5) * Math.PI * 2 / this.segmentItems.length
-            let point = new Vector2(Math.cos(angle), Math.sin(angle))
+            let point = new THREE.Vector2(Math.cos(angle), Math.sin(angle))
             point.multiplyScalar(0.35)
 
             let text = new ScreenElementText(this, this, { x: point.x, y: point.y, z: 0.025 })

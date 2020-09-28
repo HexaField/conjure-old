@@ -1,5 +1,4 @@
-import { THREE } from 'enable3d'
-import { MathUtils } from '@enable3d/three-wrapper/dist'
+import * as THREE from 'three'
 import { number } from '../util/number'
 
 export default class AvatarControls
@@ -97,7 +96,7 @@ export default class AvatarControls
         this.phi += deltaY * (this.sensitivity.y / 2)
         this.phi = Math.min(85, Math.max(-85, this.phi))
 
-        this.radius = MathUtils.lerp(this.radius, this.targetRadius, this.interpolationFactor)
+        this.radius = THREE.MathUtils.lerp(this.radius, this.targetRadius, this.interpolationFactor)
         if(this.radius < this.minDistance)
             this.radius = this.minDistance
 

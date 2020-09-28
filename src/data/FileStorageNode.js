@@ -1,11 +1,10 @@
 // import fs from 'fs-extra'
-import os from 'os'
 
 export default class FileStorageNode
 {  
     constructor()   
     {
-        this.rootDirectory = os.homedir() + (global.isDevelopment ? '/.conjure-dev/' : '/.conjure/')
+        this.rootDirectory = global.homedir + (global.isDevelopment ? '/.conjure-dev/' : '/.conjure/')
         this.files = require('fs-extra')
     }   
 
@@ -13,7 +12,6 @@ export default class FileStorageNode
 
     async initialise()
     {
-        
     }
 
     async makeDirectory(directory)

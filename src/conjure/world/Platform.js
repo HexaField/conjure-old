@@ -1,15 +1,13 @@
 
 import { THREE, ExtendedObject3D } from 'enable3d'
 import TextRenderer3D from '../screens/text/TextRenderer3D';
-import { Vector3 } from 'three/build/three.module';
-
 export default class Platform
 {  
     constructor(conjure, parentGroup, args = {})
     {
         this.conjure = conjure
         this.platformSize = args.size || 50;
-        this.pos = args.pos || new Vector3();
+        this.pos = args.pos || new THREE.Vector3();
         this.parentGroup = parentGroup
 
 

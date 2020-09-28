@@ -1,7 +1,7 @@
 import { easyPlane } from '../../util/MeshTemplates'
 import HTMLObject from '../../util/HTMLObject'
 import ScreenElementBase from './ScreenElementBase' 
-import { THREE } from 'enable3d'
+import * as THREE from 'three'
 import ThreeTypeableText from 'three-typeable-text'
 
 export default class ScreenElementTextBox extends ScreenElementBase

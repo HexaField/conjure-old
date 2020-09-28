@@ -1,4 +1,4 @@
-import { THREE } from 'enable3d'
+import * as THREE from 'three'
 import ScreenElementBase from './ScreenElementBase';
 import ScreenElementMesh from './ScreenElementMesh';
 import ScreenElementSprite from './ScreenElementSprite';

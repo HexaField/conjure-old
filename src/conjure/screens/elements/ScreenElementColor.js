@@ -1,4 +1,4 @@
-import { THREE } from 'enable3d'
+import * as THREE from 'three'
 import ScreenElementBase from './ScreenElementBase';
 import ScreenElementScaler from './ScreenElementScaler';
 import { number } from '../../util/number'

@@ -1,6 +1,6 @@
 import User from './User';
 import TextRenderer3D from '../screens/text/TextRenderer3D';
-import { THREE } from 'enable3d'
+import * as THREE from 'three'
 
 export default class UserRemote extends User
 {

@@ -1,21 +1,20 @@
-const IPFS = require('ipfs')
-const os = require('os')
-const WebrtcStar = require('libp2p-webrtc-star')
-const WS = require('libp2p-websockets')
-const TCP = require('libp2p-tcp')
-// const Bootstrap = require('libp2p-bootstrap')
-const Gossipsub = require('libp2p-gossipsub')
-const KadDHT = require('libp2p-kad-dht')
-const MPLEX = require('libp2p-mplex')
-const SECIO = require('libp2p-secio')
-const { NOISE } = require('libp2p-noise')
-const wrtc = require('wrtc')
+// import IPFS from 'ipfs'
+// import WebrtcStar from 'libp2p-webrtc-star'
+// import WS from 'libp2p-websockets'
+// import TCP from 'libp2p-tcp'
+// import wrtc from 'https://cdn.skypack.dev/wrtc'
+// import Gossipsub from 'https://cdn.skypack.dev/libp2p-gossipsub'
+// import KadDHT from 'https://cdn.skypack.dev/libp2p-kad-dht'
+// import MPLEX from 'https://cdn.skypack.dev/libp2p-mplex'
+// import SECIO from 'https://cdn.skypack.dev/libp2p-secio'
+// import NOISE from 'https://cdn.skypack.dev/libp2p-noise'
 
+// import Bootstrap from 'libp2p-bootstrap'
 
 async function loadIPFS() {
-    global.log('Connecting to IPFS and making repo at' + os.homedir())
-    const ipfs = await IPFS.create({
-        repo: os.homedir() + (global.isDevelopment ? '/.ipfs-dev' : '/.ipfs'),// + '-' + Date.now() + '/',
+    global.log('Connecting to IPFS and making repo at ' + global.homedir)
+    const ipfs = await Ipfs.create({
+        repo: global.homedir + '/.ipfs',// + '-' + Date.now() + '/',
         config: {
             Addresses: { 
                 Swarm: [
@@ -29,36 +28,35 @@ async function loadIPFS() {
             },
             Bootstrap: []
         },
-        libp2p: {
-            modules: {
-                transport: [
-                    TCP, 
-                    WebrtcStar, 
-                    WS
-                ],
-                streamMuxer: [MPLEX],
-                connEncryption: [NOISE, SECIO],
-                // peerDiscovery: [Bootstrap],
-                dht: KadDHT,
-                pubsub: Gossipsub
-            },
-            config: {
-                transport: {
-                    [WebrtcStar.prototype[Symbol.toStringTag]]: {
-                        wrtc
-                    }
-                },
-                dht: {
-                    enabled: true,
-                    // randomWalk: {
-                    //     enabled: true,
-                    // }
-                },
-            }
-        }
+        // libp2p: {
+        //     modules: {
+        //         transport: [
+        //             TCP, 
+        //             WebrtcStar, 
+        //             WS
+        //         ],
+        //         // streamMuxer: [MPLEX],
+        //         // connEncryption: [NOISE, SECIO],
+        //         // // peerDiscovery: [Bootstrap],
+        //         // dht: KadDHT,
+        //         // pubsub: Gossipsub
+        //     },
+        //     config: {
+        //         transport: {
+        //             [WebrtcStar.prototype[Symbol.toStringTag]]: {
+        //                 wrtc
+        //             }
+        //         },
+        //         dht: {
+        //             enabled: true,
+        //             // randomWalk: {
+        //             //     enabled: true,
+        //             // }
+        //         },
+        //     }
+        // }
     });
 
     return ipfs
 }
-
-module.exports = { loadIPFS }
+export default { loadIPFS }
