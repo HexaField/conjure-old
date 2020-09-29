@@ -47,11 +47,11 @@ export default class DiscordHandler
         let data_split = data.split('\n');
         this.clientId = data_split[0];
         this.clientSecret = data_split[1];
-
+        
         this.oauth = new DiscordOauth2({
             clientId: this.clientId,
             clientSecret: this.clientSecret,
-            redirectUri: window.location.href+"success.html",
+            redirectUri: window.location.origin + "/success.html",
         });
 
         this.url = this.oauth.generateAuthUrl({

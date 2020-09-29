@@ -20,7 +20,7 @@ export const GLOBAL_REALMS = {
     },
     GALLERY: {
         id: 'Gallery',
-        name: 'SuperRare Ethereum Gallery',
+        name: 'Art Gallery',
         timestamp: 0,
         visibility: REALM_VISIBILITY.GLOBAL,
         worldData: {
