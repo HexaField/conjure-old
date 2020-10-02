@@ -43,5 +43,5 @@ export default class ProfileService
     // { id, name } 
     // optional is 
     // { iconURL }
-    getRealmIDs() { return [] }
+    async getRealmsIDs() { return [] }
 }

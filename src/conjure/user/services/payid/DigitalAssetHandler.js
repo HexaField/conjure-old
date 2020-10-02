@@ -1,4 +1,4 @@
-import { PayIdClient, IlpClient, PaymentRequest } from 'xpring-js'
+// import { PayIdClient, IlpClient, PaymentRequest } from 'xpring-js'
 import bigInt from "big-integer"
 
 export default class DigitalAssetHandler
@@ -10,9 +10,19 @@ export default class DigitalAssetHandler
 
     async initXpring()
     {
-        this.payIdClient = new PayIdClient()
-        // this.ilpClient = new IlpClient('prod.grpcng.wallet.xpring.io:443')
-        // this.ilpClient.getBalance('hexafield', 'NjJhNGZiODYtNDA3YS00YjZjLWEzMTYtOWU4MDQzZmM2Nzc2')
+        const { PayIdClient, IlpClient, PaymentRequest } = window.XpringJS
+    
+        const payIdClient = new PayIdClient()
+        const payId = 'hexafield$xpring.money'
+        const allAddresses = await payIdClient.allAddressesForPayId(payId)
+        console.log(allAddresses)
+        // const balance = await this.ilpClient.getBalance('hexafield', 'Nzg4YmM2OTQtMmYxNS00YjlkLWEzMWMtZGNiODdhYjQ0YjQz')
+        // console.log(
+        //   'Net balance was ' +
+        //     balance.netBalance +
+        //     ' with asset scale ' +
+        //     balance.assetScale,
+        // )
     }
 
     async makePayment(amount, to, from)

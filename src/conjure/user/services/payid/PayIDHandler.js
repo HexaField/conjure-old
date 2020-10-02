@@ -15,7 +15,7 @@ export default class PayIDHandler
     async initialise()
     {
         await this.digitalAssetHandler.initialise()
-        console.log(this.domains)
+        // console.log(this.domains)
         this.addDomain('xpring.money')
     }
 
@@ -43,7 +43,7 @@ export default class PayIDHandler
         try
         {
             let response = await this.digitalAssetHandler.payIdClient.allAddressesForPayId(accountName + '$' + domain.getDomain())
-            console.log(response)
+            // console.log(response)
             if(response.error)
             {
                 this.conjure.getGlobalHUD().log(response.message)
@@ -96,7 +96,7 @@ export default class PayIDHandler
     // todo: verify domain is a valid payid server
     addDomain(domainName)
     {
-        console.log(this.domains)
+        // console.log(this.domains)
         if(this.getDomain(domainName)) return
 
         let newDomain = new PayIDDomain(domainName)

@@ -3,11 +3,13 @@ const CopyPlugin = require('copy-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 module.exports = {
-    externals: ['fs-extra', 'fs'],
+    externals: ['fs-extra', 'fs', '@grpc/grpc-js'],
     entry: './src/conjure/index.js',
+    target: "web",
     output: {
       path: path.resolve('dist'),
       filename: 'bundle.js',
+      globalObject: "(typeof self !== 'undefined' ? self : this)",
     },
     module: {
       rules: [{
@@ -37,6 +39,6 @@ module.exports = {
       http2: 'mock',
       net: 'empty',
       tls: 'empty',
-      child_process: 'empty',
+      child_process: 'empty'
     },
 };
