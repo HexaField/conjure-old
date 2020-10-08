@@ -37,7 +37,7 @@ export default class RealmData
             },
             worldData: params.worldData || {},
             worldSettings: params.worldSettings || {
-                features: params.features || [],
+                features: params.features && params.features.length ? params.features : [],
                 worldGeneratorType: REALM_WORLD_GENERATORS.INFINITE_WORLD 
             },
         }

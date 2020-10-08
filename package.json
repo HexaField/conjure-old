@@ -4,12 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "sudo concurrently \"sudo yarn start-node\" \"yarn start-browser\"",
-    "dev": "sudo concurrently \"sudo yarn dev-node\" \"yarn dev-browser\"",
-    "start-browser": "webpack-dev-server --define process.env.NODE_ENV='\"production\"' --mode development --config ./webpack.dev.js --progress --watch",
-    "dev-browser": "webpack-dev-server --mode development --config ./webpack.dev.js --progress --watch",
+    "start": "webpack-dev-server --mode development --config ./webpack.dev.js --progress --watch",
     "start-node": "NODE_ENV=production nodemon --watch src/data --exec babel-node -- src/data --trace-warnings",
-    "dev-node": "NODE_ENV=development nodemon --watch src/data --exec babel-node -- src/data --trace-warnings",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack --mode production --config ./webpack.build.js"
   },
@@ -42,6 +38,7 @@
     "big-integer": "^1.6.48",
     "cross-blob": "^2.0.0",
     "discord-oauth2": "^2.3.0",
+    "discord-rpc": "^3.1.4",
     "enable3d": "^0.19.1",
     "file-type": "^14.7.1",
     "fs": "^0.0.1-security",

@@ -136,7 +136,7 @@ export default class World
             if(realmData.getData().whitelist.type === REALM_WHITELIST.SERVICE)
             {
                 if(!this.conjure.getProfile().getServiceManager().getService('Discord').data) return false
-                if(!realmData.getData().whitelist.ids.includes(this.conjure.getProfile().getServiceManager().getService('Discord').data.discordID)) return false
+                // if(!realmData.getData().whitelist.ids.includes(this.conjure.getProfile().getServiceManager().getService('Discord').data.discordID)) return false
             }
             if(realmData.getData().whitelist.type === REALM_WHITELIST.PASSCODE)
             {

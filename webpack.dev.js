@@ -9,7 +9,6 @@ module.exports = {
     output: {
       path: path.resolve('dist'),
       filename: 'bundle.js',
-      globalObject: "(typeof self !== 'undefined' ? self : this)",
     },
     module: {
       rules: [{

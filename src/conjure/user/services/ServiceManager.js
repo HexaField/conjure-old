@@ -1,4 +1,4 @@
-import ProfileServiceDiscord from "./ProfileServiceDiscord"
+import ProfileServiceDiscord from "./discord/ProfileServiceDiscord"
 // import ProfileServicePayID from "./ProfileServicePayID"
 
 export default class ServiceManager
@@ -66,7 +66,8 @@ export default class ServiceManager
     {
         for(let service of Object.values(this.services))
         {
-            await service.initialise()
+            if(await service.initialise())
+                service.isInitialised = true
         }
         this.conjure.getScreens().screenServices.addServices()
     }

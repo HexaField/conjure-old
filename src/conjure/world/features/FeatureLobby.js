@@ -3,6 +3,7 @@ import Feature from "./Feature"
 import StructurePortal from "../structures/StructurePortal"
 import { POSTPROCESSING } from '../../PostProcessing';
 import { REALM_VISIBILITY, REALM_WHITELIST } from '../realm/RealmData';
+import { createLineGeometry, createCircleGeometry } from '../../util/MeshTemplates'
 
 export default class FeatureLobby extends Feature
 {
@@ -19,7 +20,7 @@ export default class FeatureLobby extends Feature
             this.realmDatas.push(...new Array(8 - this.realmDatas.length).fill(''))
         this.portalsCount = this.realmDatas.length
 
-        let groundMesh = new THREE.Line(this.createCircleGeometry(2), new THREE.LineBasicMaterial({ color: new THREE.Color('aqua'), linewidth: 2 }))
+        let groundMesh = new THREE.Line(createCircleGeometry(2), new THREE.LineBasicMaterial({ color: new THREE.Color('aqua'), linewidth: 2 }))
         groundMesh.layers.enable(POSTPROCESSING.BLOOM_SCENE)
         this.realm.group.add(groundMesh)
         
@@ -41,7 +42,7 @@ export default class FeatureLobby extends Feature
                 this.portals.push(portal)
             
                 let line = new THREE.Line(
-                    this.createLineGeometry(new THREE.Vector3(-point.x * 2, 0, -point.y * 2), new THREE.Vector3(-point.x * 9, 0, -point.y * 9)),
+                    createLineGeometry(new THREE.Vector3(-point.x * 2, 0, -point.y * 2), new THREE.Vector3(-point.x * 9, 0, -point.y * 9)),
                     new THREE.LineBasicMaterial({ 
                         color: 0xffffff,
                         linewidth: 2,
@@ -54,7 +55,7 @@ export default class FeatureLobby extends Feature
             }
 
             groundMesh = new THREE.Line(
-                this.createCircleGeometry(1),
+                createCircleGeometry(1),
                 new THREE.LineBasicMaterial({ 
                     color: color,
                     linewidth: 2
@@ -68,7 +69,7 @@ export default class FeatureLobby extends Feature
         }
 
         groundMesh = new THREE.Line(
-            this.createCircleGeometry(20, this.portalsCount),
+            createCircleGeometry(20, this.portalsCount),
             new THREE.LineBasicMaterial({ 
                 color: new THREE.Color('aqua'),
                 linewidth: 2
@@ -77,28 +78,6 @@ export default class FeatureLobby extends Feature
         groundMesh.layers.enable(POSTPROCESSING.BLOOM_SCENE)
         this.realm.group.add(groundMesh)
     }
-
-    createLineGeometry(a, b)
-    {
-        let geom = new THREE.BufferGeometry().setFromPoints([a, b]);
-        return geom
-    }
-
-    createCircleGeometry(radius, segments)
-    {
-        let curve = new THREE.EllipseCurve(
-            0,  0,
-            radius, radius,
-            0,  2 * Math.PI,
-            false,
-            0
-        )
-        let points = curve.getPoints(segments || radius * 32);
-        let geom = new THREE.BufferGeometry().setFromPoints(points);
-        geom.rotateX(Math.PI / 2)
-        return geom
-    }
-
     async load()
     {
     }

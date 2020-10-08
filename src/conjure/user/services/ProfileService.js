@@ -4,11 +4,13 @@ export default class ProfileService
     {
         this.profile = profile
         this.name = name
+        this.isInitialised = false
         this.data = {}
     }
 
     async initialise()
     {
+        return true
         // console.log('Initialised service ' + this.name)
     }
 

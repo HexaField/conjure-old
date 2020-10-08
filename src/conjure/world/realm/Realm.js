@@ -5,6 +5,7 @@ import FeatureLobby from '../features/FeatureLobby'
 import { REALM_WORLD_GENERATORS, REALM_VISIBILITY, REALM_WHITELIST } from './RealmData'
 import Platform from '../Platform'
 import ObjectManager from './ObjectManager'
+import FeatureDiscord from '../features/FeatureDiscord'
 // import FeatureParser from './FeatureParser'
 
 export const GLOBAL_REALMS = {
@@ -156,6 +157,15 @@ export default class Realm
                     this.features.push(f)
                     break
                 }
+
+                case 'Discord': {
+                    let f = new FeatureDiscord(this)
+                    this.terrain = new Platform(this.conjure, this.world.group)
+                    await f.preload()
+                    this.features.push(f)
+                    break
+                }
+
 
                 default: break
             }
