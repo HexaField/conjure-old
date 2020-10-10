@@ -150,7 +150,7 @@ export class Conjure extends Scene3D
         this.camera.far = 30000
 
         this.cameraFollow = new THREE.Group()
-        this.cameraFollow.position.setZ(-0.25)
+        this.cameraFollow.position.setZ(-0.35)
         this.debugBall = new THREE.Mesh(new THREE.SphereBufferGeometry(0.1), new THREE.MeshBasicMaterial())
         this.debugBall.receiveShadow = false
         this.debugBall.castShadow = false

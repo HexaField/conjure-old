@@ -2,7 +2,7 @@ import { THREE } from 'enable3d'
 import Feature from "./Feature"
 import StructurePortal from "../structures/StructurePortal"
 import { POSTPROCESSING } from '../../PostProcessing';
-import { REALM_VISIBILITY, REALM_WHITELIST } from '../realm/RealmData';
+import { REALM_WHITELIST } from '../realm/RealmData';
 import { createLineGeometry, createCircleGeometry } from '../../util/MeshTemplates'
 
 export default class FeatureLobby extends Feature
@@ -16,6 +16,7 @@ export default class FeatureLobby extends Feature
     {
         this.portals = []
         this.realmDatas = (await this.realm.world.getRealms()).filter(realmData => realmData.id !== 'Lobby')
+        
         if(this.realmDatas.length < 8)
             this.realmDatas.push(...new Array(8 - this.realmDatas.length).fill(''))
         this.portalsCount = this.realmDatas.length
@@ -33,7 +34,7 @@ export default class FeatureLobby extends Feature
 
             if(this.realmDatas[i] !== '')
             {
-                if(this.realmDatas[i].visibility === REALM_VISIBILITY.GLOBAL)
+                if(this.realmDatas[i].global)
                     color = new THREE.Color('green')
                 else if(this.realmDatas[i].whitelist.type !== REALM_WHITELIST.NONE)
                     color = new THREE.Color('red')

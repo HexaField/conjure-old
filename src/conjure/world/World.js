@@ -4,7 +4,7 @@ import User from '../user/User'
 import UserRemote from '../user/UserRemote'
 import { CONJURE_MODE } from '../Conjure';
 import { INTERACT_TYPES } from '../screens/hud/HUDInteract';
-import RealmData, { REALM_WORLD_GENERATORS, REALM_VISIBILITY, REALM_WHITELIST } from './realm/RealmData'
+import RealmData, { REALM_WORLD_GENERATORS, REALM_WHITELIST } from './realm/RealmData'
 import _ from 'lodash'
 
 export default class World
@@ -55,71 +55,68 @@ export default class World
         await this.joinRealmByID('Lobby')
     }
 
-    async getRealms(getPrivate)
+    async getRealms()
+    {
+        let realms = {}
+        
+        for(let realm of await this.conjure.getProfile().getServiceManager().getRealmsFromConnectedServices())
+            realms[realm.id] = new RealmData(realm).getData()
+
+        for(let realm of await this.conjure.getDataHandler().getRealms())  
+            realms[realm.id] = new RealmData(realm).getData()
+
+        for(let realm of this.globalRealms)
+        {
+            realms[realm.id] = realm
+        }
+        
+        return Object.values(realms)
+    }
+
+    async getRealmsAndPinned()
     {
         let realms = []
         
-        realms.push(...this.globalRealms)
-        realms.push(...await this.conjure.getDataHandler().getRealms())
-        realms.push(...await this.conjure.getProfile().getServiceManager().getRealmsFromConnectedServices())
-
-        realms = realms.filter(realm => getPrivate ? true : (realm.visibility && realm.visibility !== REALM_VISIBILITY.PRIVATE))
-        return realms
-    }
-
-    async getRealmsAndPinned(getPrivate)
-    {
-        let realms = []
+        for(let realm of await this.conjure.getProfile().getServiceManager().getRealmsFromConnectedServices())
+            realms[realm.id] = { realmData: new RealmData(realm).getData(), pinned: false }
         
-        for(let realm of this.globalRealms.filter(realm => getPrivate ? true : (realm.visibility && realm.visibility !== REALM_VISIBILITY.PRIVATE)))
+        for(let pinned of await this.conjure.getDataHandler().getRealms())
         {
-            realms.push({ realmData: realm, pinned: 'global' })
+            if(realms[pinned.id])
+                realms[pinned.id].pinned = true
+            else
+                realms[pinned.id] = { realmData: new RealmData(pinned).getData(), pinned: true }
         }
-        for(let realm of (await this.conjure.getProfile().getServiceManager().getRealmsFromConnectedServices()).filter(realm => getPrivate ? true : (realm.visibility && realm.visibility !== REALM_VISIBILITY.PRIVATE)))
-        {
-            realms.push({ realmData: realm, pinned: false })
-        }
-        for(let pinned of (await this.conjure.getDataHandler().getRealms()).filter(realm => getPrivate ? true : (realm.visibility && realm.visibility !== REALM_VISIBILITY.PRIVATE)))
-        {
-            let found = false
-            for(let realm of realms)
-            {
-                if(pinned.id === realm.realmData.id)
-                {
-                    realm.pinned = true
-                    found = true
-                    break
-                }
-            }
-            if(!found)
-                realms.push({ realmData: pinned, pinned: true })
-        }
-        return realms
+
+        for(let realm of this.globalRealms)   
+            realms[realm.id] = { realmData: realm, pinned: 'global' }
+        
+        return Object.values(realms)
     }
 
-    async getRealm(id, getPrivate)
+    async getRealm(id)
     {
         for(let realm of this.globalRealms)
-            if(id === realm.id && (getPrivate ? true : (realm.visibility && realm.visibility !== REALM_VISIBILITY.PRIVATE)))
+            if(id === realm.id)
                 return realm
         
-        let realm = await this.conjure.getDataHandler().getRealm(id)
-        if(!realm) return
-        return getPrivate ? realm : (realm.visibility && realm.visibility !== REALM_VISIBILITY.PRIVATE) ? realm : false
+        return await this.conjure.getDataHandler().getRealm(id)
     }
 
     async preloadGlobalRealms()
     {
-        for(let realm of Object.keys(GLOBAL_REALMS))
+        for(let realm of Object.values(GLOBAL_REALMS))
         {
-            this.globalRealms.push(GLOBAL_REALMS[realm])
-            await this.conjure.getDataHandler().pinRealm({data: GLOBAL_REALMS[realm], pin: true })
+            const realmData = new RealmData(realm).getData()
+            realmData.global = true
+            this.globalRealms.push(realmData)
+            await this.conjure.getDataHandler().pinRealm({data: realmData, pin: true })
         }
     }
 
-    async joinRealm(realmData)
+    async joinRealm(realmData, args = {})
     {
-        if(this.realm && realmData.getID() === this.realm.realmID) return false
+        if(!args.force && this.realm && realmData.getID() === this.realm.realmID) return false
         if(this.realm)
         {
             this.lastRealmID = this.realm.realmID
@@ -135,7 +132,7 @@ export default class World
         {
             if(realmData.getData().whitelist.type === REALM_WHITELIST.SERVICE)
             {
-                if(!this.conjure.getProfile().getServiceManager().getService('Discord').data) return false
+                if(!this.conjure.getProfile().getServiceManager().getServiceLinked('Discord')) return false
                 // if(!realmData.getData().whitelist.ids.includes(this.conjure.getProfile().getServiceManager().getService('Discord').data.discordID)) return false
             }
             if(realmData.getData().whitelist.type === REALM_WHITELIST.PASSCODE)
@@ -174,6 +171,12 @@ export default class World
         return true
     }
 
+    async forceReloadCurrentRealm()
+    {
+        await this.getRealms()
+        await this.joinRealmByID(this.realm.realmID, { force: true })
+    }
+
     async waitForPasscode(passcodes)
     {
         return new Promise((resolve) => {
@@ -188,7 +191,7 @@ export default class World
         })
     }
 
-    async joinRealmByID(id)
+    async joinRealmByID(id, args = {})
     {
         if(!id) return false
         if(this.realm && this.realm.loading)
@@ -200,8 +203,8 @@ export default class World
         let realmData = new RealmData(realm)
         if(!realmData) return false
         
-        if(!await this.joinRealm(realmData))
-            await this.joinRealmByID(this.lastRealmID)
+        if(!await this.joinRealm(realmData, args))
+            await this.joinRealmByID(this.lastRealmID, args)
         return true
     }
 

@@ -61,6 +61,8 @@ export default class FeatureArtGallery extends Feature
                 mesh.rotateY(Math.PI)
         }
         this.loadArtwork()
+        this.realm.conjure.getLoadingScreen().setText('WARNING!\n\nThis realm displays artwork from an external gallery and may feature adult material.\nIf you not an adult, please close the window or explore another realm.') 
+        await this.realm.conjure.getLoadingScreen().awaitInput()
     }
 
     async load()
@@ -70,6 +72,12 @@ export default class FeatureArtGallery extends Feature
     async unload()
     {
         this.room.destroy()
+        for(let piece of this.pieces)
+        {
+            if(piece.element && piece.element.remove)
+                piece.element.remove()
+            piece.mesh.material.dispose()
+        }
     }
 
     update(updateArgs)
@@ -125,6 +133,7 @@ export default class FeatureArtGallery extends Feature
             if(type.includes('mp4'))
             {
                 let video = document.createElement( 'video' );
+                this.pieces[i].element = video
                 video.crossOrigin = "anonymous";
                 video.loop = true
                 // video.src = metadata.media.uri;
@@ -138,7 +147,7 @@ export default class FeatureArtGallery extends Feature
                 req.responseType = 'blob';
 
                 req.onload = (result) => {
-                    if (result.target.status === 200)
+                    if (result.target.status === 200 && video)
                     {
                         let videoBlob = result.target.response;
                         let vid = URL.createObjectURL(videoBlob);

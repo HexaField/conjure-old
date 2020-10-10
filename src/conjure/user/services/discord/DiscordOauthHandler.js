@@ -26,10 +26,11 @@ export default class DiscordOauthHandler
             responseType: 'token',
             state: crypto.randomBytes(16).toString("hex"), 
         });
-
-        this.getUser(window.localStorage.getItem('discordAccessToken'))
-
-        return true
+        
+        const access_token = window.localStorage.getItem('discordAccessToken')
+        if(access_token)
+            return await this.getUser(access_token)
+        return false
     }
 
     logOut()
@@ -71,24 +72,29 @@ export default class DiscordOauthHandler
     
     // this acts as the login 
     //   - if we fail to get the user data, we may as well bind that to if we are logged in!
-    getUser(access_token)
+    async getUser(access_token)
     {
-        if(!access_token) return
-            
-        this.oauth.getUser(access_token)
-        .then((user_data) => {
+        if(!access_token) return false
+        try
+        {
+            const user_data = await this.oauth.getUser(access_token)
+
             console.log("Successfully logged into discord!");
             window.localStorage.setItem('discordAccessToken', access_token)
             this.setLoggedIn(true)
+            console.log(user_data)
             this.userData = user_data;
             this.serviceHandler.setData({ discordName: this.userData.username, discordID: this.userData.id });
-        })
-        .catch((error) => {
+            return true
+        }
+        catch(error)
+        {
             console.log('Sorry, could not log you in. Your session may have expired.')
             window.localStorage.removeItem('discordAccessToken')
             this.userData = undefined;
             this.setLoggedIn(false)
-        })
+            return false
+        }
     }
 
     async getUserGuilds()
@@ -108,6 +114,6 @@ export default class DiscordOauthHandler
     setLoggedIn(loggedIn)
     {
         this.loggedIn = loggedIn;
-        this.serviceHandler.setLinked(loggedIn);
+        this.serviceHandler.setAuthenticated(loggedIn);
     }
 }

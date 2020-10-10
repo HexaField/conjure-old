@@ -20,7 +20,8 @@ export default class RealmHandler
         this.dataHandler.getGlobalNetwork().setProtocolCallback(GLOBAL_PROTOCOLS.BROADCAST_REALMS, this.receiveRealms)
 
         // this is hardcoded to clean up old realms as we are in rapid development
-        this.earliestRealmTime = 1599176386000
+        this.earliestRealmTime = 1601000000000
+
         this.databases = {}
     }
 
@@ -29,10 +30,10 @@ export default class RealmHandler
         let realmCountBeforeValidation = this.pinnedRealms.length
         for(let i in this.pinnedRealms)
             if(this.pinnedRealms[i].timestamp <= this.earliestRealmTime )
-                {
-                    await this.removeDatabase(this.pinnedRealms[i].id)
-                    this.pinnedRealms.splice(i, 1)
-                }
+            {
+                await this.removeDatabase(this.pinnedRealms[i].id)
+                this.pinnedRealms.splice(i, 1)
+            }
         
         if(realmCountBeforeValidation - this.pinnedRealms.length > 0)
             global.log('Invalidated ' + (realmCountBeforeValidation - this.pinnedRealms.length) + ' old realms')
@@ -41,6 +42,7 @@ export default class RealmHandler
     async initialise()
     {
         await this.addRealms(await this.loadRealms())
+        await this.validateRealms()
         global.log('Found', this.pinnedRealms.length, 'realms stored locally.')
     }
 
@@ -55,6 +57,7 @@ export default class RealmHandler
         for(let realm of realms)
         {
             if(!realm.id) continue
+            if(!realm.timestamp || realm.timestamp < this.earliestRealmTime) continue
             let exists = false
             for(let myRealm of this.pinnedRealms)
             {
@@ -79,14 +82,14 @@ export default class RealmHandler
 
     async addRealm(realmData)
     {
-        if(!realmData || !realmData.id) return;
+        if(!realmData || !realmData.id || !realmData.timestamp || realmData.timestamp < this.earliestRealmTime) return;
         let exists = false
-        for(let myRealm of this.pinnedRealms)
+        for(let i in this.pinnedRealms)
         {
-            if(myRealm.id === realmData.id)
+            if(this.pinnedRealms[i].id === realmData.id)
             {
-                if(realmData.timestamp > myRealm.timestamp)
-                   myRealm = realmData
+                if(realmData.timestamp > this.pinnedRealms[i].timestamp && realmData.timestamp > this.earliestRealmTime)
+                this.pinnedRealms[i] = realmData
                 exists = true
                 break
             }

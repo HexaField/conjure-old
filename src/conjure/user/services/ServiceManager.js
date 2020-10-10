@@ -49,7 +49,7 @@ export default class ServiceManager
 
     getServiceLinked(serviceName)
     {
-        return this.services[serviceName].getIsLinked()
+        return this.services[serviceName].getAuthenticated()
     }
 
     getService(serviceName)
@@ -66,8 +66,7 @@ export default class ServiceManager
     {
         for(let service of Object.values(this.services))
         {
-            if(await service.initialise())
-                service.isInitialised = true
+            await service.initialise()
         }
         this.conjure.getScreens().screenServices.addServices()
     }
@@ -77,7 +76,7 @@ export default class ServiceManager
         let potentialRealmsFound = []
         for(let service of Object.values(this.services))
         {
-            potentialRealmsFound.push(...await service.getRealmsIDs())
+            potentialRealmsFound.push(...await service.getRealms())
         }
         return potentialRealmsFound
     }
@@ -87,12 +86,11 @@ export default class ServiceManager
         let realmsFound = []
         for(let service of Object.values(this.services))
         {
-            let ids = await service.getRealmsIDs()
+            let ids = await service.getRealms()
             for(let i in ids)
             {
-                let realm = await this.conjure.getDataHandler().getRealm(ids[i].id)
-                if(realm)
-                    realmsFound.push(realm)
+                if(await this.conjure.getDataHandler().getRealm(ids[i].id))
+                    realmsFound.push(ids[i])
             }
         }
         return realmsFound

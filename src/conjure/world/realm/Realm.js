@@ -2,7 +2,7 @@ import { THREE, ExtendedGroup } from 'enable3d'
 import Terrain from './Terrain'
 import FeatureArtGallery from '../features/FeatureArtGallery'
 import FeatureLobby from '../features/FeatureLobby'
-import { REALM_WORLD_GENERATORS, REALM_VISIBILITY, REALM_WHITELIST } from './RealmData'
+import { REALM_WORLD_GENERATORS, REALM_WHITELIST } from './RealmData'
 import Platform from '../Platform'
 import ObjectManager from './ObjectManager'
 import FeatureDiscord from '../features/FeatureDiscord'
@@ -13,7 +13,6 @@ export const GLOBAL_REALMS = {
         id: 'Lobby',
         name: 'Lobby',
         timestamp: 0,
-        visibility: REALM_VISIBILITY.GLOBAL,
         worldSettings: {
             features: ['Lobby'],
             worldGeneratorType: REALM_WORLD_GENERATORS.NONE
@@ -23,7 +22,6 @@ export const GLOBAL_REALMS = {
         id: 'Gallery',
         name: 'Art Gallery',
         timestamp: 0,
-        visibility: REALM_VISIBILITY.GLOBAL,
         worldData: {
             playsAudio: true
         },
@@ -36,7 +34,6 @@ export const GLOBAL_REALMS = {
         id: 'Campfire',
         name: 'Campfire',
         timestamp: 0,
-        visibility: REALM_VISIBILITY.GLOBAL,
         worldData: {
             playsAudio: true
         },
@@ -201,11 +198,9 @@ export default class Realm
         await this.conjure.getDataHandler().leaveNetwork({ network: this.realmID })
         await this.conjure.getDataHandler().unsubscribeFromRealm({ realmID: this.realmID })
         if(this.terrain)
-        {
             this.terrain.destroy()
-        }
         for(let feature of this.features)
-            feature.unload()
+            await feature.unload()
         this.world.group.remove(this.group)
         console.log('successfully left realm')
     }
